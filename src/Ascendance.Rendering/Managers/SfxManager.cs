@@ -74,7 +74,7 @@ public class SfxManager(SfxLoader loader, System.Func<System.Int32> volume)
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void LoadFromFileList(System.Collections.Generic.IEnumerable<System.String> files, System.Int32 parallelSounds)
     {
-        foreach (var file in files)
+        foreach (System.String file in files)
         {
             AddToLibrary(file, parallelSounds);
         }
@@ -90,19 +90,33 @@ public class SfxManager(SfxLoader loader, System.Func<System.Int32> volume)
     public void AddToLibrary(System.String name, System.Int32 parallelSounds)
     {
         System.ObjectDisposedException.ThrowIf(_Loader.Disposed, nameof(_Loader));
-
-        if (_SoundLibrary.TryGetValue(name, out SoundManager sound))
+        try
         {
-            // Replace SoundManager
-            _ = _SoundLibrary.Remove(name);
-            sound.Dispose();
-            AddToLibrary(name, parallelSounds);
+            if (_SoundLibrary.TryGetValue(name, out SoundManager sound))
+            {
+                _ = _SoundLibrary.Remove(name);
+                sound.Dispose();
+                AddToLibrary(name, parallelSounds);
+            }
+            else
+            {
+                // Add new SoundManager
+                SoundBuffer buffer = _Loader.Load(name);
+                if (buffer != null)
+                {
+                    sound = new SoundManager(name, buffer, parallelSounds);
+                    _SoundLibrary.Add(name, sound);
+                    $"[SfxManager] Loaded sound '{name}'".Info();
+                }
+                else
+                {
+                    $"[SfxManager] Failed to load sound buffer for '{name}'".Warn();
+                }
+            }
         }
-        else
+        catch (System.Exception ex)
         {
-            // Add new SoundManager
-            sound = new SoundManager(name, _Loader.Load(name), parallelSounds);
-            _SoundLibrary.Add(name, sound);
+            ex.Error(source: "SfxManager", message: $"Error loading sound '{name}': {ex.Message}");
         }
     }
 
