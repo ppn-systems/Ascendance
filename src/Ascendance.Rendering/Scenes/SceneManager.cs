@@ -32,9 +32,9 @@ public static class SceneManager
     /// <returns>ScreenSize HashSet of all objects of the specified type.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static System.Collections.Generic.HashSet<T> AllObjects<T>()
+    public static System.Collections.Generic.IReadOnlyCollection<T> AllObjects<T>()
         where T : SceneObject
-        => [.. System.Linq.Enumerable.OfType<T>(_sceneObjects)];
+        => System.Linq.Enumerable.ToList(System.Linq.Enumerable.OfType<T>(_sceneObjects));
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -79,9 +79,9 @@ public static class SceneManager
             if (System.Reflection.CustomAttributeExtensions.GetCustomAttribute<IgnoredLoadAttribute>(type) != null)
             {
                 NLogixFx.Debug(
-                    message: $"Skipping load of scene {type.Name} because it is marked as not loadable."
-,
+                    message: $"Skipping load of scene {type.Name} because it is marked as not loadable.",
                     source: type.Name);
+
                 continue;
             }
 
@@ -101,17 +101,14 @@ public static class SceneManager
             catch (System.Exception ex)
             {
                 // Handle any exceptions that occur during instantiation
-                ("Instantiating: " + type.FullName).Debug();
-                ex.Error(
-                    source: type.Name,
-                    message: $"Error instantiating scene {type.Name}: {ex.Message}"
-                );
+                ex.Error(source: type.Name, message: $"Error instantiating scene {type.Name}: {ex.Message}");
                 continue;
             }
 
             // Check for duplicate scene names
             if (sceneNames.Contains(scene.Name))
             {
+                NLogixFx.Error(message: $"Duplicate scene name '{scene.Name}' detected.", source: type.Name);
                 throw new System.Exception($"Scenes with name {scene.Name} already exists.");
             }
 
@@ -161,7 +158,14 @@ public static class SceneManager
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     private static void LoadScene(System.String name)
     {
-        _currentScene = System.Linq.Enumerable.First(_scenes, scene => scene.Name == name);
+        Scene found = System.Linq.Enumerable.FirstOrDefault(_scenes, scene => scene.Name == name);
+        if (found == null)
+        {
+            NLogixFx.Error(message: $"Scene '{name}' not found in scene list.", source: "SceneManager");
+            throw new System.Exception($"Scene with name '{name}' does not exist.");
+        }
+
+        _currentScene = found;
         _currentScene.CreateScene();
         QueueSpawn(_currentScene.GetObjects());
     }
@@ -190,8 +194,7 @@ public static class SceneManager
     /// <param name="sceneObjects">The collection of objects to be spawned.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void QueueSpawn(
-        System.Collections.Generic.IEnumerable<SceneObject> sceneObjects)
+    public static void QueueSpawn(System.Collections.Generic.IEnumerable<SceneObject> sceneObjects)
     {
         foreach (SceneObject o in sceneObjects)
         {
@@ -311,7 +314,7 @@ public static class SceneManager
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static T FindByType<T>() where T : SceneObject
     {
-        System.Collections.Generic.HashSet<T> objects = AllObjects<T>();
+        System.Collections.Generic.IReadOnlyCollection<T> objects = AllObjects<T>();
         return objects.Count != 0 ? System.Linq.Enumerable.First(objects) : null;
     }
 }

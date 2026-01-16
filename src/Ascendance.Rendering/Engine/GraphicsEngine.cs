@@ -2,6 +2,7 @@
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
+using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -13,12 +14,18 @@ namespace Ascendance.Rendering.Engine;
 /// </summary>
 public static class GraphicsEngine
 {
-    // Private fields
+    #region Fields
+
+    internal static System.Boolean _renderDirty;
+    internal static System.Boolean _focused;
     internal static readonly RenderWindow _window;
     internal static readonly System.UInt32 _foregroundFps;
     internal static readonly System.UInt32 _backgroundFps;
+    internal static System.Collections.Generic.List<RenderObject> _cachedRenderObjects;
 
-    private static System.Boolean _focused = true;
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
     /// Indicates whether debugging mode is enabled.
@@ -41,6 +48,10 @@ public static class GraphicsEngine
     /// </summary>
     public static System.Action<System.Single> OnUpdate { get; set; }
 
+    #endregion Properties
+
+    #region Constructor
+
     /// <summary>
     /// Static constructor to initialize the game configuration and window.
     /// </summary>
@@ -49,8 +60,11 @@ public static class GraphicsEngine
         GraphicsConfig = new GraphicsConfig();
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
 
-        _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
+        _focused = true;
+        _renderDirty = true;
         _backgroundFps = 15;
+        _cachedRenderObjects = [];
+        _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
         ContextSettings ctx = new()
         {
@@ -82,6 +96,10 @@ public static class GraphicsEngine
         }
     }
 
+    #endregion Constructor
+
+    #region Methods
+
     /// <summary>
     /// Enables or disables debug mode.
     /// </summary>
@@ -106,63 +124,77 @@ public static class GraphicsEngine
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static void OpenWindow()
     {
-        var clock = new Clock();
-        SceneManager.Instantiate();
-
-        // Fixed step (ổn định logic), vẫn render mỗi vòng
         const System.Single targetDt = 1f / 60f;
+
+        Clock clock = new();
+        SceneManager.Instantiate();
         System.Single accumulator = 0f;
 
-        while (_window.IsOpen)
+        try
         {
-            // Event pump
-            _window.DispatchEvents();
-
-            // Timing
-            System.Single frameDt = clock.Restart().AsSeconds();
-            // Clamp để tránh spike quá lớn khi alt-tab
-            if (frameDt > 0.25f)
+            while (_window.IsOpen)
             {
-                frameDt = 0.25f;
-            }
+                // Event pump
+                _window.DispatchEvents();
 
-            accumulator += frameDt;
-            while (accumulator >= targetDt)
-            {
-                Update(targetDt);
-                accumulator -= targetDt;
-            }
-
-            // Render
-            _window.Clear();
-            Render(_window);
-            _window.Display();
-
-            // Throttle nhẹ khi nền (mất focus) để hạ GPU/CPU
-            if (!_focused)
-            {
-                // Nếu VSync OFF: giảm FPS nền.
-                if (!GraphicsConfig.VSync)
+                // Timing
+                System.Single frameDt = clock.Restart().AsSeconds();
+                // Clamp để tránh spike quá lớn khi alt-tab
+                if (frameDt > 0.25f)
                 {
-                    _window.SetFramerateLimit(_backgroundFps);
+                    frameDt = 0.25f;
                 }
 
-                // Nhường CPU 1–3ms là đủ
-                System.Threading.Thread.Sleep(2);
-            }
-            else
-            {
-                // Restore foreground FPS khi có focus (nếu không dùng VSync)
-                if (!GraphicsConfig.VSync)
+                accumulator += frameDt;
+                while (accumulator >= targetDt)
                 {
-                    _window.SetFramerateLimit(_foregroundFps);
+                    Update(targetDt);
+                    accumulator -= targetDt;
+                }
+
+                // Render
+                _window.Clear();
+                Render(_window);
+                _window.Display();
+
+                // Throttle nhẹ khi nền (mất focus) để hạ GPU/CPU
+                if (!_focused)
+                {
+                    // Nếu VSync OFF: giảm FPS nền.
+                    if (!GraphicsConfig.VSync)
+                    {
+                        _window.SetFramerateLimit(_backgroundFps);
+                    }
+
+                    // Nhường CPU 1–3ms là đủ
+                    System.Threading.Thread.Sleep(2);
+                }
+                else
+                {
+                    // Restore foreground FPS khi có focus (nếu không dùng VSync)
+                    if (!GraphicsConfig.VSync)
+                    {
+                        _window.SetFramerateLimit(_foregroundFps);
+                    }
                 }
             }
+
+            _window.Dispose();
         }
-
-        _window.Dispose();
+        catch (System.Exception ex)
+        {
+            NLogixFx.Error(message: $"Unhandled exception in main game loop: {ex}", source: "GraphicsEngine");
+        }
+        finally
+        {
+            _window.Dispose();
+            try { MusicManager.Dispose(); } catch { }
+        }
     }
 
+    /// <summary>
+    /// Closes the game window and disposes of game subsystems.
+    /// </summary>
     public static void CloseWindow()
     {
         _window.Close();
@@ -195,10 +227,14 @@ public static class GraphicsEngine
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     private static void Render(RenderTarget target)
     {
-        System.Collections.Generic.List<RenderObject> renderObjects = [.. SceneManager.AllObjects<RenderObject>()];
-        renderObjects.Sort(RenderObject.CompareByZIndex);
+        if (_renderDirty)
+        {
+            _cachedRenderObjects = [.. SceneManager.AllObjects<RenderObject>()];
+            _cachedRenderObjects.Sort(RenderObject.CompareByZIndex);
+            _renderDirty = false;
+        }
 
-        foreach (RenderObject r in renderObjects)
+        foreach (RenderObject r in _cachedRenderObjects)
         {
             if (r.Enabled && r.Visible)
             {
@@ -217,4 +253,6 @@ public static class GraphicsEngine
             _window.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
         }
     }
+
+    #endregion Methods
 }
