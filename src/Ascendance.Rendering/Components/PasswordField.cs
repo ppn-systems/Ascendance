@@ -1,18 +1,18 @@
-﻿using Ascendance.Rendering.Graphics.Visual;
+﻿using Ascendance.Rendering.Components.Rules;
+using Ascendance.Rendering.Graphics.Visual;
 using SFML.Graphics;
 using SFML.System;
 
 namespace Ascendance.Rendering.Components;
 
 /// <summary>
-/// Single-line password input built on top of <see cref="InputField"/>.
+/// Single-line password input built on top of <see cref="TextInputField"/>.
 /// </summary>
 /// <remarks>
 /// - Masks user input with <see cref="MaskChar"/> by default.<br/>
 /// - Set <see cref="Show"/> = <c>true</c> to reveal raw text (useful for an "eye" toggle).<br/>
-/// - Constructor sets <see cref="InputField.PasswordMode"/> = <c>true</c>.
 /// </remarks>
-public sealed class PasswordField : InputField
+public sealed class PasswordField : TextInputField
 {
     /// <summary>
     /// Whether to reveal the raw text (i.e., “show password”). Default: <c>false</c>.
@@ -35,9 +35,7 @@ public sealed class PasswordField : InputField
         System.UInt32 fontSize,
         Vector2f size,
         Vector2f position)
-        : base(panelTexture, border, sourceRect, font, fontSize, size, position) =>
-        // (VN) Mặc định dùng chế độ password của InputField
-        PasswordMode = true;
+        : base(panelTexture, border, sourceRect, font, fontSize, size, position) => base.ValidationRule = new PasswordValidationRule();
 
     /// <summary>
     /// Toggle <see cref="Show"/> state. (VN) Đổi trạng thái hiện/ẩn mật khẩu.
@@ -57,7 +55,7 @@ public sealed class PasswordField : InputField
         }
 
         // Khi ẩn, trả về chuỗi mask có độ dài bằng số ký tự thực
-        var len = Text?.Length ?? 0;
+        System.Int32 len = Text?.Length ?? 0;
         return len == 0 ? System.String.Empty : new System.String(MaskChar, len);
     }
 }

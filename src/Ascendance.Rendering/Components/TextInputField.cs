@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
+using Ascendance.Rendering.Components.Rules;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Graphics.Visual;
 using Ascendance.Rendering.Input;
@@ -24,7 +26,7 @@ namespace Ascendance.Rendering.Components;
 /// và auto cuộn để luôn thấy caret ở cuối.
 /// </para>
 /// </remarks>
-public class InputField : RenderObject
+public class TextInputField : RenderObject
 {
     #region ===== Constants & Defaults =====
 
@@ -51,6 +53,7 @@ public class InputField : RenderObject
 
     private readonly System.UInt32 _fontSize;
     private System.Single _caretWidth = 1f;
+    public ITextValidationRule ValidationRule { get; set; }
 
     #endregion
 
@@ -78,9 +81,6 @@ public class InputField : RenderObject
 
     /// <summary>Optional placeholder (shown when <see cref="Text"/> is empty and unfocused).</summary>
     public System.String Placeholder { get; set; } = System.String.Empty;
-
-    /// <summary>If true, displayed text is replaced with bullets (but <see cref="Text"/> still holds real content).</summary>
-    public System.Boolean PasswordMode { get; set; }
 
     /// <summary>Raised whenever <see cref="Text"/> changes.</summary>
     public event System.Action<System.String> OnChanged;
@@ -179,7 +179,7 @@ public class InputField : RenderObject
     #region ===== Construction =====
 
     /// <summary>
-    /// Creates a new <see cref="InputField"/>.
+    /// Creates a new <see cref="TextInputField"/>.
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="border">9-slice borders.</param>
@@ -188,7 +188,7 @@ public class InputField : RenderObject
     /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
-    public InputField(
+    public TextInputField(
         Texture panelTexture, Thickness border, IntRect sourceRect,
         Font font, System.UInt32 fontSize,
         Vector2f size, Vector2f position)
@@ -216,6 +216,8 @@ public class InputField : RenderObject
         {
             FillColor = _text.FillColor
         };
+
+        this.ValidationRule = new UsernameValidationRule();
 
         UpdateHitBox();
         UpdateCaretImmediate();
@@ -297,38 +299,11 @@ public class InputField : RenderObject
         }
 
         // Letters A..Z
-        if (_buffer.Length < (MaxLength ?? System.Int32.MaxValue) && TryKeyToChar(out System.Char ch, shift))
+        if (_buffer.Length < (MaxLength ?? System.Int32.MaxValue) && KeyboardCharMapper.Instance.TryMapKeyToChar(out System.Char ch, shift))
         {
-            if (ch == ' ')
+            if (ValidationRule?.IsValid(_buffer.ToString() + ch) == false)
             {
                 return;
-            }
-
-            if (PasswordMode)
-            {
-                if (ch > 0x7F)
-                {
-                    return;
-                }
-
-                if (System.Char.IsControl(ch))
-                {
-                    return;
-                }
-
-                if (ch is '\'' or '\"' or '\\' or '/')
-                {
-                    return; // disallow quotes and slashes in password mode
-                }
-
-                if (!System.Char.IsLetterOrDigit(ch) && ch != '_' && ch != '-' && ch != '.' && ch != '#')
-                {
-                    return;
-                }
-            }
-            else
-            {
-                ch = System.Char.ToLowerInvariant(ch);
             }
 
             AppendChar(ch);
@@ -455,90 +430,11 @@ public class InputField : RenderObject
     /// Returns what should be displayed: placeholder, masked password, or raw text.
     /// (VN) Chuỗi hiển thị: placeholder (nếu rỗng & không focus), password (•••), hoặc text thường.
     /// </summary>
-    protected virtual System.String GetDisplayText()
-    {
-        if (_buffer.Length == 0 && !Focused && !System.String.IsNullOrEmpty(Placeholder))
-        {
-            return Placeholder;
-        }
-
-        if (PasswordMode && _buffer.Length > 0)
-        {
-            // Use bullet U+2022
-            return new System.String('\u2022', _buffer.Length);
-        }
-
-        return _buffer.ToString();
-    }
+    protected virtual System.String GetDisplayText() => _buffer.Length == 0 && !Focused && !System.String.IsNullOrEmpty(Placeholder) ? Placeholder : _buffer.ToString();
 
     #endregion
 
     #region ===== Helpers =====
-
-    private static readonly System.Collections.Generic.Dictionary<Keyboard.Key, (System.Char normal, System.Char shift)> _map = new()
-    {
-        // row digits
-        [Keyboard.Key.Num0] = ('0', ')'),
-        [Keyboard.Key.Num1] = ('1', '!'),
-        [Keyboard.Key.Num2] = ('2', '@'),
-        [Keyboard.Key.Num3] = ('3', '#'),
-        [Keyboard.Key.Num4] = ('4', '$'),
-        [Keyboard.Key.Num5] = ('5', '%'),
-        [Keyboard.Key.Num6] = ('6', '^'),
-        [Keyboard.Key.Num7] = ('7', '&'),
-        [Keyboard.Key.Num8] = ('8', '*'),
-        [Keyboard.Key.Num9] = ('9', '('),
-
-        // punctuation
-        [Keyboard.Key.Hyphen] = ('-', '_'),
-        [Keyboard.Key.Equal] = ('=', '+'),
-        [Keyboard.Key.LBracket] = ('[', '{'),
-        [Keyboard.Key.RBracket] = (']', '}'),
-        [Keyboard.Key.Backslash] = ('\\', '|'),
-        [Keyboard.Key.Semicolon] = (';', ':'),
-        [Keyboard.Key.Apostrophe] = ('\'', '"'),
-        [Keyboard.Key.Comma] = (',', '<'),
-        [Keyboard.Key.Period] = ('.', '>'),
-        [Keyboard.Key.Slash] = ('/', '?'),
-        [Keyboard.Key.Space] = (' ', ' ')
-    };
-
-    private static System.Boolean TryKeyToChar(out System.Char c, System.Boolean shift)
-    {
-        c = '\0';
-
-        // A..Z
-        for (var k = Keyboard.Key.A; k <= Keyboard.Key.Z; k++)
-        {
-            if (InputState.IsKeyPressed(k))
-            {
-                c = (System.Char)((shift ? 'A' : 'a') + (k - Keyboard.Key.A));
-                return true;
-            }
-        }
-
-        // numpad 0..9
-        for (var k = Keyboard.Key.Numpad0; k <= Keyboard.Key.Numpad9; k++)
-        {
-            if (InputState.IsKeyPressed(k))
-            {
-                c = (System.Char)('0' + (k - Keyboard.Key.Numpad0));
-                return true;
-            }
-        }
-
-        // row digits + punctuation
-        foreach (var kv in _map)
-        {
-            if (InputState.IsKeyPressed(kv.Key))
-            {
-                c = shift ? kv.Value.shift : kv.Value.normal;
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     /// <summary>
     /// Append a char with MaxLength enforcement and change notification.

@@ -1,4 +1,6 @@
-﻿using SFML.Graphics;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using SFML.Graphics;
 
 namespace Ascendance.Rendering.Abstractions;
 
