@@ -11,6 +11,8 @@ namespace Ascendance.Rendering.Entities;
 /// </summary>
 public abstract class SpriteObject : RenderObject
 {
+    #region Properties
+
     /// <summary>
     /// The Sprite associated with this object.
     /// </summary>
@@ -19,7 +21,11 @@ public abstract class SpriteObject : RenderObject
     /// <summary>
     /// Gets the global bounds of the Sprite.
     /// </summary>
-    public virtual FloatRect Bounds => Sprite.GetGlobalBounds();
+    public virtual FloatRect GlobalBounds => this.Sprite.GetGlobalBounds();
+
+    #endregion Properties
+
+    #region Constructions
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpriteObject"/> class with a texture, rectangle, position, scale, and rotation.
@@ -36,8 +42,8 @@ public abstract class SpriteObject : RenderObject
         Vector2f scale,
         System.Single rotation)
     {
-        Sprite = new Sprite(texture, rect);
-        SetTransform(ref Sprite, position, scale, rotation);
+        this.Sprite = new Sprite(texture, rect);
+        ApplyTransform(ref this.Sprite, position, scale, rotation);
     }
 
     /// <summary>
@@ -53,8 +59,8 @@ public abstract class SpriteObject : RenderObject
         Vector2f scale,
         System.Single rotation)
     {
-        Sprite = new Sprite(texture);
-        SetTransform(ref Sprite, position, scale, rotation);
+        this.Sprite = new Sprite(texture);
+        ApplyTransform(ref this.Sprite, position, scale, rotation);
     }
 
     /// <summary>
@@ -65,7 +71,7 @@ public abstract class SpriteObject : RenderObject
     protected SpriteObject(Texture texture, IntRect rect)
     {
         Sprite = new Sprite(texture, rect);
-        SetTransform(ref Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
+        ApplyTransform(ref Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
     }
 
     /// <summary>
@@ -74,9 +80,25 @@ public abstract class SpriteObject : RenderObject
     /// <param name="texture">The texture to be used for the Sprite.</param>
     protected SpriteObject(Texture texture)
     {
-        Sprite = new Sprite(texture);
-        SetTransform(ref Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
+        this.Sprite = new Sprite(texture);
+        ApplyTransform(ref this.Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
     }
+
+    #endregion Constructions
+
+    #region APIs
+
+    /// <summary>
+    /// Gets the drawable object for rendering the Sprite.
+    /// </summary>
+    /// <returns>The Sprite as a drawable object.</returns>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    protected sealed override Drawable GetDrawable() => this.Sprite;
+
+    #endregion APIs
+
+    #region Private Methods
 
     /// <summary>
     /// Sets the transformation properties of a Sprite.
@@ -87,18 +109,12 @@ public abstract class SpriteObject : RenderObject
     /// <param name="rotation">The rotation angle of the Sprite in degrees.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void SetTransform(ref Sprite s, Vector2f position, Vector2f scale, System.Single rotation)
+    private static void ApplyTransform(ref Sprite s, Vector2f position, Vector2f scale, System.Single rotation)
     {
         s.Position = position;
         s.Scale = scale;
         s.Rotation = rotation;
     }
 
-    /// <summary>
-    /// Gets the drawable object for rendering the Sprite.
-    /// </summary>
-    /// <returns>The Sprite as a drawable object.</returns>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected sealed override Drawable GetDrawable() => Sprite;
+    #endregion Private Methods
 }
