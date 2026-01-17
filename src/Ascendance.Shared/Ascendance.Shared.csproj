@@ -6,6 +6,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Nalix.Shared" Version="9.9.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="SFML.System" Version="2.6.1" />
 	</ItemGroup>
 </Project>
