@@ -1,19 +1,53 @@
-﻿using Ascendance.Rendering.Engine;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Engine.Abstractions;
 using SFML.Graphics;
 using SFML.System;
-using System;
 
 namespace Ascendance.Rendering.Graphics.Transitions.Effects;
 
-internal abstract class ScreenOverlayBase(Color color) : ITransitionDrawable
+/// <summary>
+/// Base class for full-screen overlay effects used in scene transitions.
+/// (VN) Lớp nền cho các hiệu ứng overlay màn hình chuyển cảnh.
+/// </summary>
+internal abstract class ScreenOverlayBase : ITransitionDrawable
 {
-    protected readonly Vector2f Size = new(GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y);
-    protected readonly Color BaseColor = color;
+    /// <summary>
+    /// Gets the full-screen overlay size based on current engine screen size.
+    /// </summary>
+    protected static Vector2f OverlaySize => new(GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y);
 
-    public abstract void Update(Single p, Boolean closing);
+    /// <summary>
+    /// Gets the effect base color (alpha may be controlled dynamically).
+    /// </summary>
+    protected Color BaseColor { get; }
+
+    /// <summary>
+    /// Gets the overlay size (captured at construction; use OverlaySize if need to dynamically resize).
+    /// </summary>
+    protected readonly Vector2f Size;
+
+    /// <summary>
+    /// Initializes the overlay effect with a given color.
+    /// </summary>
+    /// <param name="color">Overlay base color.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
+    protected ScreenOverlayBase(Color color)
+    {
+        Size = OverlaySize;
+        BaseColor = color;
+    }
+
+    /// <summary>
+    /// Updates the overlay effect logic for the current frame.
+    /// </summary>
+    /// <param name="t">Progress of the transition phase [0..1].</param>
+    /// <param name="closing">True if in closing (cover), false if opening (reveal).</param>
+    public abstract void Update(System.Single t, System.Boolean closing);
+
+    /// <summary>
+    /// Gets the object that renders the current overlay.
+    /// </summary>
     public abstract Drawable GetDrawable();
-
-    protected static Byte LerpByte(Byte a, Byte b, Single t)
-        => (Byte)(a + ((b - a) * Math.Clamp(t, 0f, 1f)));
 }

@@ -1,15 +1,24 @@
-﻿using SFML.Graphics;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using SFML.Graphics;
 using SFML.System;
-using System;
 
 namespace Ascendance.Rendering.Graphics.Transitions.Effects;
 
-/// <summary>Wipe ngang: che từ trái→phải, rồi mở ngược lại.</summary>
+/// <summary>
+/// Horizontal wipe overlay: covers the screen from left to right, then uncovers in reverse.
+/// (VN) Che màn hình từ trái qua phải, đổi scene, rồi mở lại từ phải sang trái.
+/// </summary>
 internal sealed class WipeOverlayHorizontal : ScreenOverlayBase
 {
     private readonly RectangleShape _rect;
 
-    public WipeOverlayHorizontal(Color color) : base(color)
+    /// <summary>
+    /// Initializes the horizontal wipe overlay with the specified color.
+    /// </summary>
+    /// <param name="color">Wipe color.</param>
+    public WipeOverlayHorizontal(Color color)
+        : base(color)
     {
         _rect = new RectangleShape(new Vector2f(0, Size.Y))
         {
@@ -18,11 +27,24 @@ internal sealed class WipeOverlayHorizontal : ScreenOverlayBase
         };
     }
 
-    public override void Update(Single p, Boolean closing)
+    /// <summary>
+    /// Updates the wipe width for the current frame.
+    /// </summary>
+    /// <param name="t">Phase progress [0..1].</param>
+    /// <param name="closing">True for covering, false for uncovering.</param>
+    public override void Update(System.Single t, System.Boolean closing)
     {
-        Single w = closing ? Size.X * p : Size.X * (1f - p);
-        _rect.Size = new Vector2f(Math.Max(0f, w), Size.Y);
+        t = System.Single.Clamp(t, 0f, 1f); // Clamp progress for safe sizing
+
+        System.Single w = closing
+            ? Size.X * t
+            : Size.X * (1f - t);
+
+        _rect.Size = new Vector2f(System.MathF.Max(0f, w), Size.Y);
     }
 
+    /// <summary>
+    /// Gets the wipe overlay rectangle covering the screen.
+    /// </summary>
     public override Drawable GetDrawable() => _rect;
 }

@@ -1,16 +1,26 @@
-﻿using SFML.Graphics;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using SFML.Graphics;
 using SFML.System;
-using System;
 
 namespace Ascendance.Rendering.Graphics.Transitions.Effects;
 
-/// <summary>Zoom: hình chữ nhật scale từ tâm (ZoomIn: 0→1 rồi 1→0; ZoomOut: 1→0 rồi 0→1).</summary>
+/// <summary>
+/// Zoom overlay effect: a colored rectangle scales from the center (ZoomIn: 0→1 then 1→0; ZoomOut: 1→0 then 0→1).
+/// (VN) Hiệu ứng zoom phủ: hình chữ nhật co/phóng từ tâm màn hình.
+/// </summary>
 internal sealed class ZoomOverlay : ScreenOverlayBase
 {
     private readonly RectangleShape _rect;
-    private readonly Boolean _modeIn; // true: ZoomIn, false: ZoomOut
+    private readonly System.Boolean _modeIn; // true: ZoomIn, false: ZoomOut
 
-    public ZoomOverlay(Color color, Boolean modeIn) : base(color)
+    /// <summary>
+    /// Initializes the zoom overlay.
+    /// </summary>
+    /// <param name="color">Overlay color.</param>
+    /// <param name="modeIn">true for ZoomIn, false for ZoomOut.</param>
+    public ZoomOverlay(Color color, System.Boolean modeIn)
+        : base(color)
     {
         _modeIn = modeIn;
         _rect = new RectangleShape(Size)
@@ -21,14 +31,27 @@ internal sealed class ZoomOverlay : ScreenOverlayBase
         };
     }
 
-    public override void Update(Single p, Boolean closing)
+    /// <summary>
+    /// Updates rectangle scale for the current frame.
+    /// </summary>
+    /// <param name="t">Phase progress [0..1].</param>
+    /// <param name="closing">True for closing (cover), false for opening (reveal).</param>
+    public override void Update(System.Single t, System.Boolean closing)
     {
-        // Với ZoomIn: closing scale 0→1; opening 1→0
-        // Với ZoomOut: closing 1→0; opening 0→1
-        Single s = _modeIn ? closing ? p : 1f - p : closing ? 1f - p : p;
-        s = Math.Clamp(s, 0.0001f, 1f);
+        // For ZoomIn: closing scales 0→1; opening scales 1→0
+        // For ZoomOut: closing scales 1→0; opening scales 0→1
+        System.Single s = _modeIn
+            ? (closing ? t : 1f - t)
+            : (closing ? 1f - t : t);
+
+        // Avoid 0 to ensure still visible; Clamp t into [0.0001, 1f]
+        s = System.Single.Clamp(s, 0.0001f, 1f);
+
         _rect.Scale = new Vector2f(s, s);
     }
 
+    /// <summary>
+    /// Gets the zoom overlay rectangle for the current frame.
+    /// </summary>
     public override Drawable GetDrawable() => _rect;
 }
