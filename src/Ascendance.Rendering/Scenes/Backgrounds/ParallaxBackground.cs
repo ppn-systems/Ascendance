@@ -14,7 +14,7 @@ public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
     #region Fields
 
     private readonly Vector2u _viewport = viewport;
-    private readonly System.Collections.Generic.List<Layer> _layers = [];
+    private readonly System.Collections.Generic.List<Layer> _backgroundLayers = [];
 
     #endregion Fields
 
@@ -37,7 +37,7 @@ public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void AddLayer(Texture texture, System.Single speed, System.Boolean autoScale)
+    public void AddBackgroundLayer(Texture texture, System.Single speed, System.Boolean autoScale)
     {
         System.ArgumentNullException.ThrowIfNull(texture);
 
@@ -46,7 +46,7 @@ public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
             throw new System.ArgumentException("Texture must have nonzero size.", nameof(texture));
         }
 
-        _layers.Add(new Layer(_viewport, texture, speed, autoScale));
+        _backgroundLayers.Add(new Layer(_viewport, texture, speed, autoScale));
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void ClearLayers() => _layers.Clear();
+    public void ClearBackgroundLayers() => _backgroundLayers.Clear();
 
     /// <summary>
     /// Updates the parallax scrolling based on elapsed time.
@@ -63,7 +63,7 @@ public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void Update(System.Single deltaTime)
     {
-        foreach (Layer layer in _layers)
+        foreach (Layer layer in _backgroundLayers)
         {
             layer.Offset += layer.Speed * deltaTime;
 
@@ -87,7 +87,7 @@ public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void Draw(RenderTarget target)
     {
-        foreach (Layer layer in _layers)
+        foreach (Layer layer in _backgroundLayers)
         {
             target.Draw(layer.Sprite);
         }

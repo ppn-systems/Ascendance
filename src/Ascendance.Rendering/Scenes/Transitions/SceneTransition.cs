@@ -3,6 +3,7 @@
 using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Scenes.Transitions.Effects;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Scenes.Transitions;
@@ -96,7 +97,7 @@ public sealed class SceneTransition : RenderObject, IRenderUpdatable
         if (!_hasSwitched && _elapsed >= half)
         {
             _hasSwitched = true;
-            SceneManager.ChangeScene(_nextSceneName);
+            SceneManager.RequestSceneChange(_nextSceneName);
         }
 
         if (_elapsed >= _durationSeconds)

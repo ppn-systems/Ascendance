@@ -120,7 +120,7 @@ public static class GraphicsEngine
         var clock = new Clock();
         System.Single accumulator = 0f;
 
-        SceneManager.Instantiate();
+        SceneManager.InitializeScenes();
 
         try
         {
@@ -193,9 +193,9 @@ public static class GraphicsEngine
     {
         FrameUpdate?.Invoke(deltaTime);
         InputState.Update(_window);
-        SceneManager.ProcessLoadScene();
-        SceneManager.ProcessDestroyQueue();
-        SceneManager.ProcessSpawnQueue();
+        SceneManager.ProcessSceneChange();
+        SceneManager.ProcessPendingDestroy();
+        SceneManager.ProcessPendingSpawn();
         SceneManager.UpdateSceneObjects(deltaTime);
     }
 
@@ -206,7 +206,7 @@ public static class GraphicsEngine
     {
         if (_isRenderDirty)
         {
-            _cachedRenderObjects = [.. SceneManager.AllObjects<RenderObject>()];
+            _cachedRenderObjects = [.. SceneManager.GetAllObjectsOfType<RenderObject>()];
             _cachedRenderObjects.Sort(RenderObject.CompareZIndex);
             _isRenderDirty = false;
         }

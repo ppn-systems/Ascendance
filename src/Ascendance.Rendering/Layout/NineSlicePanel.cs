@@ -185,6 +185,28 @@ public sealed class NineSlicePanel : Drawable
 
     #endregion Fluent API
 
+    #region Draw
+
+    /// <summary>
+    /// Draws the panel to the target using the specified render states.
+    /// </summary>
+    /// <param name="target">The render target.</param>
+    /// <param name="states">The render states.</param>
+    public void Draw(RenderTarget target, RenderStates states)
+    {
+        if (_dirty)
+        {
+            RebuildVertices();
+        }
+
+        states.Texture = Texture;
+        target.Draw(_vertexArray, states);
+    }
+
+    #endregion Draw
+
+    #region Private Methods
+
     #region Layout
 
     private void RebuildVertices()
@@ -266,26 +288,6 @@ public sealed class NineSlicePanel : Drawable
 
     #endregion Layout
 
-    #region Draw
-
-    /// <summary>
-    /// Draws the panel to the target using the specified render states.
-    /// </summary>
-    /// <param name="target">The render target.</param>
-    /// <param name="states">The render states.</param>
-    public void Draw(RenderTarget target, RenderStates states)
-    {
-        if (_dirty)
-        {
-            RebuildVertices();
-        }
-
-        states.Texture = Texture;
-        target.Draw(_vertexArray, states);
-    }
-
-    #endregion Draw
-
     #region Validation
 
     private static void ValidateBorderThickness(Thickness border)
@@ -307,4 +309,6 @@ public sealed class NineSlicePanel : Drawable
     }
 
     #endregion Validation
+
+    #endregion Private Methods
 }

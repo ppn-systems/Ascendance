@@ -8,27 +8,39 @@ namespace Ascendance.Rendering.Scenes;
 /// Represents a sealed class that stores information about a scene change and persists across scene transitions.
 /// </summary>
 /// <typeparam name="T">The type of information stored in the scene change info.</typeparam>
-public sealed class SceneChangeInfo<T> : SceneObject
+public sealed class SceneTransitionData<T> : SceneObject
 {
-    private System.Boolean _sceneChanged;
-    private readonly T _info;
+    #region Fields
+
+    private System.Boolean _hasSceneChanged;
+    private readonly T _data;
+
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
     /// Gets the name associated with this scene change info.
     /// </summary>
     public System.String Name { get; }
 
+    #endregion Properties
+
+    #region Constructor
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="SceneChangeInfo{T}"/> class with the specified information and name.
+    /// Initializes a new instance of the <see cref="SceneTransitionData{T}"/> class with the specified information and name.
     /// </summary>
     /// <param name="info">The information to store.</param>
     /// <param name="name">The name associated with this scene change info.</param>
-    public SceneChangeInfo(T info, System.String name)
+    public SceneTransitionData(T info, System.String name)
     {
-        _info = info;
+        _data = info;
         Name = name;
         IsPersistent = true;
     }
+
+    #endregion Constructor
 
     /// <summary>
     /// Extracts the stored information.
@@ -36,7 +48,7 @@ public sealed class SceneChangeInfo<T> : SceneObject
     /// <returns>The information of type <typeparamref name="T"/>.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
          System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public T Extract() => _info;
+    public T GetData() => _data;
 
     /// <summary>
     /// Initializes the scene change info and subscribes to the SceneChanged event.
@@ -53,13 +65,13 @@ public sealed class SceneChangeInfo<T> : SceneObject
     public override void OnBeforeDestroy() => SceneManager.SceneChanged -= OnSceneChange;
 
     /// <summary>
-    /// Handles the scene change event by setting the <see cref="_sceneChanged"/> flag.
+    /// Handles the scene change event by setting the <see cref="_hasSceneChanged"/> flag.
     /// </summary>
     /// <param name="lastScene">The name of the last scene.</param>
     /// <param name="nextScene">The name of the next scene.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private void OnSceneChange(System.String lastScene, System.String nextScene) => _sceneChanged = true;
+    private void OnSceneChange(System.String lastScene, System.String nextScene) => _hasSceneChanged = true;
 
     /// <summary>
     /// Updates the state of the SceneChangeInfo object and destroys it after a scene change.
@@ -70,7 +82,7 @@ public sealed class SceneChangeInfo<T> : SceneObject
     public override void Update(System.Single deltaTime)
     {
         // Destroy this instance on the first frame after a new scene has been loaded
-        if (_sceneChanged)
+        if (_hasSceneChanged)
         {
             Destroy();
         }
@@ -84,9 +96,9 @@ public sealed class SceneChangeInfo<T> : SceneObject
     /// <returns>The stored information of type <typeparamref name="T"/> or the default value.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static T Catch(System.String name, T defaultValue)
+    public static T FindByName(System.String name, T defaultValue)
     {
-        SceneChangeInfo<T> info = SceneManager.FindByType<SceneChangeInfo<T>>();
-        return info == null ? defaultValue : info.Name != name ? defaultValue : info.Extract();
+        SceneTransitionData<T> info = SceneManager.FindFirstObjectOfType<SceneTransitionData<T>>();
+        return info == null ? defaultValue : info.Name != name ? defaultValue : info.GetData();
     }
 }

@@ -139,14 +139,14 @@ public abstract class SceneObject : IRenderUpdatable
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Spawn() => SceneManager.QueueSpawn(this);
+    public void Spawn() => SceneManager.EnqueueSpawn(this);
 
     /// <summary>
     /// Queues the object to be destroyed in the scene.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Destroy() => SceneManager.QueueDestroy(this);
+    public void Destroy() => SceneManager.EnqueueDestroy(this);
 
     #endregion APIs
 

@@ -122,7 +122,6 @@ public class TextInputField : RenderObject
         set
         {
             _ = _panel.SetPosition(value);
-            _panel.Layout();
             RelayoutText();
             UpdateHitBox();
             UpdateCaretImmediate();
@@ -136,7 +135,6 @@ public class TextInputField : RenderObject
         set
         {
             _ = _panel.SetSize(EnsureMinSize(value, _panel.BorderThickness));
-            _panel.Layout();
             RelayoutText();
             UpdateHitBox();
             ResetScrollAndCaret();
@@ -190,7 +188,6 @@ public class TextInputField : RenderObject
         _padding = new(DefaultPaddingX, DefaultPaddingY);
         _panel = new NineSlicePanel(panelTexture, border, sourceRect);
         _ = _panel.SetPosition(position).SetSize(EnsureMinSize(size, border));
-        _panel.Layout();
 
         // (VN) _measure chỉ dùng đo kích thước/khoảng cách glyph → tránh xê dịch do bearings
         _measure = new Text(System.String.Empty, font, _fontSize)
