@@ -230,7 +230,7 @@ public static class SceneManager
         // Get the types from the entry assembly that match the scene namespace
         System.Collections.Generic.IEnumerable<System.Type> sceneTypes =
             System.Linq.Enumerable.Where(
-                System.Reflection.Assembly.GetEntryAssembly()!.GetTypes(), t => t.Namespace?.Contains(GraphicsEngine.GraphicsConfig.ScenesNamespace) == true);
+                System.Reflection.Assembly.GetEntryAssembly()!.GetTypes(), t => t.Namespace?.Contains(GraphicsEngine.GraphicsConfig.SceneNamespace) == true);
 
         // HashSet to check for duplicate scene names efficiently
         System.Collections.Generic.HashSet<System.String> sceneNames = [];

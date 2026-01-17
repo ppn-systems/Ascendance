@@ -54,11 +54,11 @@ public sealed class GraphicsConfig : ConfigurationLoader
     /// <summary>
     /// Gets the namespace where scenes are located. Default value is "Scenes".
     /// </summary>
-    public System.String ScenesNamespace { get; init; } = "Scenes";
+    public System.String SceneNamespace { get; init; } = "Scenes";
 
     /// <summary>
     /// Gets the base path for assets. Default value is <see cref="Directories.BasePath"/>.
     /// </summary>
     [ConfiguredIgnore]
-    public System.String AssetPath { get; init; } = Directories.BaseAssetsDirectory;
+    public System.String AssetRoot { get; init; } = Directories.BaseAssetsDirectory;
 }

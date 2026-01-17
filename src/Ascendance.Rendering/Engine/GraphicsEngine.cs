@@ -22,9 +22,9 @@ public static class GraphicsEngine
     private static readonly System.UInt32 _foregroundFps;
     private static readonly System.UInt32 _backgroundFps;
 
-    private static System.Boolean _isRenderDirty;
     private static System.Boolean _isFocused;
-    private static System.Collections.Generic.List<RenderObject> _cachedRenderObjects;
+    private static System.Boolean _renderCacheDirty;
+    private static System.Collections.Generic.List<RenderObject> _renderObjectCache;
 
     #endregion
 
@@ -60,9 +60,9 @@ public static class GraphicsEngine
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
 
         _isFocused = true;
-        _isRenderDirty = true;
+        _renderCacheDirty = true;
         _backgroundFps = 15;
-        _cachedRenderObjects = [];
+        _renderObjectCache = [];
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
         var ctx = new ContextSettings
@@ -142,7 +142,7 @@ public static class GraphicsEngine
                 }
 
                 _window.Clear();
-                RenderScene(_window);
+                Draw(_window);
                 _window.Display();
 
                 if (!_isFocused)
@@ -202,16 +202,16 @@ public static class GraphicsEngine
     /// <summary>
     /// Draws all visible scene objects, sorted by Z-index.
     /// </summary>
-    private static void RenderScene(RenderTarget target)
+    private static void Draw(RenderTarget target)
     {
-        if (_isRenderDirty)
+        if (_renderCacheDirty)
         {
-            _cachedRenderObjects = [.. SceneManager.GetAllObjectsOfType<RenderObject>()];
-            _cachedRenderObjects.Sort(RenderObject.CompareZIndex);
-            _isRenderDirty = false;
+            _renderObjectCache = [.. SceneManager.GetAllObjectsOfType<RenderObject>()];
+            _renderObjectCache.Sort(RenderObject.CompareZIndex);
+            _renderCacheDirty = false;
         }
 
-        foreach (var obj in _cachedRenderObjects)
+        foreach (RenderObject obj in _renderObjectCache)
         {
             if (obj.IsEnabled && obj.IsVisible)
             {
