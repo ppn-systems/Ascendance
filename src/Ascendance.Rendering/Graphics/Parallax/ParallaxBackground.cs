@@ -1,3 +1,6 @@
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Rendering.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 
@@ -6,10 +9,16 @@ namespace Ascendance.Rendering.Graphics.Parallax;
 /// <summary>
 /// Provides parallax scrolling functionality by managing multiple background layers with varying scroll speeds.
 /// </summary>
-public class ParallaxBackground(Vector2u viewport)
+public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
 {
-    private readonly System.Collections.Generic.List<Layer> _layers = [];
+    #region Fields
+
     private readonly Vector2u _viewport = viewport;
+    private readonly System.Collections.Generic.List<Layer> _layers = [];
+
+    #endregion Fields
+
+    #region Construction
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ParallaxBackground"/> class with the specified viewport size.
@@ -19,13 +28,33 @@ public class ParallaxBackground(Vector2u viewport)
     {
     }
 
+    #endregion Construction
+
+    #region APIs
+
     /// <summary>
     /// Adds a new layer to the parallax system.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void AddLayer(Texture texture, System.Single speed, System.Boolean autoScale)
-        => _layers.Add(new Layer(_viewport, texture, speed, autoScale));
+    {
+        System.ArgumentNullException.ThrowIfNull(texture);
+
+        if (texture.Size.X == 0 || texture.Size.Y == 0)
+        {
+            throw new System.ArgumentException("Texture must have nonzero size.", nameof(texture));
+        }
+
+        _layers.Add(new Layer(_viewport, texture, speed, autoScale));
+    }
+
+    /// <summary>
+    /// Removes all background layers.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void ClearLayers() => _layers.Clear();
 
     /// <summary>
     /// Updates the parallax scrolling based on elapsed time.
@@ -45,9 +74,9 @@ public class ParallaxBackground(Vector2u viewport)
                 layer.Offset %= textureWidth;
             }
 
-            ref IntRect rect = ref layer.Rect;
-            rect.Left = (System.Int32)layer.Offset;
-            layer.Sprite.TextureRect = rect;
+            System.Int32 left = (System.Int32)layer.Offset;
+            layer.Rect = new IntRect(left, 0, (System.Int32)_viewport.X, (System.Int32)_viewport.Y);
+            layer.Sprite.TextureRect = layer.Rect;
         }
     }
 
@@ -64,6 +93,10 @@ public class ParallaxBackground(Vector2u viewport)
         }
     }
 
+    #endregion APIs
+
+    #region Private Classes
+
     private class Layer
     {
         public IntRect Rect;
@@ -77,20 +110,22 @@ public class ParallaxBackground(Vector2u viewport)
             Vector2u viewport, Texture texture,
             System.Single speed, System.Boolean autoScale = false)
         {
-            Texture = texture;
-            Speed = speed;
-            Offset = 0;
+            this.Texture = texture;
+            this.Speed = speed;
+            this.Offset = 0;
 
-            Texture.Repeated = true;
-            Rect = new IntRect(0, 0, (System.Int32)viewport.X, (System.Int32)viewport.Y);
-            Sprite = new Sprite(Texture) { TextureRect = Rect };
+            this.Texture.Repeated = true;
+            this.Rect = new IntRect(0, 0, (System.Int32)viewport.X, (System.Int32)viewport.Y);
+            this.Sprite = new Sprite(Texture) { TextureRect = Rect };
 
             if (autoScale)
             {
                 System.Single scaleX = (System.Single)viewport.X / texture.Size.X;
                 System.Single scaleY = (System.Single)viewport.Y / texture.Size.Y;
-                Sprite.Scale = new(scaleX, scaleY);
+                this.Sprite.Scale = new(scaleX, scaleY);
             }
         }
     }
+
+    #endregion Private Classes
 }
