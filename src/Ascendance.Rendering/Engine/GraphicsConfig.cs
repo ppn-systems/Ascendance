@@ -42,7 +42,7 @@ public sealed class GraphicsConfig : ConfigurationLoader
     /// <summary>
     /// Gets the title of the application. Default value is "Nalix".
     /// </summary>
-    public System.String Title { get; init; } = "Nalix";
+    public System.String Title { get; init; } = "Ascendance";
 
     /// <summary>
     /// Gets the name of the main scene to be loaded. Default value is "main".

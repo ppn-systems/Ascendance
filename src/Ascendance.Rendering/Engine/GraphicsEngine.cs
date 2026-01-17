@@ -10,63 +10,60 @@ using SFML.Window;
 namespace Ascendance.Rendering.Engine;
 
 /// <summary>
-/// The Game class serves as the entry point for managing the game window, rendering, and scene updates.
+/// Central static class for managing the main game window, rendering loop, and core events.
 /// </summary>
 public static class GraphicsEngine
 {
     #region Fields
 
-    internal static System.Boolean _renderDirty;
-    internal static System.Boolean _focused;
-    internal static readonly RenderWindow _window;
-    internal static readonly System.UInt32 _foregroundFps;
-    internal static readonly System.UInt32 _backgroundFps;
-    internal static System.Collections.Generic.List<RenderObject> _cachedRenderObjects;
+    private static readonly RenderWindow _window;
+    private static readonly System.UInt32 _foregroundFps;
+    private static readonly System.UInt32 _backgroundFps;
 
-    #endregion Fields
+    private static System.Boolean _isRenderDirty;
+    private static System.Boolean _isFocused;
+    private static System.Collections.Generic.List<RenderObject> _cachedRenderObjects;
+
+    #endregion
 
     #region Properties
 
     /// <summary>
-    /// Indicates whether debugging mode is enabled.
+    /// Gets whether debug mode is enabled.
     /// </summary>
-    public static System.Boolean Debugging { get; private set; }
+    public static System.Boolean IsDebugMode { get; private set; }
 
     /// <summary>
-    /// Gets the dimensions (width and height) of the screen or viewport,
-    /// used to set the screen size for rendering purposes.
+    /// Gets current window size.
     /// </summary>
     public static Vector2u ScreenSize { get; private set; }
 
     /// <summary>
-    /// Provides access to the assembly configuration.
+    /// Gets application graphics configuration.
     /// </summary>
     public static GraphicsConfig GraphicsConfig { get; }
 
     /// <summary>
-    /// User-defined update event called every frame with delta time in seconds.
+    /// Sets a user-defined per-frame update handler.
     /// </summary>
-    public static System.Action<System.Single> OnUpdate { get; set; }
+    public static System.Action<System.Single> FrameUpdate { get; set; }
 
-    #endregion Properties
+    #endregion
 
     #region Constructor
 
-    /// <summary>
-    /// Static constructor to initialize the game configuration and window.
-    /// </summary>
     static GraphicsEngine()
     {
         GraphicsConfig = new GraphicsConfig();
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
 
-        _focused = true;
-        _renderDirty = true;
+        _isFocused = true;
+        _isRenderDirty = true;
         _backgroundFps = 15;
         _cachedRenderObjects = [];
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
-        ContextSettings ctx = new()
+        var ctx = new ContextSettings
         {
             AntialiasingLevel = 0,
             DepthBits = 0,
@@ -74,18 +71,19 @@ public static class GraphicsEngine
         };
 
         _window = new RenderWindow(
-                    new VideoMode(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight),
-                    GraphicsConfig.Title,
-                    Styles.Titlebar | Styles.Close,
-                    ctx);
+            new VideoMode(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight),
+            GraphicsConfig.Title,
+            Styles.Titlebar | Styles.Close,
+            ctx
+        );
 
         // Window events
         _window.Closed += (_, _) => _window.Close();
-        _window.GainedFocus += (_, _) => SetFocus(true);
-        _window.LostFocus += (_, _) => SetFocus(false);
+        _window.GainedFocus += (_, _) => HandleFocusChanged(true);
+        _window.LostFocus += (_, _) => HandleFocusChanged(false);
         _window.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
 
-        // Limit mode: prefer VSync for idle UI; don't enable both
+        // Prefer VSync if available
         if (GraphicsConfig.VSync)
         {
             _window.SetVerticalSyncEnabled(true);
@@ -96,82 +94,66 @@ public static class GraphicsEngine
         }
     }
 
-    #endregion Constructor
+    #endregion
 
     #region Methods
 
     /// <summary>
     /// Enables or disables debug mode.
     /// </summary>
-    /// <param name="on">Set to true to enable debug mode, false to disable it.</param>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void SetDebugMode(System.Boolean on) => Debugging = on;
+    public static void EnableDebugMode(System.Boolean enable) => IsDebugMode = enable;
 
     /// <summary>
     /// Sets the icon for the game window.
     /// </summary>
-    /// <param name="image">The image to use as the window icon.</param>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void SetIcon(Image image)
+    public static void SetWindowIcon(Image image)
         => _window.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
 
     /// <summary>
-    /// Opens the game window and starts the main game loop.
+    /// Starts the main game window loop.
     /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void OpenWindow()
+    public static void Run()
     {
-        const System.Single targetDt = 1f / 60f;
-
-        Clock clock = new();
-        SceneManager.Instantiate();
+        const System.Single targetDelta = 1f / 60f;
+        var clock = new Clock();
         System.Single accumulator = 0f;
+
+        SceneManager.Instantiate();
 
         try
         {
             while (_window.IsOpen)
             {
-                // Event pump
                 _window.DispatchEvents();
 
-                // Timing
-                System.Single frameDt = clock.Restart().AsSeconds();
-                // Clamp để tránh spike quá lớn khi alt-tab
-                if (frameDt > 0.25f)
+                System.Single frameDelta = clock.Restart().AsSeconds();
+                if (frameDelta > 0.25f)
                 {
-                    frameDt = 0.25f;
+                    frameDelta = 0.25f;
                 }
 
-                accumulator += frameDt;
-                while (accumulator >= targetDt)
+                accumulator += frameDelta;
+                while (accumulator >= targetDelta)
                 {
-                    Update(targetDt);
-                    accumulator -= targetDt;
+                    UpdateFrame(targetDelta);
+                    accumulator -= targetDelta;
                 }
 
-                // Render
                 _window.Clear();
-                Render(_window);
+                RenderScene(_window);
                 _window.Display();
 
-                // Throttle nhẹ khi nền (mất focus) để hạ GPU/CPU
-                if (!_focused)
+                if (!_isFocused)
                 {
-                    // Nếu VSync OFF: giảm FPS nền.
                     if (!GraphicsConfig.VSync)
                     {
                         _window.SetFramerateLimit(_backgroundFps);
                     }
 
-                    // Nhường CPU 1–3ms là đủ
                     System.Threading.Thread.Sleep(2);
                 }
                 else
                 {
-                    // Restore foreground FPS khi có focus (nếu không dùng VSync)
                     if (!GraphicsConfig.VSync)
                     {
                         _window.SetFramerateLimit(_foregroundFps);
@@ -183,7 +165,7 @@ public static class GraphicsEngine
         }
         catch (System.Exception ex)
         {
-            NLogixFx.Error(message: $"Unhandled exception in main game loop: {ex}", source: "GraphicsEngine");
+            NLogixFx.Error($"Unhandled exception in main game loop: {ex}", source: "GraphicsEngine");
         }
         finally
         {
@@ -193,25 +175,21 @@ public static class GraphicsEngine
     }
 
     /// <summary>
-    /// Closes the game window and disposes of game subsystems.
+    /// Closes the game window and disposes of systems.
     /// </summary>
-    public static void CloseWindow()
+    public static void Shutdown()
     {
         _window.Close();
 
-        // Dispose game subsystems first
-        try { MusicManager.Dispose(); } catch { /* swallow to guarantee shutdown */ }
+        try { MusicManager.Dispose(); } catch { /* intentionally ignore */ }
     }
 
     /// <summary>
-    /// Updates all game components, including input, scene management, and scene objects.
+    /// Per-frame: updates input, scenes, and user code.
     /// </summary>
-    /// <param name="deltaTime">Time elapsed since the last update, in seconds.</param>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void Update(System.Single deltaTime)
+    private static void UpdateFrame(System.Single deltaTime)
     {
-        OnUpdate?.Invoke(deltaTime);
+        FrameUpdate?.Invoke(deltaTime);
         InputState.Update(_window);
         SceneManager.ProcessLoadScene();
         SceneManager.ProcessDestroyQueue();
@@ -220,39 +198,37 @@ public static class GraphicsEngine
     }
 
     /// <summary>
-    /// Renders all objects in the current scene, sorted by their Z-index.
+    /// Draws all visible scene objects, sorted by Z-index.
     /// </summary>
-    /// <param name="target">The render target.</param>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void Render(RenderTarget target)
+    private static void RenderScene(RenderTarget target)
     {
-        if (_renderDirty)
+        if (_isRenderDirty)
         {
             _cachedRenderObjects = [.. SceneManager.AllObjects<RenderObject>()];
             _cachedRenderObjects.Sort(RenderObject.CompareByZIndex);
-            _renderDirty = false;
+            _isRenderDirty = false;
         }
 
-        foreach (RenderObject r in _cachedRenderObjects)
+        foreach (var obj in _cachedRenderObjects)
         {
-            if (r.Enabled && r.Visible)
+            if (obj.Enabled && obj.Visible)
             {
-                r.Render(target);
+                obj.Render(target);
             }
         }
     }
 
-    // New: focus toggle helper
-    private static void SetFocus(System.Boolean focused)
+    /// <summary>
+    /// Handles application focus changes (foreground/background).
+    /// </summary>
+    private static void HandleFocusChanged(System.Boolean focused)
     {
-        _focused = focused;
-        // Nếu dùng VSync, không đổi gì; còn nếu limit FPS, chuyển giữa Foreground/Background
+        _isFocused = focused;
         if (!GraphicsConfig.VSync)
         {
             _window.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
         }
     }
 
-    #endregion Methods
+    #endregion
 }
