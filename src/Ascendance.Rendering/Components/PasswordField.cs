@@ -1,5 +1,5 @@
 ﻿using Ascendance.Rendering.Components.Rules;
-using Ascendance.Rendering.Graphics.Visual;
+using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;
 

@@ -3,7 +3,7 @@
 using Ascendance.Rendering.Abstractions;
 using SFML.Graphics;
 
-namespace Ascendance.Rendering.Graphics.Animation;
+namespace Ascendance.Rendering.Animation;
 
 /// <summary>
 /// Handles frame-based animation for a SFML Sprite using an IntRect frame list.

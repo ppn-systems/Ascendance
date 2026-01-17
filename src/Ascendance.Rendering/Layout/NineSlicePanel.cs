@@ -1,7 +1,7 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Graphics.Visual;
+namespace Ascendance.Rendering.Layout;
 
 /// <summary>
 /// Simple 9-slice panel for crisp, scalable UI frames.

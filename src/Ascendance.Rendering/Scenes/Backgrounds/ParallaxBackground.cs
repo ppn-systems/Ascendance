@@ -4,7 +4,7 @@ using Ascendance.Rendering.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Graphics.Parallax;
+namespace Ascendance.Rendering.Scenes.Backgrounds;
 
 /// <summary>
 /// Provides parallax scrolling functionality by managing multiple background layers with varying scroll speeds.

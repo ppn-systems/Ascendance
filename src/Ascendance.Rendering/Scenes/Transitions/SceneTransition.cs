@@ -3,11 +3,9 @@
 using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
-using Ascendance.Rendering.Graphics.Transitions.Effects;
-using Ascendance.Rendering.Scenes;
 using SFML.Graphics;
 
-namespace Ascendance.Rendering.Graphics.Transitions;
+namespace Ascendance.Rendering.Scenes.Transitions;
 
 /// <summary>
 /// Runs a two-phase scene transition via a full-screen overlay: <b>closing</b> (cover) → <b>switch scene</b> → <b>opening</b> (reveal).

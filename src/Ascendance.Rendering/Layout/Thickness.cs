@@ -1,4 +1,4 @@
-﻿namespace Ascendance.Rendering.Graphics.Visual;
+﻿namespace Ascendance.Rendering.Layout;
 
 /// <summary>
 /// Simple thickness struct to describe 9-slice borders.

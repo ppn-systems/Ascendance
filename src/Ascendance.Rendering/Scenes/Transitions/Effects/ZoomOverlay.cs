@@ -3,7 +3,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Graphics.Transitions.Effects;
+namespace Ascendance.Rendering.Scenes.Transitions.Effects;
 
 /// <summary>
 /// Zoom overlay effect: a colored rectangle scales from the center (ZoomIn: 0→1 then 1→0; ZoomOut: 1→0 then 0→1).

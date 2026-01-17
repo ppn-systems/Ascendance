@@ -3,8 +3,8 @@
 using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Components.Rules;
 using Ascendance.Rendering.Entities;
-using Ascendance.Rendering.Graphics.Visual;
 using Ascendance.Rendering.Input;
+using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;

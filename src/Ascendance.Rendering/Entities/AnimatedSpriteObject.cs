@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.Animation;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Graphics.Animation;
+namespace Ascendance.Rendering.Entities;
 
 /// <summary>
 /// Base class for sprite-based scene objects using a spritesheet animator.

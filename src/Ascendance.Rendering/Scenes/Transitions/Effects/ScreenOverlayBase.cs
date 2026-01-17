@@ -5,7 +5,7 @@ using Ascendance.Rendering.Engine;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Graphics.Transitions.Effects;
+namespace Ascendance.Rendering.Scenes.Transitions.Effects;
 
 /// <summary>
 /// Base class for full-screen overlay effects used in scene transitions.
