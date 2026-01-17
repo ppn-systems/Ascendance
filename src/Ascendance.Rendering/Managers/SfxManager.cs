@@ -1,3 +1,5 @@
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
 using Ascendance.Rendering.Loaders;
 using Nalix.Logging.Extensions;
 using SFML.Audio;

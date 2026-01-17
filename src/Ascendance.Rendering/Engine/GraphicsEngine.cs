@@ -1,4 +1,6 @@
-﻿using Ascendance.Rendering.Entities;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;

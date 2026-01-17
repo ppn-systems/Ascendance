@@ -1,3 +1,5 @@
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
 using Ascendance.Rendering.Loaders;
 using Nalix.Common.Environment;
 using Nalix.Framework.Injection.DI;

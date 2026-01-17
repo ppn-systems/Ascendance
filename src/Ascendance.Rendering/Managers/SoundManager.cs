@@ -1,12 +1,13 @@
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
 using SFML.Audio;
-using System;
 
 namespace Ascendance.Rendering.Managers;
 
 /// <summary>
 /// Represents a single Sound Effect
 /// </summary>
-public class SoundManager : IDisposable
+public class SoundManager : System.IDisposable
 {
     private SoundBuffer _Buffer;
     private Sound[] _Sounds;
@@ -14,12 +15,12 @@ public class SoundManager : IDisposable
     /// <summary>
     /// Gets the name of this <see cref="SoundManager"/>.
     /// </summary>
-    public String Name { get; }
+    public System.String Name { get; }
 
     /// <summary>
     /// Determines whether this <see cref="SoundManager"/> has been disposed.
     /// </summary>
-    public Boolean Disposed { get; private set; }
+    public System.Boolean Disposed { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundManager" /> class.
@@ -27,16 +28,16 @@ public class SoundManager : IDisposable
     /// <param name="name">The sounds name</param>
     /// <param name="soundBuffer">Sound buffer containing the audio data to play with the sound instance</param>
     /// <param name="parallelSounds">The maximum number of parallel playing sounds.</param>
-    public SoundManager(String name, SoundBuffer soundBuffer, Int32 parallelSounds)
+    public SoundManager(System.String name, SoundBuffer soundBuffer, System.Int32 parallelSounds)
     {
-        if (String.IsNullOrWhiteSpace(name))
+        if (System.String.IsNullOrWhiteSpace(name))
         {
-            throw new ArgumentException($"Invalid {nameof(name)}:{name}");
+            throw new System.ArgumentException($"Invalid {nameof(name)}:{name}");
         }
 
         Name = name;
-        _Buffer = soundBuffer ?? throw new ArgumentNullException(nameof(soundBuffer));
-        _Sounds = new Sound[Math.Clamp(parallelSounds, 1, 25)];
+        _Buffer = soundBuffer ?? throw new System.ArgumentNullException(nameof(soundBuffer));
+        _Sounds = new Sound[System.Math.Clamp(parallelSounds, 1, 25)];
     }
 
     /// <summary>
@@ -55,9 +56,9 @@ public class SoundManager : IDisposable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public Sound GetSound()
     {
-        ObjectDisposedException.ThrowIf(Disposed, Name);
+        System.ObjectDisposedException.ThrowIf(Disposed, Name);
 
-        for (Int32 i = 0; i < _Sounds.Length; i++)
+        for (System.Int32 i = 0; i < _Sounds.Length; i++)
         {
             var sound = _Sounds[i];
             if (sound == null)
@@ -83,7 +84,7 @@ public class SoundManager : IDisposable
     public void Dispose()
     {
         Dispose(true);
-        GC.SuppressFinalize(this);
+        System.GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -92,13 +93,13 @@ public class SoundManager : IDisposable
     /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected virtual void Dispose(Boolean disposing)
+    protected virtual void Dispose(System.Boolean disposing)
     {
         if (!Disposed)
         {
             if (disposing)
             {
-                for (Int32 i = 0; i < _Sounds.Length; i++)
+                for (System.Int32 i = 0; i < _Sounds.Length; i++)
                 {
                     _Sounds[i]?.Dispose();
                     _Sounds[i] = null;

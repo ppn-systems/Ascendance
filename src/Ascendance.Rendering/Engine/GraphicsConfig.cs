@@ -1,3 +1,5 @@
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
 using Nalix.Common.Core.Attributes;
 using Nalix.Common.Environment;
 using Nalix.Framework.Configuration.Binding;

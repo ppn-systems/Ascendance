@@ -1,4 +1,6 @@
-﻿namespace Ascendance.Rendering.Enums;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+namespace Ascendance.Rendering.Enums;
 
 /// <summary>
 /// Định nghĩa các hiệu ứng hình ảnh được sử dụng khi chuyển đổi giữa các cảnh.

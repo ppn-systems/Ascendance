@@ -1,4 +1,6 @@
-﻿using Ascendance.Rendering.Components.Rules;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Rendering.Components.Rules;
 using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;

@@ -1,4 +1,6 @@
-﻿namespace Ascendance.Rendering.Layout;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+namespace Ascendance.Rendering.Layout;
 
 /// <summary>
 /// Simple thickness struct to describe 9-slice borders.
