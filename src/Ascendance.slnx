@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="Ascendance.Physics/Ascendance.Physics.csproj" Id="5203a60b-4786-4fa3-9abb-4b93aaa1aeef" />
   <Project Path="Ascendance.Rendering/Ascendance.Rendering.csproj" />
+  <Project Path="Ascendance.Shared/Ascendance.Shared.csproj" Id="c1f6bae4-5ed5-4b31-b596-f5c322f789b3" />
 </Solution>

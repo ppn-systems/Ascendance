@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Shared.Abstractions;
+using SFML.System;
+
+namespace Ascendance.Physics.Movement;
+
+public class WalkMovement : IMovementBehavior
+{
+    private readonly System.Single _speed = 150f;
+
+    public void Move(
+        ref Vector2f position, ref Vector2f velocity, Vector2f direction,
+        ref System.Boolean isGrounded, System.Single deltaTime) => velocity.X = direction.X * _speed;
+}
