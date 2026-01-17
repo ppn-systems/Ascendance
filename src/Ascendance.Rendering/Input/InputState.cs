@@ -26,8 +26,8 @@ public static class InputState
     private static System.Boolean _isRecording;
     private static System.Boolean _inputEnabled;
     private static System.Boolean _isPlayingBack;
-    private static System.Collections.Generic.List<InputFrame> _recordedFrames;
-    private static System.Collections.Generic.List<InputFrame> _playbackFrames;
+    private static System.Collections.Generic.List<InputFrame> _recordedInputFrames;
+    private static System.Collections.Generic.List<InputFrame> _playbackInputFrames;
 
     #endregion Fields
 
@@ -63,6 +63,16 @@ public static class InputState
 
     #endregion Structures
 
+    #region Properties
+
+    /// <summary>
+    /// Indicates whether input is currently enabled.
+    /// </summary>
+    /// <returns>True if input is enabled; otherwise, false.</returns>
+    public static System.Boolean IsInputEnabled => _inputEnabled;
+
+    #endregion Properties
+
     #region Constructor
 
     static InputState()
@@ -70,8 +80,8 @@ public static class InputState
         _playbackIndex = 0;
         _isRecording = false;
         _inputEnabled = true;
-        _recordedFrames = [];
-        _playbackFrames = null;
+        _recordedInputFrames = [];
+        _playbackInputFrames = null;
         _isPlayingBack = false;
 
         AllKeys = System.Enum.GetValues<Keyboard.Key>();
@@ -102,9 +112,9 @@ public static class InputState
             return;
         }
 
-        if (_isPlayingBack && _playbackFrames != null)
+        if (_isPlayingBack && _playbackInputFrames != null)
         {
-            InputFrame frame = _playbackFrames[_playbackIndex];
+            InputFrame frame = _playbackInputFrames[_playbackIndex];
             for (System.Int32 i = 0; i < KeyState.Length; i++)
             {
                 PreviousKeyState[i] = KeyState[i];
@@ -118,7 +128,7 @@ public static class InputState
             }
 
             _mousePosition = frame.MousePosition;
-            _playbackIndex = System.Math.Min(_playbackIndex + 1, _playbackFrames.Count - 1);
+            _playbackIndex = System.Math.Min(_playbackIndex + 1, _playbackInputFrames.Count - 1);
             return;
         }
 
@@ -147,7 +157,7 @@ public static class InputState
                 MouseButtonState = (System.Boolean[])MouseButtonState.Clone(),
                 MousePosition = _mousePosition
             };
-            _recordedFrames.Add(frame);
+            _recordedInputFrames.Add(frame);
         }
     }
 
@@ -156,20 +166,18 @@ public static class InputState
     #region API - Input Block
 
     /// <summary>
-    /// Enables or disables all input globally.
+    /// Enables all input globally.
     /// </summary>
-    /// <param name="enabled">True to enable input; false to block input.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void SetInputEnabled(System.Boolean enabled) => _inputEnabled = enabled;
+    public static void EnableInput() => _inputEnabled = true;
 
     /// <summary>
-    /// Indicates whether input is currently enabled.
+    /// Disables all input globally.
     /// </summary>
-    /// <returns>True if input is enabled; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static System.Boolean IsInputEnabled() => _inputEnabled;
+    public static void DisableInput() => _inputEnabled = false;
 
     #endregion API - Input Block
 
@@ -179,7 +187,7 @@ public static class InputState
     /// Gets all currently pressed keys.
     /// </summary>
     /// <returns>An enumerable containing the pressed keyboard keys.</returns>
-    public static System.Collections.Generic.IEnumerable<Keyboard.Key> GetActiveKeys()
+    public static System.Collections.Generic.IEnumerable<Keyboard.Key> GetPressedKeys()
     {
         for (System.Int32 i = 0; i < KeyState.Length; i++)
         {
@@ -194,7 +202,7 @@ public static class InputState
     /// Gets all currently pressed mouse buttons.
     /// </summary>
     /// <returns>An enumerable containing the pressed mouse buttons.</returns>
-    public static System.Collections.Generic.IEnumerable<Mouse.Button> GetActiveMouseButtons()
+    public static System.Collections.Generic.IEnumerable<Mouse.Button> GetPressedMouseButtons()
     {
         for (System.Int32 i = 0; i < MouseButtonState.Length; i++)
         {
@@ -215,7 +223,7 @@ public static class InputState
     public static void BeginInputRecording()
     {
         _isRecording = true;
-        _recordedFrames = [];
+        _recordedInputFrames = [];
     }
 
     /// <summary>
@@ -226,7 +234,7 @@ public static class InputState
     {
         _isRecording = false;
         var record = new InputRecord();
-        foreach (var frame in _recordedFrames)
+        foreach (var frame in _recordedInputFrames)
         {
             record.Frames.Add(frame.Clone());
         }
@@ -241,7 +249,7 @@ public static class InputState
     public static void BeginInputPlayback(InputRecord record)
     {
         _isPlayingBack = true;
-        _playbackFrames = record.Frames;
+        _playbackInputFrames = record.Frames;
         _playbackIndex = 0;
     }
 
@@ -251,7 +259,7 @@ public static class InputState
     public static void EndInputPlayback()
     {
         _isPlayingBack = false;
-        _playbackFrames = null;
+        _playbackInputFrames = null;
         _playbackIndex = 0;
     }
 
@@ -273,7 +281,7 @@ public static class InputState
     /// <returns>ScreenSize tuple containing the X and Y position of the mouse.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static (System.Single X, System.Single Y) GetMousePositionTuple() => new(_mousePosition.X, _mousePosition.Y);
+    public static (System.Single X, System.Single Y) GetMousePositionF() => new(_mousePosition.X, _mousePosition.Y);
 
     #endregion Getters
 
