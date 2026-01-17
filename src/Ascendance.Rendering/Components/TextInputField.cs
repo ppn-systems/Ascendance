@@ -78,12 +78,12 @@ public class TextInputField : RenderObject
     /// <summary>
     /// Raised whenever <see cref="Text"/> changes.
     /// </summary>
-    public event System.Action<System.String> OnChanged;
+    public event System.Action<System.String> TextChanged;
 
     /// <summary>
     /// Raised when user presses Enter while focused.
     /// </summary>
-    public event System.Action<System.String> OnSubmit;
+    public event System.Action<System.String> TextSubmitted;
 
     /// <summary>
     /// Validation rule for input text; can be <c>null</c> for no validation.
@@ -99,7 +99,7 @@ public class TextInputField : RenderObject
             _ = _buffer.Clear().Append(value ?? System.String.Empty);
             ClampToMaxLength();
             ResetScrollAndCaret();
-            OnChanged?.Invoke(_buffer.ToString());
+            TextChanged?.Invoke(_buffer.ToString());
         }
     }
 
@@ -240,11 +240,11 @@ public class TextInputField : RenderObject
                 _caretTimer = 0f;
             }
 
-            HandleTypingCore(dt);
+            HandleKeyInput(dt);
         }
 
         // Cập nhật phần text hiển thị (scroll cửa sổ nhìn)
-        UpdateVisibleWindowAndString();
+        UpdateVisibleText();
         UpdateCaretImmediate();
     }
 
@@ -288,7 +288,7 @@ public class TextInputField : RenderObject
     /// Returns what should be displayed: placeholder, masked password, or raw text.
     /// (VN) Chuỗi hiển thị: placeholder (nếu rỗng & không focus), password (•••), hoặc text thường.
     /// </summary>
-    protected virtual System.String GetDisplayText() => _buffer.Length == 0 && !Focused && !System.String.IsNullOrEmpty(Placeholder) ? Placeholder : _buffer.ToString();
+    protected virtual System.String GetRenderText() => _buffer.Length == 0 && !Focused && !System.String.IsNullOrEmpty(Placeholder) ? Placeholder : _buffer.ToString();
 
     #endregion APIs
 
@@ -298,14 +298,14 @@ public class TextInputField : RenderObject
     /// Handles key presses and key repeats for Backspace/Delete.
     /// (VN) Xử lý gõ phím & giữ phím để repeat.
     /// </summary>
-    private void HandleTypingCore(System.Single dt)
+    private void HandleKeyInput(System.Single dt)
     {
         System.Boolean shift = InputState.IsKeyDown(Keyboard.Key.LShift) || InputState.IsKeyDown(Keyboard.Key.RShift);
 
         // Submit: Enter
         if (InputState.IsKeyPressed(Keyboard.Key.Enter))
         {
-            OnSubmit?.Invoke(_buffer.ToString());
+            TextSubmitted?.Invoke(_buffer.ToString());
         }
 
         // Letters A..Z
@@ -323,7 +323,7 @@ public class TextInputField : RenderObject
         System.Boolean bsDown = InputState.IsKeyDown(Keyboard.Key.Backspace);
         if (bsDown && !_prevBackspace)
         {
-            BackspaceOne();
+            RemoveLastChar();
             _repeatBackspace = true;
             _repeatTimer = KeyRepeatFirstDelay;
         }
@@ -332,7 +332,7 @@ public class TextInputField : RenderObject
             _repeatTimer -= dt;
             if (_repeatTimer <= 0f)
             {
-                BackspaceOne();
+                RemoveLastChar();
                 _repeatTimer = KeyRepeatNextDelay;
             }
         }
@@ -347,7 +347,7 @@ public class TextInputField : RenderObject
         if (delDown && !_prevDelete)
         {
             // caret is always at the end => treat Delete same as Backspace
-            BackspaceOne();
+            RemoveLastChar();
             _repeatDelete = true;
             _repeatTimer = KeyRepeatFirstDelay;
         }
@@ -356,7 +356,7 @@ public class TextInputField : RenderObject
             _repeatTimer -= dt;
             if (_repeatTimer <= 0f)
             {
-                BackspaceOne();
+                RemoveLastChar();
                 _repeatTimer = KeyRepeatNextDelay;
             }
         }
@@ -384,12 +384,12 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>
-    /// Computes the portion of <see cref="GetDisplayText"/> that fits into the inner width,
+    /// Computes the portion of <see cref="GetRenderText"/> that fits into the inner width,
     /// ensuring the tail (caret at end) remains visible. Then assigns to <see cref="_text"/>.
     /// </summary>
-    private void UpdateVisibleWindowAndString()
+    private void UpdateVisibleText()
     {
-        System.String full = GetDisplayText();
+        System.String full = GetRenderText();
         _measure.DisplayedString = full;
 
         System.Single innerWidth = _panel.Size.X - (_padding.X * 2f) - _caretWidth; // leave space for caret
@@ -443,11 +443,11 @@ public class TextInputField : RenderObject
         }
 
         _ = _buffer.Append(c);
-        OnChanged?.Invoke(_buffer.ToString());
+        TextChanged?.Invoke(_buffer.ToString());
     }
 
-    /// <summary>Remove one char at end, if any; raises <see cref="OnChanged"/>.</summary>
-    private void BackspaceOne()
+    /// <summary>Remove one char at end, if any; raises <see cref="TextChanged"/>.</summary>
+    private void RemoveLastChar()
     {
         if (_buffer.Length == 0)
         {
@@ -455,7 +455,7 @@ public class TextInputField : RenderObject
         }
 
         _ = _buffer.Remove(_buffer.Length - 1, 1);
-        OnChanged?.Invoke(_buffer.ToString());
+        TextChanged?.Invoke(_buffer.ToString());
     }
 
     /// <summary>Clamp current text to <see cref="MaxLength"/> if needed.</summary>
@@ -501,7 +501,7 @@ public class TextInputField : RenderObject
         _scrollStart = 0;
         _caretVisible = true;
         _caretTimer = 0f;
-        UpdateVisibleWindowAndString();
+        UpdateVisibleText();
         UpdateCaretImmediate();
     }
 

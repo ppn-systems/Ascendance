@@ -11,8 +11,8 @@ namespace Ascendance.Rendering.Components;
 /// Single-line password input built on top of <see cref="TextInputField"/>.
 /// </summary>
 /// <remarks>
-/// - Masks user input with <see cref="MaskChar"/> by default.<br/>
-/// - Set <see cref="IsShowField"/> = <c>true</c> to reveal raw text (useful for an "eye" toggle).<br/>
+/// - Masks user input with <see cref="MaskCharacter"/> by default.<br/>
+/// - Set <see cref="IsPasswordVisible"/> = <c>true</c> to reveal raw text (useful for an "eye" toggle).<br/>
 /// </remarks>
 public sealed class PasswordField : TextInputField
 {
@@ -21,12 +21,12 @@ public sealed class PasswordField : TextInputField
     /// <summary>
     /// Whether to reveal the raw text (i.e., “show password”). Default: <c>false</c>.
     /// </summary>
-    public System.Boolean IsShowField { get; set; } = false;
+    public System.Boolean IsPasswordVisible { get; set; } = false;
 
     /// <summary>
-    /// Mask character used when <see cref="IsShowField"/> is <c>false</c>. Default: • (U+2022).
+    /// Mask character used when <see cref="IsPasswordVisible"/> is <c>false</c>. Default: • (U+2022).
     /// </summary>
-    public System.Char MaskChar { get; set; } = '\u2022';
+    public System.Char MaskCharacter { get; set; } = '\u2022';
 
     #endregion Properties
 
@@ -50,25 +50,25 @@ public sealed class PasswordField : TextInputField
     #region APIs
 
     /// <summary>
-    /// Toggle <see cref="IsShowField"/> state. (VN) Đổi trạng thái hiện/ẩn mật khẩu.
+    /// Toggle <see cref="IsPasswordVisible"/> state. (VN) Đổi trạng thái hiện/ẩn mật khẩu.
     /// </summary>
-    public void Toggle() => IsShowField = !IsShowField;
+    public void ToggleVisibility() => IsPasswordVisible = !IsPasswordVisible;
 
     /// <summary>
-    /// Returns what should be displayed: raw text when <see cref="IsShowField"/> is true,
-    /// otherwise masked with <see cref="MaskChar"/>.
+    /// Returns what should be displayed: raw text when <see cref="IsPasswordVisible"/> is true,
+    /// otherwise masked with <see cref="MaskCharacter"/>.
     /// </summary>
-    protected override System.String GetDisplayText()
+    protected override System.String GetRenderText()
     {
         // Nếu đang “show”, hiển thị text thường
-        if (IsShowField)
+        if (IsPasswordVisible)
         {
             return Text;
         }
 
         // Khi ẩn, trả về chuỗi mask có độ dài bằng số ký tự thực
         System.Int32 len = Text?.Length ?? 0;
-        return len == 0 ? System.String.Empty : new System.String(MaskChar, len);
+        return len == 0 ? System.String.Empty : new System.String(MaskCharacter, len);
     }
 
     #endregion APIs
