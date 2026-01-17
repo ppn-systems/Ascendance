@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Rendering.Abstractions;
+using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Animation;
@@ -12,7 +12,7 @@ namespace Ascendance.Rendering.Animation;
 /// (VN) Quản lý hoạt ảnh theo khung hình (spritesheet). Gọi Update mỗi frame để tiến thời gian.
 /// Dùng OnLooped, OnCompleted event để bắt trạng thái kết thúc.
 /// </remarks>
-public sealed class Animator : IRenderUpdatable
+public sealed class Animator : IUpdatable
 {
     #region Fields
 

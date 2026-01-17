@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Rendering.Abstractions;
+namespace Ascendance.Shared.Abstractions;
 
-public interface IRenderUpdatable
+public interface IUpdatable
 {
     /// <summary>
     /// Updates the object with the given delta time.

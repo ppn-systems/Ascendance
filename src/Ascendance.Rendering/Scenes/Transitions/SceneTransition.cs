@@ -4,6 +4,7 @@ using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Scenes.Transitions.Effects;
+using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Scenes.Transitions;
@@ -16,7 +17,7 @@ namespace Ascendance.Rendering.Scenes.Transitions;
 /// Instance này tồn tại xuyên cảnh và tự hủy khi hoàn tất.
 /// Dùng hiệu ứng vẽ được chọn qua <see cref="ITransitionDrawable"/> strategy.
 /// </remarks>
-public sealed class SceneTransition : RenderObject, IRenderUpdatable
+public sealed class SceneTransition : RenderObject, IUpdatable
 {
     #region Fields (configuration)
 

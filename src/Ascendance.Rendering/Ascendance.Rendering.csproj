@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
 		<IsTrimmable>true</IsTrimmable>
 		<Deterministic>true</Deterministic>
 		<TargetFramework>net10.0</TargetFramework>
-
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,5 +17,8 @@
         <PackageReference Include="SFML.Window" Version="2.6.1" />
         <PackageReference Include="SFML.Graphics" Version="2.6.1" />
     </ItemGroup>
-
+  
+    <ItemGroup>
+      <ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
+    </ItemGroup>
 </Project>

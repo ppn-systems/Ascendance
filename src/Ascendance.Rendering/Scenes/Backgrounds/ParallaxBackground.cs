@@ -1,6 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Rendering.Abstractions;
+using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 
@@ -9,7 +9,7 @@ namespace Ascendance.Rendering.Scenes.Backgrounds;
 /// <summary>
 /// Provides parallax scrolling functionality by managing multiple background layers with varying scroll speeds.
 /// </summary>
-public class ParallaxBackground(Vector2u viewport) : IRenderUpdatable
+public class ParallaxBackground(Vector2u viewport) : IUpdatable
 {
     #region Fields
 

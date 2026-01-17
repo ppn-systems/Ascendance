@@ -1,7 +1,7 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Scenes;
+using Ascendance.Shared.Abstractions;
 
 namespace Ascendance.Rendering.Entities;
 
@@ -9,7 +9,7 @@ namespace Ascendance.Rendering.Entities;
 /// Represents a base class for all scene objects in the game.
 /// This class provides lifecycle management, tagging, and utility methods for objects within a scene.
 /// </summary>
-public abstract class SceneObject : IRenderUpdatable
+public abstract class SceneObject : IUpdatable
 {
     #region Fields
 
