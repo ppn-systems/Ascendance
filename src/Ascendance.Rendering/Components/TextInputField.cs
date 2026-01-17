@@ -135,7 +135,7 @@ public class TextInputField : RenderObject
         get => _panel.Size;
         set
         {
-            _ = _panel.SetSize(EnsureMinSize(value, _panel.Border));
+            _ = _panel.SetSize(EnsureMinSize(value, _panel.BorderThickness));
             _panel.Layout();
             RelayoutText();
             UpdateHitBox();
@@ -276,7 +276,7 @@ public class TextInputField : RenderObject
     /// <summary>
     /// Set the panel's tint color.
     /// </summary>
-    public void SetPanelColor(Color color) => _panel.SetColor(color);
+    public void SetPanelColor(Color color) => _panel.SetTintColor(color);
 
     /// <summary>
     /// Set the text/caret color together.
