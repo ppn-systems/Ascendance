@@ -1,3 +1,4 @@
+using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Scenes;
 
 namespace Ascendance.Rendering.Entities;
@@ -6,7 +7,7 @@ namespace Ascendance.Rendering.Entities;
 /// Represents a base class for all scene objects in the game.
 /// This class provides lifecycle management, tagging, and utility methods for objects within a scene.
 /// </summary>
-public abstract class SceneObject
+public abstract class SceneObject : IRenderUpdatable
 {
     private readonly System.Collections.Generic.HashSet<System.String> _tags = [];
 
