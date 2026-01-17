@@ -1,6 +1,6 @@
 ﻿using SFML.Graphics;
 
-namespace Ascendance.Rendering.Engine.Abstractions;
+namespace Ascendance.Rendering.Abstractions;
 
 /// <summary>
 /// Giao diện vẽ overlay cho từng hiệu ứng.

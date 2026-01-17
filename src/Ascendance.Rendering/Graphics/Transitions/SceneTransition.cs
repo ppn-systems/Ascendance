@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Abstractions;
-using Ascendance.Rendering.Engine.Abstractions;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Graphics.Transitions.Effects;
