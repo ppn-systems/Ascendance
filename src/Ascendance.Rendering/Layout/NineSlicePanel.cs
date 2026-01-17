@@ -9,39 +9,70 @@ namespace Ascendance.Rendering.Layout;
 /// Simple 9-slice panel for crisp, scalable UI frames.
 /// Corners unscaled, edges scale in one axis, center in both.
 /// </summary>
-public sealed class NineSlicePanel : Drawable
+public sealed class NineSlicePanel : Drawable, System.IDisposable
 {
-    // Public readable state
-    public Vector2f Position { get; private set; }
-    public Vector2f Size { get; private set; }          // Target outer size in pixels
-    public IntRect SourceRect { get; private set; }     // Sub-rect inside the texture
-    public Thickness Border { get; private set; }       // Border thickness in source pixels
-    public Texture Texture { get; }
+    #region Fields
+
+    private System.Boolean _dirty = true;
+    private System.Boolean _disposed;
 
     private readonly Sprite[] _parts = new Sprite[9];
-    private System.Boolean _dirty = true;
+
+    #endregion Fields
+
+    #region Properties
+
+    public Texture Texture { get; }
+
+    /// <summary>
+    /// Raised when layout changed.
+    /// </summary>
+    public event System.Action OnLayoutChanged;
+
+    public Vector2f Size { get; private set; }
+
+    public Thickness Border { get; private set; }
+
+    public Vector2f Position { get; private set; }
+
+    public IntRect SourceRect { get; private set; }
+
+    #endregion Properties
+
+    #region Constructor
 
     public NineSlicePanel(Texture texture, Thickness border, IntRect sourceRect = default)
     {
         Texture = texture ?? throw new System.ArgumentNullException(nameof(texture));
+        if (border.Left < 0 || border.Top < 0 || border.Right < 0 || border.Bottom < 0)
+        {
+            throw new System.ArgumentException("Border thickness must be >= 0.", nameof(border));
+        }
+
         Border = border;
         SourceRect = sourceRect == default
             ? new IntRect(0, 0, (System.Int32)texture.Size.X, (System.Int32)texture.Size.Y)
             : sourceRect;
 
-        // Init parts
+        if (SourceRect.Width < Border.Left + Border.Right || SourceRect.Height < Border.Top + Border.Bottom)
+        {
+            throw new System.ArgumentException("SourceRect must be large enough to fit border.", nameof(sourceRect));
+        }
+
         for (System.Int32 i = 0; i < 9; i++)
         {
             _parts[i] = new Sprite(Texture);
         }
 
-        // Defaults
         Position = default;
         Size = new Vector2f(SourceRect.Width, SourceRect.Height);
         _dirty = true;
     }
 
-    #region Fluent setters (auto-layout)
+    #endregion Constructor
+
+    #region APIs
+
     public NineSlicePanel SetPosition(Vector2f pos)
     {
         if (pos != Position)
@@ -54,6 +85,11 @@ public sealed class NineSlicePanel : Drawable
 
     public NineSlicePanel SetSize(Vector2f size)
     {
+        if (size.X < Border.Left + Border.Right || size.Y < Border.Top + Border.Bottom)
+        {
+            throw new System.ArgumentException("Size is too small for borders.", nameof(size));
+        }
+
         if (size != Size)
         {
             Size = size;
@@ -64,6 +100,11 @@ public sealed class NineSlicePanel : Drawable
 
     public NineSlicePanel SetSourceRect(IntRect rect)
     {
+        if (rect.Width < Border.Left + Border.Right || rect.Height < Border.Top + Border.Bottom)
+        {
+            throw new System.ArgumentException("SourceRect too small for set borders.", nameof(rect));
+        }
+
         if (rect != SourceRect)
         {
             SourceRect = rect;
@@ -74,6 +115,11 @@ public sealed class NineSlicePanel : Drawable
 
     public NineSlicePanel SetBorder(Thickness border)
     {
+        if (border.Left < 0 || border.Top < 0 || border.Right < 0 || border.Bottom < 0)
+        {
+            throw new System.ArgumentException("Border thickness must be >= 0.", nameof(border));
+        }
+
         if (!border.Equals(Border))
         {
             Border = border;
@@ -84,9 +130,9 @@ public sealed class NineSlicePanel : Drawable
 
     public NineSlicePanel SetColor(Color color)
     {
-        for (System.Int32 i = 0; i < _parts.Length; i++)
+        foreach (var part in _parts)
         {
-            _parts[i].Color = color;
+            part.Color = color;
         }
 
         return this;
@@ -94,105 +140,116 @@ public sealed class NineSlicePanel : Drawable
 
     public Color GetColor() => _parts.Length > 0 ? _parts[0].Color : Color.White;
 
-    /// <summary>For legacy code paths using your RenderObject style.</summary>
+    /// <summary>For legacy RenderObject style.</summary>
     public void Render(RenderTarget target)
     {
-        EnsureLayout();
-        for (System.Int32 i = 0; i < 9; i++)
+        if (_dirty)
+        {
+            Layout();
+        }
+
+        for (var i = 0; i < 9; i++)
         {
             target.Draw(_parts[i]);
         }
     }
-    #endregion
+
+    /// <summary>
+    /// Checks if a point is inside this panel.
+    /// </summary>
+    public System.Boolean Contains(Vector2f point)
+    {
+        return point.X >= Position.X &&
+               point.X <= Position.X + Size.X &&
+               point.Y >= Position.Y &&
+               point.Y <= Position.Y + Size.Y;
+    }
 
     /// <summary>
     /// Recompute 9 slices geometry.
     /// </summary>
     public void Layout()
     {
-        // Guard: avoid negative stretch if target too small
         System.Int32 L = Border.Left, T = Border.Top, R = Border.Right, B = Border.Bottom;
-        System.Single minW = L + R;
-        System.Single minH = T + B;
+        System.Single minW = L + R, minH = T + B;
 
-        System.Single x = (System.Single)System.Math.Round(Position.X);
-        System.Single y = (System.Single)System.Math.Round(Position.Y);
-        System.Single w = (System.Single)System.Math.Round(System.Math.Max(Size.X, minW));
-        System.Single h = (System.Single)System.Math.Round(System.Math.Max(Size.Y, minH));
+        System.Single x = (System.Single)System.Math.Floor(Position.X);
+        System.Single y = (System.Single)System.Math.Floor(Position.Y);
+        System.Single w = System.Math.Max(Size.X, minW);
+        System.Single h = System.Math.Max(Size.Y, minH);
 
         System.Int32 sx = SourceRect.Left, sy = SourceRect.Top, sw = SourceRect.Width, sh = SourceRect.Height;
 
-        // Source slices
         var src = new IntRect[9];
-        // Corners
-        src[0] = new IntRect(sx, sy, L, T);                           // TL
-        src[2] = new IntRect(sx + sw - R, sy, R, T);                  // TR
-        src[6] = new IntRect(sx, sy + sh - B, L, B);                  // BL
-        src[8] = new IntRect(sx + sw - R, sy + sh - B, R, B);         // BR
-        // Edges
-        src[1] = new IntRect(sx + L, sy, sw - L - R, T);              // Top
-        src[3] = new IntRect(sx, sy + T, L, sh - T - B);              // Left
-        src[5] = new IntRect(sx + sw - R, sy + T, R, sh - T - B);     // Right
-        src[7] = new IntRect(sx + L, sy + sh - B, sw - L - R, B);     // Bottom
-        // Center
-        src[4] = new IntRect(sx + L, sy + T, sw - L - R, sh - T - B); // Center
+        src[0] = new IntRect(sx, sy, L, T);
+        src[2] = new IntRect(sx + sw - R, sy, R, T);
+        src[6] = new IntRect(sx, sy + sh - B, L, B);
+        src[8] = new IntRect(sx + sw - R, sy + sh - B, R, B);
+        src[1] = new IntRect(sx + L, sy, sw - L - R, T);
+        src[3] = new IntRect(sx, sy + T, L, sh - T - B);
+        src[5] = new IntRect(sx + sw - R, sy + T, R, sh - T - B);
+        src[7] = new IntRect(sx + L, sy + sh - B, sw - L - R, B);
+        src[4] = new IntRect(sx + L, sy + T, sw - L - R, sh - T - B);
 
-        // Target rects (draw borders at 1:1 for crisp)
         System.Single Lw = L, Tw = T, Rw = R, Bw = B;
 
         var dst = new FloatRect[9];
-        // Corners
         dst[0] = new FloatRect(x, y, Lw, Tw);
         dst[2] = new FloatRect(x + w - Rw, y, Rw, Tw);
         dst[6] = new FloatRect(x, y + h - Bw, Lw, Bw);
         dst[8] = new FloatRect(x + w - Rw, y + h - Bw, Rw, Bw);
-        // Edges
-        dst[1] = new FloatRect(x + Lw, y, w - Lw - Rw, Tw);              // Top (stretch X)
-        dst[3] = new FloatRect(x, y + Tw, Lw, h - Tw - Bw);              // Left (stretch Y)
-        dst[5] = new FloatRect(x + w - Rw, y + Tw, Rw, h - Tw - Bw);     // Right (stretch Y)
-        dst[7] = new FloatRect(x + Lw, y + h - Bw, w - Lw - Rw, Bw);     // Bottom (stretch X)
-        // Center
+        dst[1] = new FloatRect(x + Lw, y, w - Lw - Rw, Tw);
+        dst[3] = new FloatRect(x, y + Tw, Lw, h - Tw - Bw);
+        dst[5] = new FloatRect(x + w - Rw, y + Tw, Rw, h - Tw - Bw);
+        dst[7] = new FloatRect(x + Lw, y + h - Bw, w - Lw - Rw, Bw);
         dst[4] = new FloatRect(x + Lw, y + Tw, w - Lw - Rw, h - Tw - Bw);
 
-        // Apply
         for (System.Int32 i = 0; i < 9; i++)
         {
-            var s = _parts[i];
+            Sprite s = _parts[i];
             s.TextureRect = src[i];
             s.Position = new Vector2f(dst[i].Left, dst[i].Top);
 
-            // Clamp to >= 0 to avoid NaN scales when very small
             System.Single dw = System.Math.Max(0f, dst[i].Width);
             System.Single dh = System.Math.Max(0f, dst[i].Height);
             System.Single swp = System.Math.Max(1, src[i].Width);
             System.Single shp = System.Math.Max(1, src[i].Height);
 
-            s.Scale = new Vector2f(
-                dw / swp,
-                dh / shp
-            );
+            s.Scale = new Vector2f(dw / swp, dh / shp);
         }
-
         _dirty = false;
+        OnLayoutChanged?.Invoke();
     }
 
-    private void EnsureLayout()
+    public void Draw(RenderTarget target, RenderStates states)
     {
         if (_dirty)
         {
             Layout();
         }
-    }
 
-    // SFML draw path
-    public void Draw(RenderTarget target, RenderStates states)
-    {
-        EnsureLayout();
-        for (System.Int32 i = 0; i < 9; i++)
+        for (var i = 0; i < 9; i++)
         {
             target.Draw(_parts[i], states);
         }
     }
 
+    #endregion APIs
 
+    #region IDisposable Support
+
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            foreach (var sprite in _parts)
+            {
+                sprite?.Dispose();
+            }
+
+            _disposed = true;
+        }
+    }
+
+    #endregion IDisposable Support
 }
