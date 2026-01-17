@@ -16,6 +16,8 @@ namespace Ascendance.Rendering.Components;
 /// </remarks>
 public sealed class PasswordField : TextInputField
 {
+    #region Properties
+
     /// <summary>
     /// Whether to reveal the raw text (i.e., “show password”). Default: <c>false</c>.
     /// </summary>
@@ -25,6 +27,10 @@ public sealed class PasswordField : TextInputField
     /// Mask character used when <see cref="Show"/> is <c>false</c>. Default: • (U+2022).
     /// </summary>
     public System.Char MaskChar { get; set; } = '\u2022';
+
+    #endregion Properties
+
+    #region Constructor
 
     /// <summary>
     /// Creates a new password field.
@@ -38,6 +44,10 @@ public sealed class PasswordField : TextInputField
         Vector2f size,
         Vector2f position)
         : base(panelTexture, border, sourceRect, font, fontSize, size, position) => base.ValidationRule = new PasswordValidationRule();
+
+    #endregion Constructor
+
+    #region APIs
 
     /// <summary>
     /// Toggle <see cref="Show"/> state. (VN) Đổi trạng thái hiện/ẩn mật khẩu.
@@ -60,4 +70,6 @@ public sealed class PasswordField : TextInputField
         System.Int32 len = Text?.Length ?? 0;
         return len == 0 ? System.String.Empty : new System.String(MaskChar, len);
     }
+
+    #endregion APIs
 }

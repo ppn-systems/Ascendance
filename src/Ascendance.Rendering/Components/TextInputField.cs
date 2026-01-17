@@ -28,7 +28,7 @@ namespace Ascendance.Rendering.Components;
 /// </remarks>
 public class TextInputField : RenderObject
 {
-    #region ===== Constants & Defaults =====
+    #region Constants
 
     private const System.Single DefaultPaddingX = 16f;
     private const System.Single DefaultPaddingY = 6f;
@@ -37,56 +37,58 @@ public class TextInputField : RenderObject
     private const System.Single KeyRepeatFirstDelay = 0.35f;
     private const System.Single KeyRepeatNextDelay = 0.05f;
 
-    #endregion
+    #endregion Constants
 
-    #region ===== Visuals & Layout =====
+    #region Fields
 
-    private readonly NineSlicePanel _panel;
     private readonly Text _text;        // used for drawing
     private readonly Text _measure;     // used for measuring width/pos exactly
     private readonly RectangleShape _caret;
-
-    private FloatRect _hitBox;          // cached for mouse hit-test
-
-    // (VN) Padding có thể chỉnh nếu muốn
-    private Vector2f _padding = new(DefaultPaddingX, DefaultPaddingY);
-
+    private readonly NineSlicePanel _panel;
     private readonly System.UInt32 _fontSize;
-    private System.Single _caretWidth = 1f;
-    public ITextValidationRule ValidationRule { get; set; }
-
-    #endregion
-
-    #region ===== State =====
-
     private readonly System.Text.StringBuilder _buffer = new();
-    private System.Boolean _focused;
-    private System.Boolean _caretVisible;
-    private System.Single _caretTimer;
 
+    private Vector2f _padding;
+    private FloatRect _hitBox;          // cached for mouse hit-test
+    private System.Boolean _focused;
+    private System.Int32 _scrollStart; // start index of visible window (inclusive)
+    private System.Single _caretTimer;
+    private System.Single _caretWidth;
     private System.Single _repeatTimer;
-    private System.Boolean _repeatBackspace;
+    private System.Boolean _prevDelete;
+    private System.Boolean _caretVisible;
     private System.Boolean _repeatDelete;
     private System.Boolean _prevBackspace;
-    private System.Boolean _prevDelete;
+    private System.Boolean _repeatBackspace;
 
-    private System.Int32 _scrollStart; // start index of visible window (inclusive)
+    #endregion Fields
 
-    #endregion
+    #region Properties
 
-    #region ===== Options / Public Surface =====
-
-    /// <summary>Maximum number of characters allowed; <c>null</c> means unlimited.</summary>
+    /// <summary>
+    /// Maximum number of characters allowed; <c>null</c> means unlimited.
+    /// </summary>
     public System.Int32? MaxLength { get; set; }
 
-    /// <summary>Optional placeholder (shown when <see cref="Text"/> is empty and unfocused).</summary>
+    /// <summary>
+    /// Optional placeholder (shown when <see cref="Text"/> is empty and unfocused).
+    /// </summary>
     public System.String Placeholder { get; set; } = System.String.Empty;
 
-    /// <summary>Raised whenever <see cref="Text"/> changes.</summary>
+    /// <summary>
+    /// Raised whenever <see cref="Text"/> changes.
+    /// </summary>
     public event System.Action<System.String> OnChanged;
 
-    /// <summary>Raised when user presses Enter while focused.</summary>
+    /// <summary>
+    /// Raised when user presses Enter while focused.
+    /// </summary>
     public event System.Action<System.String> OnSubmit;
+
+    /// <summary>
+    /// Validation rule for input text; can be <c>null</c> for no validation.
+    /// </summary>
+    public ITextValidationRule ValidationRule { get; set; }
 
     /// <summary>Gets or sets the current text content.</summary>
     public System.String Text
@@ -164,19 +166,9 @@ public class TextInputField : RenderObject
         }
     }
 
-    /// <summary>Set the panel's tint color.</summary>
-    public void SetPanelColor(Color color) => _panel.SetColor(color);
+    #endregion Properties
 
-    /// <summary>Set the text/caret color together.</summary>
-    public void SetTextColor(Color color)
-    {
-        _text.FillColor = color;
-        _caret.FillColor = color;
-    }
-
-    #endregion
-
-    #region ===== Construction =====
+    #region Construction
 
     /// <summary>
     /// Creates a new <see cref="TextInputField"/>.
@@ -193,8 +185,9 @@ public class TextInputField : RenderObject
         Font font, System.UInt32 fontSize,
         Vector2f size, Vector2f position)
     {
+        _caretWidth = 1f;
         _fontSize = fontSize;
-
+        _padding = new(DefaultPaddingX, DefaultPaddingY);
         _panel = new NineSlicePanel(panelTexture, border, sourceRect);
         _ = _panel.SetPosition(position).SetSize(EnsureMinSize(size, border));
         _panel.Layout();
@@ -226,9 +219,9 @@ public class TextInputField : RenderObject
         SetZIndex(800);
     }
 
-    #endregion
+    #endregion Construction
 
-    #region ===== Engine Hooks =====
+    #region APIs
 
     /// <inheritdoc/>
     public override void Update(System.Single dt)
@@ -280,9 +273,29 @@ public class TextInputField : RenderObject
     /// </summary>
     protected override Drawable GetDrawable() => _text;
 
-    #endregion
+    /// <summary>
+    /// Set the panel's tint color.
+    /// </summary>
+    public void SetPanelColor(Color color) => _panel.SetColor(color);
 
-    #region ===== Typing & Caret =====
+    /// <summary>
+    /// Set the text/caret color together.
+    /// </summary>
+    public void SetTextColor(Color color)
+    {
+        _text.FillColor = color;
+        _caret.FillColor = color;
+    }
+
+    /// <summary>
+    /// Returns what should be displayed: placeholder, masked password, or raw text.
+    /// (VN) Chuỗi hiển thị: placeholder (nếu rỗng & không focus), password (•••), hoặc text thường.
+    /// </summary>
+    protected virtual System.String GetDisplayText() => _buffer.Length == 0 && !Focused && !System.String.IsNullOrEmpty(Placeholder) ? Placeholder : _buffer.ToString();
+
+    #endregion APIs
+
+    #region Private Methods
 
     /// <summary>
     /// Handles key presses and key repeats for Backspace/Delete.
@@ -373,10 +386,6 @@ public class TextInputField : RenderObject
         _caret.Position = new Vector2f(caretX, caretY);
     }
 
-    #endregion
-
-    #region ===== Visible Window / Scrolling =====
-
     /// <summary>
     /// Computes the portion of <see cref="GetDisplayText"/> that fits into the inner width,
     /// ensuring the tail (caret at end) remains visible. Then assigns to <see cref="_text"/>.
@@ -427,16 +436,6 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>
-    /// Returns what should be displayed: placeholder, masked password, or raw text.
-    /// (VN) Chuỗi hiển thị: placeholder (nếu rỗng & không focus), password (•••), hoặc text thường.
-    /// </summary>
-    protected virtual System.String GetDisplayText() => _buffer.Length == 0 && !Focused && !System.String.IsNullOrEmpty(Placeholder) ? Placeholder : _buffer.ToString();
-
-    #endregion
-
-    #region ===== Helpers =====
-
-    /// <summary>
     /// Append a char with MaxLength enforcement and change notification.
     /// </summary>
     private void AppendChar(System.Char c)
@@ -474,8 +473,8 @@ public class TextInputField : RenderObject
     /// <summary>Recompute hit-box based on panel position &amp; size.</summary>
     private void UpdateHitBox()
     {
-        var p = _panel.Position;
         var s = _panel.Size;
+        var p = _panel.Position;
         _hitBox = new FloatRect(p.X, p.Y, s.X, s.Y);
     }
 
@@ -509,5 +508,5 @@ public class TextInputField : RenderObject
         UpdateCaretImmediate();
     }
 
-    #endregion
+    #endregion Private Methods
 }
