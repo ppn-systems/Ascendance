@@ -252,9 +252,9 @@ public class TextInputField : RenderObject
     }
 
     /// <inheritdoc/>
-    public override void Render(RenderTarget target)
+    public override void Draw(RenderTarget target)
     {
-        if (!Visible)
+        if (!IsVisible)
         {
             return;
         }
@@ -269,7 +269,7 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>
-    /// Not used by engine (we render explicitly in <see cref="Render"/>), but must be provided.
+    /// Not used by engine (we render explicitly in <see cref="Draw"/>), but must be provided.
     /// </summary>
     protected override Drawable GetDrawable() => _text;
 
