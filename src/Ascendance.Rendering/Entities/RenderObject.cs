@@ -15,7 +15,7 @@ public abstract class RenderObject : SceneObject
     /// <summary>
     /// Gets or sets whether the object is visible.
     /// </summary>
-    public System.Boolean Visible { get; private set; } = true;
+    public System.Boolean IsVisible { get; private set; } = true;
 
     /// <summary>
     /// Gets the drawable object to be rendered.
@@ -32,9 +32,9 @@ public abstract class RenderObject : SceneObject
     /// <param name="target">The render target where the object will be drawn.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public virtual void Render(RenderTarget target)
+    public virtual void Draw(RenderTarget target)
     {
-        if (Visible)
+        if (IsVisible)
         {
             target.Draw(GetDrawable());
         }
@@ -45,14 +45,14 @@ public abstract class RenderObject : SceneObject
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Conceal() => Visible = false;
+    public void Hide() => IsVisible = false;
 
     /// <summary>
     /// Makes the object visible.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Reveal() => Visible = true;
+    public void Show() => IsVisible = true;
 
     /// <summary>
     /// Sets the Z-Index of the object for rendering order.
@@ -76,6 +76,6 @@ public abstract class RenderObject : SceneObject
     /// </returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static System.Int32 CompareByZIndex(RenderObject r1, RenderObject r2)
+    public static System.Int32 CompareZIndex(RenderObject r1, RenderObject r2)
         => r1 == null && r2 == null ? 0 : r1 == null ? -1 : r2 == null ? 1 : r1._zIndex - r2._zIndex;
 }

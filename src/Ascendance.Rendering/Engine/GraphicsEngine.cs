@@ -207,15 +207,15 @@ public static class GraphicsEngine
         if (_isRenderDirty)
         {
             _cachedRenderObjects = [.. SceneManager.AllObjects<RenderObject>()];
-            _cachedRenderObjects.Sort(RenderObject.CompareByZIndex);
+            _cachedRenderObjects.Sort(RenderObject.CompareZIndex);
             _isRenderDirty = false;
         }
 
         foreach (var obj in _cachedRenderObjects)
         {
-            if (obj.Enabled && obj.Visible)
+            if (obj.Enabled && obj.IsVisible)
             {
-                obj.Render(target);
+                obj.Draw(target);
             }
         }
     }
