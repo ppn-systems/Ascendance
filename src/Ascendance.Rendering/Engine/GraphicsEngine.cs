@@ -213,7 +213,7 @@ public static class GraphicsEngine
 
         foreach (var obj in _cachedRenderObjects)
         {
-            if (obj.Enabled && obj.IsVisible)
+            if (obj.IsEnabled && obj.IsVisible)
             {
                 obj.Draw(target);
             }

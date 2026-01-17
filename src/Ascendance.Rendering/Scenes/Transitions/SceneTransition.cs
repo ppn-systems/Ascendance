@@ -67,7 +67,7 @@ public sealed class SceneTransition : RenderObject, IRenderUpdatable
 
         // Always render on top, persistent through scene change
         SetZIndex(System.Int32.MaxValue);
-        PersistOnSceneChange = true;
+        IsPersistent = true;
     }
 
     #endregion

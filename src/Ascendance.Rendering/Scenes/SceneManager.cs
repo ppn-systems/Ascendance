@@ -139,21 +139,21 @@ public static class SceneManager
     {
         foreach (SceneObject sceneObject in _sceneObjects)
         {
-            if (!sceneObject.PersistOnSceneChange)
+            if (!sceneObject.IsPersistent)
             {
-                sceneObject.BeforeDestroy();
+                sceneObject.OnBeforeDestroy();
             }
         }
-        _ = _sceneObjects.RemoveWhere(o => !o.PersistOnSceneChange);
+        _ = _sceneObjects.RemoveWhere(o => !o.IsPersistent);
 
         foreach (SceneObject queued in _spawnQueue)
         {
-            if (!queued.PersistOnSceneChange)
+            if (!queued.IsPersistent)
             {
-                queued.BeforeDestroy();
+                queued.OnBeforeDestroy();
             }
         }
-        _ = _spawnQueue.RemoveWhere(o => !o.PersistOnSceneChange);
+        _ = _spawnQueue.RemoveWhere(o => !o.IsPersistent);
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
@@ -180,7 +180,7 @@ public static class SceneManager
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static void QueueSpawn(SceneObject o)
     {
-        if (o.Initialized)
+        if (o.IsInitialized)
         {
             throw new System.Exception($"Instance of SceneObject {nameof(o)} already exists in Scenes");
         }
@@ -266,7 +266,7 @@ public static class SceneManager
                 "Instance of SceneObject to be destroyed does not exist in scene".Warn();
                 continue;
             }
-            o.BeforeDestroy();
+            o.OnBeforeDestroy();
         }
         _destroyQueue.Clear();
     }
@@ -287,9 +287,9 @@ public static class SceneManager
 
         foreach (SceneObject o in _sceneObjects)
         {
-            if (!o.Initialized)
+            if (!o.IsInitialized)
             {
-                o.InitializeSceneObject();
+                o.InternalInitialize();
             }
         }
     }
@@ -300,7 +300,7 @@ public static class SceneManager
     {
         foreach (SceneObject o in _sceneObjects)
         {
-            if (o.Enabled)
+            if (o.IsEnabled)
             {
                 o.Update(deltaTime);
             }

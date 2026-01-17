@@ -27,7 +27,7 @@ public sealed class SceneChangeInfo<T> : SceneObject
     {
         _info = info;
         Name = name;
-        PersistOnSceneChange = true;
+        IsPersistent = true;
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public sealed class SceneChangeInfo<T> : SceneObject
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override void BeforeDestroy() => SceneManager.SceneChanged -= OnSceneChange;
+    public override void OnBeforeDestroy() => SceneManager.SceneChanged -= OnSceneChange;
 
     /// <summary>
     /// Handles the scene change event by setting the <see cref="_sceneChanged"/> flag.
