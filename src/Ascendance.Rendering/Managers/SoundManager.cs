@@ -100,11 +100,8 @@ public class SoundManager : IDisposable
             {
                 for (Int32 i = 0; i < _Sounds.Length; i++)
                 {
-                    if (_Sounds[i] != null)
-                    {
-                        _Sounds[i].Dispose();
-                        _Sounds[i] = null;
-                    }
+                    _Sounds[i]?.Dispose();
+                    _Sounds[i] = null;
                 }
             }
             _Sounds = null;

@@ -1,9 +1,11 @@
-﻿using SFML.Audio;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using SFML.Audio;
 
 namespace Ascendance.Rendering.Managers;
 
 /// <summary>
-/// Manages music playback, caching, and control.
+/// Manages music playback, resource caching, and control.
 /// </summary>
 public static class MusicManager
 {
@@ -17,50 +19,58 @@ public static class MusicManager
     #region Properties
 
     /// <summary>
-    /// Gets a value indicating whether music is currently playing.
+    /// Gets whether any music is currently playing.
     /// </summary>
     public static System.Boolean IsPlaying => _current?.Status == SoundStatus.Playing;
 
     /// <summary>
-    /// Gets a value indicating whether music is currently paused.
+    /// Gets whether the current music is paused.
     /// </summary>
     public static System.Boolean IsPaused => _current?.Status == SoundStatus.Paused;
 
+    /// <summary>
+    /// Gets the current music (readonly, may be null).
+    /// </summary>
+    public static Music Current => _current;
+
     #endregion Properties
 
-    #region Methods
+    #region APIs
 
     /// <summary>
-    /// Loads a music file into cache if not already loaded.
+    /// Loads a music file into cache, or throws if not found.
     /// </summary>
-    /// <param name="filename">The path to the music file.</param>
+    /// <param name="filename">Path to music file (must exist).</param>
     /// <exception cref="System.IO.FileNotFoundException"></exception>
     public static void Load(System.String filename)
     {
-        if (!_musicCache.ContainsKey(filename))
+        if (_musicCache.ContainsKey(filename))
         {
-            if (!System.IO.File.Exists(filename))
-            {
-                throw new System.IO.FileNotFoundException($"Music file not found: {filename}");
-            }
-
-            _musicCache[filename] = new Music(filename);
+            return;
         }
+
+        if (!System.IO.File.Exists(filename))
+        {
+            throw new System.IO.FileNotFoundException($"Music file not found: {filename}");
+        }
+
+        _musicCache[filename] = new Music(filename);
     }
 
     /// <summary>
-    /// Plays a loaded music file. Must be loaded before.
+    /// Plays a music file, loading if necessary.
     /// </summary>
-    /// <param name="filename">The path to the music file.</param>
-    /// <param name="loop">Determines whether the music should loop.</param>
-    /// <exception cref="InvalidOperationException">If music not loaded yet.</exception>
+    /// <param name="filename">Path to music file.</param>
+    /// <param name="loop">True to loop playback.</param>
+    /// <exception cref="FileNotFoundException">If file not found and cannot be loaded.</exception>
     public static void Play(System.String filename, System.Boolean loop = true)
     {
-        Stop(); // Stop current before playing new
+        Stop();
 
-        if (!_musicCache.TryGetValue(filename, out Music music))
+        if (!_musicCache.TryGetValue(filename, out var music))
         {
-            throw new System.InvalidOperationException($"Music file not loaded: {filename}");
+            Load(filename); // Try auto-load
+            music = _musicCache[filename];
         }
 
         _current = music;
@@ -69,17 +79,13 @@ public static class MusicManager
     }
 
     /// <summary>
-    /// Pauses the currently playing music.
+    /// Pauses the currently playing music (if any).
     /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static void Pause() => _current?.Pause();
 
     /// <summary>
-    /// Resumes playback if the music is paused.
+    /// Resumes playback if current music is paused.
     /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static void Resume()
     {
         if (_current?.Status == SoundStatus.Paused)
@@ -89,10 +95,8 @@ public static class MusicManager
     }
 
     /// <summary>
-    /// Stops the currently playing music and clears the reference.
+    /// Stops and unloads current music.
     /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static void Stop()
     {
         _current?.Stop();
@@ -100,12 +104,9 @@ public static class MusicManager
     }
 
     /// <summary>
-    /// Sets the volume of the currently playing music.
+    /// Sets the volume for the current music.
     /// </summary>
-    /// <param name="volume">The volume level to set, ranging from 0.0 (silent) to 100.0 (full volume).</param>
-    /// <remarks>
-    /// The volume will be clamped if the input is out of range.
-    /// </remarks>
+    /// <param name="volume">Volume [0..100].</param>
     public static void SetVolume(System.Single volume)
     {
         if (_current == null)
@@ -113,33 +114,25 @@ public static class MusicManager
             return;
         }
 
-        if (volume < 0.0f)
-        {
-            volume = 0.0f;
-        }
-        else if (volume > 100.0f)
-        {
-            volume = 100.0f;
-        }
-
-        _current.Volume = volume;
+        _current.Volume = System.Single.Clamp(volume, 0.0f, 100.0f);
     }
 
     /// <summary>
-    /// Clears the music cache by disposing of all cached music instances and removing them from the cache.
+    /// Frees all loaded music tracks from cache.
     /// </summary>
     public static void ClearCache()
     {
-        foreach (Music music in _musicCache.Values)
+        foreach (var music in _musicCache.Values)
         {
             music.Dispose();
         }
 
         _musicCache.Clear();
+        _current = null;
     }
 
     /// <summary>
-    /// Disposes of the music manager by clearing the music cache and stopping any currently playing music.
+    /// Fully releases all resources and stops any playback.
     /// </summary>
     public static void Dispose()
     {
@@ -147,5 +140,5 @@ public static class MusicManager
         ClearCache();
     }
 
-    #endregion Methods
+    #endregion APIs
 }
