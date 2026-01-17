@@ -11,8 +11,8 @@ public static class MusicManager
 {
     #region Fields
 
-    private static Music _current;
-    private static readonly System.Collections.Generic.Dictionary<System.String, Music> _musicCache = [];
+    private static Music _currentMusic;
+    private static readonly System.Collections.Generic.Dictionary<System.String, Music> _musicLibrary = [];
 
     #endregion Fields
 
@@ -21,17 +21,17 @@ public static class MusicManager
     /// <summary>
     /// Gets whether any music is currently playing.
     /// </summary>
-    public static System.Boolean IsPlaying => _current?.Status == SoundStatus.Playing;
+    public static System.Boolean IsPlaying => _currentMusic?.Status == SoundStatus.Playing;
 
     /// <summary>
     /// Gets whether the current music is paused.
     /// </summary>
-    public static System.Boolean IsPaused => _current?.Status == SoundStatus.Paused;
+    public static System.Boolean IsPaused => _currentMusic?.Status == SoundStatus.Paused;
 
     /// <summary>
     /// Gets the current music (readonly, may be null).
     /// </summary>
-    public static Music Current => _current;
+    public static Music CurrentMusic => _currentMusic;
 
     #endregion Properties
 
@@ -44,7 +44,7 @@ public static class MusicManager
     /// <exception cref="System.IO.FileNotFoundException"></exception>
     public static void Load(System.String filename)
     {
-        if (_musicCache.ContainsKey(filename))
+        if (_musicLibrary.ContainsKey(filename))
         {
             return;
         }
@@ -54,7 +54,7 @@ public static class MusicManager
             throw new System.IO.FileNotFoundException($"Music file not found: {filename}");
         }
 
-        _musicCache[filename] = new Music(filename);
+        _musicLibrary[filename] = new Music(filename);
     }
 
     /// <summary>
@@ -62,35 +62,35 @@ public static class MusicManager
     /// </summary>
     /// <param name="filename">Path to music file.</param>
     /// <param name="loop">True to loop playback.</param>
-    /// <exception cref="FileNotFoundException">If file not found and cannot be loaded.</exception>
-    public static void Play(System.String filename, System.Boolean loop = true)
+    /// <exception cref="System.IO.FileNotFoundException">If file not found and cannot be loaded.</exception>
+    public static void PlayMusic(System.String filename, System.Boolean loop = true)
     {
         Stop();
 
-        if (!_musicCache.TryGetValue(filename, out var music))
+        if (!_musicLibrary.TryGetValue(filename, out var music))
         {
             Load(filename); // Try auto-load
-            music = _musicCache[filename];
+            music = _musicLibrary[filename];
         }
 
-        _current = music;
-        _current.Loop = loop;
-        _current.Play();
+        _currentMusic = music;
+        _currentMusic.Loop = loop;
+        _currentMusic.Play();
     }
 
     /// <summary>
     /// Pauses the currently playing music (if any).
     /// </summary>
-    public static void Pause() => _current?.Pause();
+    public static void Pause() => _currentMusic?.Pause();
 
     /// <summary>
     /// Resumes playback if current music is paused.
     /// </summary>
     public static void Resume()
     {
-        if (_current?.Status == SoundStatus.Paused)
+        if (_currentMusic?.Status == SoundStatus.Paused)
         {
-            _current.Play();
+            _currentMusic.Play();
         }
     }
 
@@ -99,36 +99,36 @@ public static class MusicManager
     /// </summary>
     public static void Stop()
     {
-        _current?.Stop();
-        _current = null;
+        _currentMusic?.Stop();
+        _currentMusic = null;
     }
 
     /// <summary>
     /// Sets the volume for the current music.
     /// </summary>
     /// <param name="volume">Volume [0..100].</param>
-    public static void SetVolume(System.Single volume)
+    public static void SetMusicVolume(System.Single volume)
     {
-        if (_current == null)
+        if (_currentMusic == null)
         {
             return;
         }
 
-        _current.Volume = System.Single.Clamp(volume, 0.0f, 100.0f);
+        _currentMusic.Volume = System.Single.Clamp(volume, 0.0f, 100.0f);
     }
 
     /// <summary>
     /// Frees all loaded music tracks from cache.
     /// </summary>
-    public static void ClearCache()
+    public static void ClearMusicCache()
     {
-        foreach (var music in _musicCache.Values)
+        foreach (var music in _musicLibrary.Values)
         {
             music.Dispose();
         }
 
-        _musicCache.Clear();
-        _current = null;
+        _musicLibrary.Clear();
+        _currentMusic = null;
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public static class MusicManager
     public static void Dispose()
     {
         Stop();
-        ClearCache();
+        ClearMusicCache();
     }
 
     #endregion APIs

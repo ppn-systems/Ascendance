@@ -10,25 +10,25 @@ namespace Ascendance.Rendering.Loaders;
 /// <remarks>
 /// Creates a new instance of the FontLoader class.
 /// </remarks>
-/// <param name="assetRoot">Optional root path of the managed asset folder</param>
-public sealed class FontLoader(System.String assetRoot = "") : AssetLoader<Font>(AvailableFormats, assetRoot)
+/// <param name="rootFolder">Optional root path of the managed asset folder</param>
+public sealed class FontLoader(System.String rootFolder = "") : AssetLoader<Font>(SupportedExtensions, rootFolder)
 {
     /// <summary>
     /// List of supported file endings for this FontLoader
     /// </summary>
-    public static readonly System.Collections.Generic.IEnumerable<System.String> AvailableFormats = [".ttf", ".cff", ".fnt", ".ttf", ".otf", ".eot"];
+    public static readonly System.Collections.Generic.IEnumerable<System.String> SupportedExtensions = [".ttf", ".cff", ".fnt", ".ttf", ".otf", ".eot"];
 
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected override Font CreateInstanceFromRawData(System.Byte[] rawData)
+    protected override Font Load(System.Byte[] bytes)
     {
-        if (rawData == null || rawData.Length == 0)
+        if (bytes == null || bytes.Length == 0)
         {
-            throw new System.ArgumentException("Raw data is null or empty.", nameof(rawData));
+            throw new System.ArgumentException("Raw data is null or empty.", nameof(bytes));
         }
 
-        using System.IO.MemoryStream ms = new(rawData, writable: false);
+        using System.IO.MemoryStream ms = new(bytes, writable: false);
         return new Font(ms);
     }
 

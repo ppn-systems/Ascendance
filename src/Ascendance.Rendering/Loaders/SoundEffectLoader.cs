@@ -10,13 +10,13 @@ namespace Ascendance.Rendering.Loaders;
 /// <remarks>
 /// Creates a new instance of the SfxLoader class.
 /// </remarks>
-/// <param name="assetRoot">Optional root path of the managed asset folder</param>
-public sealed class SfxLoader(System.String assetRoot = "") : AssetLoader<SoundBuffer>(AvailableFormats, assetRoot)
+/// <param name="rootFolder">Optional root path of the managed asset folder</param>
+public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoader<SoundBuffer>(SupportedFormats, rootFolder)
 {
     /// <summary>
     /// List of supported file endings for this SfxLoader
     /// </summary>
-    public static readonly System.Collections.Generic.IEnumerable<System.String> AvailableFormats =
+    public static readonly System.Collections.Generic.IEnumerable<System.String> SupportedFormats =
     [
             ".ogg", ".wav", ".flac", ".aiff", ".au", ".raw",
             ".paf", ".svx", ".nist", ".voc", ".ircam", ".w64",
@@ -34,10 +34,10 @@ public sealed class SfxLoader(System.String assetRoot = "") : AssetLoader<SoundB
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public SoundBuffer Load(System.String name, System.IO.Stream stream)
     {
-        System.ObjectDisposedException.ThrowIf(Disposed, nameof(SfxLoader));
+        System.ObjectDisposedException.ThrowIf(Disposed, nameof(SoundEffectLoader));
         System.ArgumentNullException.ThrowIfNull(name);
 
-        if (_Assets.TryGetValue(name, out SoundBuffer value))
+        if (_assets.TryGetValue(name, out SoundBuffer value))
         {
             return value;
         }
@@ -55,14 +55,14 @@ public sealed class SfxLoader(System.String assetRoot = "") : AssetLoader<SoundB
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected override SoundBuffer CreateInstanceFromRawData(System.Byte[] rawData)
+    protected override SoundBuffer Load(System.Byte[] bytes)
     {
-        if (rawData == null || rawData.Length == 0)
+        if (bytes == null || bytes.Length == 0)
         {
-            throw new System.ArgumentException("Raw data is null or empty.", nameof(rawData));
+            throw new System.ArgumentException("Raw data is null or empty.", nameof(bytes));
         }
 
-        using System.IO.MemoryStream memoryStream = new(rawData, writable: false);
+        using System.IO.MemoryStream memoryStream = new(bytes, writable: false);
         return new SoundBuffer(memoryStream);
     }
 

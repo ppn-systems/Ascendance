@@ -14,23 +14,23 @@ namespace Ascendance.Rendering.Managers;
 /// <remarks>
 /// Initializes a new instance of the <see cref="AssetManager"/> class.
 /// </remarks>
-/// <param name="root">The root directory for assets.</param>
-public sealed class AssetManager(System.String root = null!) : SingletonBase<AssetManager>, System.IDisposable
+/// <param name="rootFolder">The root directory for assets.</param>
+public sealed class AssetManager(System.String rootFolder = null!) : SingletonBase<AssetManager>, System.IDisposable
 {
-    /// <summary>
-    /// Gets the sound effects loader instance.
-    /// </summary>
-    public SfxLoader SfxLoader { get; } = new SfxLoader(root ?? Directories.BaseAssetsDirectory);
-
     /// <summary>
     /// Gets the font loader instance.
     /// </summary>
-    public FontLoader FontLoader { get; } = new FontLoader(root ?? Directories.BaseAssetsDirectory);
+    public FontLoader FontManager { get; } = new FontLoader(rootFolder ?? Directories.BaseAssetsDirectory);
 
     /// <summary>
     /// Gets the texture loader instance.
     /// </summary>
-    public TextureLoader TextureLoader { get; } = new TextureLoader(root ?? Directories.BaseAssetsDirectory);
+    public TextureLoader TextureManager { get; } = new TextureLoader(rootFolder ?? Directories.BaseAssetsDirectory);
+
+    /// <summary>
+    /// Gets the sound effects loader instance.
+    /// </summary>
+    public SoundEffectLoader SoundEffectManager { get; } = new SoundEffectLoader(rootFolder ?? Directories.BaseAssetsDirectory);
 
     /// <summary>
     /// Load a texture by name (from file or memory).
@@ -40,7 +40,7 @@ public sealed class AssetManager(System.String root = null!) : SingletonBase<Ass
     /// <returns>ScreenSize <see cref="Texture"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public Texture LoadTexture(System.String name, System.Byte[] data = null) => TextureLoader.Load(name, data);
+    public Texture LoadTexture(System.String name, System.Byte[] data = null) => this.TextureManager.Load(name, data);
 
     /// <summary>
     /// Load a font by name (from file or memory).
@@ -50,7 +50,7 @@ public sealed class AssetManager(System.String root = null!) : SingletonBase<Ass
     /// <returns>ScreenSize <see cref="Font"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public Font LoadFont(System.String name, System.Byte[] data = null) => FontLoader.Load(name, data);
+    public Font LoadFont(System.String name, System.Byte[] data = null) => this.FontManager.Load(name, data);
 
     /// <summary>
     /// Load a sound buffer by name (from file or memory).
@@ -60,7 +60,7 @@ public sealed class AssetManager(System.String root = null!) : SingletonBase<Ass
     /// <returns>ScreenSize <see cref="SoundBuffer"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public SoundBuffer LoadSound(System.String name, System.Byte[] data = null) => SfxLoader.Load(name, data);
+    public SoundBuffer LoadSound(System.String name, System.Byte[] data = null) => this.SoundEffectManager.Load(name, data);
 
     /// <summary>
     /// Load a sound buffer by name (from stream).
@@ -70,7 +70,7 @@ public sealed class AssetManager(System.String root = null!) : SingletonBase<Ass
     /// <returns>ScreenSize <see cref="SoundBuffer"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public SoundBuffer LoadSound(System.String name, System.IO.Stream stream) => SfxLoader.Load(name, stream);
+    public SoundBuffer LoadSound(System.String name, System.IO.Stream stream) => this.SoundEffectManager.Load(name, stream);
 
     /// <summary>
     /// Release all loaded assets.
@@ -79,8 +79,8 @@ public sealed class AssetManager(System.String root = null!) : SingletonBase<Ass
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public new void Dispose()
     {
-        SfxLoader.Dispose();
-        FontLoader.Dispose();
-        TextureLoader.Dispose();
+        this.FontManager.Dispose();
+        this.TextureManager.Dispose();
+        this.SoundEffectManager.Dispose();
     }
 }

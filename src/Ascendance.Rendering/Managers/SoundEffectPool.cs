@@ -7,28 +7,38 @@ namespace Ascendance.Rendering.Managers;
 /// <summary>
 /// Represents a single Sound Effect
 /// </summary>
-public class SoundManager : System.IDisposable
+public class SoundEffectPool : System.IDisposable
 {
-    private SoundBuffer _Buffer;
-    private Sound[] _Sounds;
+    #region Fields
+
+    private SoundBuffer _buffer;
+    private Sound[] _soundInstances;
+
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
-    /// Gets the name of this <see cref="SoundManager"/>.
+    /// Gets the name of this <see cref="SoundEffectPool"/>.
     /// </summary>
     public System.String Name { get; }
 
     /// <summary>
-    /// Determines whether this <see cref="SoundManager"/> has been disposed.
+    /// Determines whether this <see cref="SoundEffectPool"/> has been disposed.
     /// </summary>
     public System.Boolean Disposed { get; private set; }
 
+    #endregion Properties
+
+    #region Constructor
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="SoundManager" /> class.
+    /// Initializes a new instance of the <see cref="SoundEffectPool" /> class.
     /// </summary>
     /// <param name="name">The sounds name</param>
     /// <param name="soundBuffer">Sound buffer containing the audio data to play with the sound instance</param>
     /// <param name="parallelSounds">The maximum number of parallel playing sounds.</param>
-    public SoundManager(System.String name, SoundBuffer soundBuffer, System.Int32 parallelSounds)
+    public SoundEffectPool(System.String name, SoundBuffer soundBuffer, System.Int32 parallelSounds)
     {
         if (System.String.IsNullOrWhiteSpace(name))
         {
@@ -36,17 +46,19 @@ public class SoundManager : System.IDisposable
         }
 
         Name = name;
-        _Buffer = soundBuffer ?? throw new System.ArgumentNullException(nameof(soundBuffer));
-        _Sounds = new Sound[System.Math.Clamp(parallelSounds, 1, 25)];
+        _buffer = soundBuffer ?? throw new System.ArgumentNullException(nameof(soundBuffer));
+        _soundInstances = new Sound[System.Math.Clamp(parallelSounds, 1, 25)];
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="SoundManager" /> class.
+    /// Finalizes an instance of the <see cref="SoundEffectPool" /> class.
     /// </summary>
-    ~SoundManager()
+    ~SoundEffectPool()
     {
         Dispose(false);
     }
+
+    #endregion Constructor
 
     /// <summary>
     /// Retrieves a sound when available. The amount of sounds per frame is limited.
@@ -54,16 +66,16 @@ public class SoundManager : System.IDisposable
     /// <returns>The sound instance or null when too many instances of the same sound are already active</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public Sound GetSound()
+    public Sound GetAvailableInstance()
     {
         System.ObjectDisposedException.ThrowIf(Disposed, Name);
 
-        for (System.Int32 i = 0; i < _Sounds.Length; i++)
+        for (System.Int32 i = 0; i < _soundInstances.Length; i++)
         {
-            var sound = _Sounds[i];
+            var sound = _soundInstances[i];
             if (sound == null)
             {
-                _Sounds[i] = sound = new Sound(_Buffer);
+                _soundInstances[i] = sound = new Sound(_buffer);
             }
 
             if (sound.Status != SoundStatus.Stopped)
@@ -99,14 +111,14 @@ public class SoundManager : System.IDisposable
         {
             if (disposing)
             {
-                for (System.Int32 i = 0; i < _Sounds.Length; i++)
+                for (System.Int32 i = 0; i < _soundInstances.Length; i++)
                 {
-                    _Sounds[i]?.Dispose();
-                    _Sounds[i] = null;
+                    _soundInstances[i]?.Dispose();
+                    _soundInstances[i] = null;
                 }
             }
-            _Sounds = null;
-            _Buffer = null;
+            _soundInstances = null;
+            _buffer = null;
             Disposed = true;
         }
     }

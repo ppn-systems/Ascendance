@@ -14,12 +14,12 @@ namespace Ascendance.Rendering.Loaders;
 /// <param name="repeat">Determines if loaded Textures should repeat when the texture rectangle exceeds its dimension</param>
 /// <param name="smoothing">Determines if a smoothing should be applied onto newly loaded Textures</param>
 public sealed class TextureLoader(System.String assetRoot = "", System.Boolean repeat = false, System.Boolean smoothing = false)
-    : AssetLoader<Texture>(AvailableFormats, assetRoot)
+    : AssetLoader<Texture>(SupportedFormats, assetRoot)
 {
     /// <summary>
     /// List of supported file endings for this TextureLoader
     /// </summary>
-    public static readonly System.Collections.Generic.IEnumerable<System.String> AvailableFormats =
+    public static readonly System.Collections.Generic.IEnumerable<System.String> SupportedFormats =
     [
         ".bmp", ".png", ".tga", ".jpg",
         ".gif", ".psd", ".hdr", ".pic"
@@ -70,9 +70,9 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected override Texture CreateInstanceFromRawData(System.Byte[] rawData)
+    protected override Texture Load(System.Byte[] bytes)
     {
-        using System.IO.MemoryStream ms = new(rawData);
+        using System.IO.MemoryStream ms = new(bytes);
         Texture texture = new(ms); // Pass the MemoryStream to the constructor
         return texture;
     }
@@ -82,7 +82,7 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     protected override Texture CreateInstanceFromPath(System.String path)
     {
-        using var fs = System.IO.File.OpenRead(path);
+        using System.IO.FileStream fs = System.IO.File.OpenRead(path);
         Texture texture = new(fs); // Pass the FileStream to the constructor
         return texture;
     }

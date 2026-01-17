@@ -13,20 +13,21 @@ public abstract class AssetLoader<[
     System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)] T>
     : System.IDisposable where T : class, System.IDisposable
 {
+    #region Fields
+
     /// <summary>
     /// List of supported file endings for this AssetLoader
     /// </summary>
-    protected System.String[] _FileEndings;
+    protected System.String[] _fileExtensions;
 
     /// <summary>
     /// Dictionary of loaded assets, where the key is the asset name and the value is the asset instance.
     /// </summary>
-    protected System.Collections.Generic.Dictionary<System.String, T> _Assets = [];
+    protected System.Collections.Generic.Dictionary<System.String, T> _assets = [];
 
-    /// <summary>
-    /// List of supported file endings for this AssetLoader
-    /// </summary>
-    public System.Collections.Generic.IEnumerable<System.String> FileEndings => _FileEndings;
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
     /// The root folder where assets are located.
@@ -36,25 +37,36 @@ public abstract class AssetLoader<[
     /// <summary>
     /// Indicates whether the asset loader should log debug information.
     /// </summary>
-    public System.Boolean Debug { get; set; }
+    public System.Boolean EnableLogging { get; set; }
 
     /// <summary>
     /// Indicates whether the asset loader has been disposed.
     /// </summary>
     public System.Boolean Disposed { get; private set; }
 
+    /// <summary>
+    /// List of supported file endings for this AssetLoader
+    /// </summary>
+    public System.Collections.Generic.IEnumerable<System.String> FileEndings => _fileExtensions;
+
+    #endregion Properties
+
+    #region Constructor
+
     internal AssetLoader(
         System.Collections.Generic.IEnumerable<System.String> supportedFileEndings,
         System.String assetRoot = "")
     {
         RootFolder = assetRoot;
-        _FileEndings = [.. System.Linq.Enumerable.Distinct(System.Linq.Enumerable.Concat([System.String.Empty], supportedFileEndings))];
+        _fileExtensions = [.. System.Linq.Enumerable.Distinct(System.Linq.Enumerable.Concat([System.String.Empty], supportedFileEndings))];
     }
 
     /// <summary>
     /// Finalizer for the AssetLoader class. Calls Dispose(false) to release unmanaged resources.
     /// </summary>
     ~AssetLoader() => Dispose(false);
+
+    #endregion Constructor
 
     /// <summary>
     /// Loads or retrieves an already loaded instance of T from a File or Raw Data Source
@@ -69,7 +81,7 @@ public abstract class AssetLoader<[
         System.ObjectDisposedException.ThrowIf(Disposed, nameof(AssetLoader<>));
         System.ArgumentNullException.ThrowIfNull(name);
 
-        if (_Assets.TryGetValue(name, out T value))
+        if (_assets.TryGetValue(name, out T value))
         {
             return value;
         }
@@ -81,16 +93,16 @@ public abstract class AssetLoader<[
 
             if (rawData != null)
             {
-                asset = CreateInstanceFromRawData(rawData);
+                asset = Load(rawData);
                 input = "rawData";
             }
             else
             {
-                input = ResolveFileEndings(name);
+                input = ResolveFileExtension(name);
                 asset = CreateInstanceFromPath(input);
             }
 
-            _Assets.Add(name, asset);
+            _assets.Add(name, asset);
 
             $"[AssetLoader<{typeof(T).Name}>] Loaded asset '{name}' successfully from {input}".Debug();
             return asset;
@@ -98,7 +110,7 @@ public abstract class AssetLoader<[
         catch (System.Exception ex)
         {
             $"[AssetLoader<{typeof(T).Name}>] Failed to load asset '{name}'. InputState: {input ?? "null"}. Error: {ex.Message}\n{ex}".Error();
-            if (Debug)
+            if (EnableLogging)
             {
                 throw;
             }
@@ -114,7 +126,7 @@ public abstract class AssetLoader<[
     /// <returns></returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public virtual System.String[] LoadAllFilesInDirectory(System.Boolean logErrors = false)
+    public virtual System.String[] LoadAllAssetsInDirectory(System.Boolean logErrors = false)
     {
         System.Collections.Generic.List<System.String> assetNames = [];
 
@@ -125,10 +137,10 @@ public abstract class AssetLoader<[
                 T asset = CreateInstanceFromPath(file);
                 System.String name = System.IO.Path.GetFileNameWithoutExtension(file);
 
-                _Assets.Add(name, asset);
+                _assets.Add(name, asset);
                 assetNames.Add(name);
 
-                if (Debug)
+                if (EnableLogging)
                 {
                     $"[AssetLoader<{typeof(T).Name}>] Loaded asset: '{name}' from file: '{file}'".Info();
                 }
@@ -143,7 +155,7 @@ public abstract class AssetLoader<[
                     """.Error();
                 }
 
-                if (Debug)
+                if (EnableLogging)
                 {
                     throw;
                 }
@@ -153,49 +165,22 @@ public abstract class AssetLoader<[
         return [.. assetNames];
     }
 
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private System.String ResolveFileEndings(System.String name)
-    {
-        foreach (System.String ending in _FileEndings)
-        {
-            System.String candidate = System.IO.Path.Combine(RootFolder, $"{name}{ending}");
-            if (System.IO.File.Exists(candidate))
-            {
-                return candidate;
-            }
-        }
-
-        System.String[] attemptedPaths = [.. System.Linq.Enumerable.Select(_FileEndings, f => System.IO.Path.Combine(RootFolder, $"{name}{f}"))];
-
-        $"""
-        [AssetLoader] Could not find a matching file for asset '{name}'.
-        Tried extensions: {System.String.Join(", ", _FileEndings)}
-        Attempted paths:
-        {System.String.Join("\n", attemptedPaths)}
-        Root folder: {RootFolder}
-        Fallback path used: {System.IO.Path.Combine(RootFolder, name)}
-        """.Warn();
-
-        return System.IO.Path.Combine(RootFolder, name);
-    }
-
     /// <summary>
     /// Releases the asset with the specified name.
     /// </summary>
     /// <param name="name"></param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Release(System.String name)
+    public void Unload(System.String name)
     {
         System.ObjectDisposedException.ThrowIf(Disposed, nameof(AssetLoader<>));
-        if (!_Assets.TryGetValue(name, out T value))
+        if (!_assets.TryGetValue(name, out T value))
         {
             return;
         }
 
         value.Dispose();
-        _ = _Assets.Remove(name);
+        _ = _assets.Remove(name);
     }
 
     /// <summary>
@@ -224,7 +209,7 @@ public abstract class AssetLoader<[
 
         Disposed = true;
 
-        foreach (var kvp in _Assets)
+        foreach (var kvp in _assets)
         {
             try
             {
@@ -236,13 +221,13 @@ public abstract class AssetLoader<[
             }
         }
 
-        _Assets.Clear();
+        _assets.Clear();
     }
 
     /// <summary>
     /// Creates an instance of type <typeparamref name="T"/> from raw binary data.
     /// </summary>
-    /// <param name="rawData">The raw byte array representing the asset data.</param>
+    /// <param name="bytes">The raw byte array representing the asset data.</param>
     /// <returns>An instance of <typeparamref name="T"/> created from the raw data.</returns>
     /// <exception cref="System.NotSupportedException">
     /// Thrown if this type <typeparamref name="T"/> does not support loading from raw data.
@@ -250,9 +235,8 @@ public abstract class AssetLoader<[
     /// </exception>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected virtual T CreateInstanceFromRawData(System.Byte[] rawData)
-        => throw new System.NotSupportedException(
-            $"{typeof(T).Name} does not support loading from raw data. Override this method.");
+    protected virtual T Load(System.Byte[] bytes)
+        => throw new System.NotSupportedException($"{typeof(T).Name} does not support loading from raw data. Override this method.");
 
     /// <summary>
     /// Creates an instance of type <typeparamref name="T"/> from a file path.
@@ -269,6 +253,36 @@ public abstract class AssetLoader<[
     /// </exception>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected virtual T CreateInstanceFromPath(System.String path)
-        => (T)System.Activator.CreateInstance(typeof(T), [path]);
+    protected virtual T CreateInstanceFromPath(System.String path) => (T)System.Activator.CreateInstance(typeof(T), [path]);
+
+    #region Private Methods
+
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private System.String ResolveFileExtension(System.String name)
+    {
+        foreach (System.String ending in _fileExtensions)
+        {
+            System.String candidate = System.IO.Path.Combine(RootFolder, $"{name}{ending}");
+            if (System.IO.File.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        System.String[] attemptedPaths = [.. System.Linq.Enumerable.Select(_fileExtensions, f => System.IO.Path.Combine(RootFolder, $"{name}{f}"))];
+
+        $"""
+        [AssetLoader] Could not find a matching file for asset '{name}'.
+        Tried extensions: {System.String.Join(", ", _fileExtensions)}
+        Attempted paths:
+        {System.String.Join("\n", attemptedPaths)}
+        Root folder: {RootFolder}
+        Fallback path used: {System.IO.Path.Combine(RootFolder, name)}
+        """.Warn();
+
+        return System.IO.Path.Combine(RootFolder, name);
+    }
+
+    #endregion Private Methods
 }
