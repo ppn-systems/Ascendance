@@ -52,7 +52,7 @@ public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>, IKeyCharMap
         // A..Z
         for (var k = Keyboard.Key.A; k <= Keyboard.Key.Z; k++)
         {
-            if (InputState.IsKeyPressed(k))
+            if (KeyboardManager.Instance.IsKeyPressed(k))
             {
                 c = (System.Char)((shift ? 'A' : 'a') + (k - Keyboard.Key.A));
                 return true;
@@ -62,7 +62,7 @@ public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>, IKeyCharMap
         // numpad 0..9
         for (var k = Keyboard.Key.Numpad0; k <= Keyboard.Key.Numpad9; k++)
         {
-            if (InputState.IsKeyPressed(k))
+            if (KeyboardManager.Instance.IsKeyPressed(k))
             {
                 c = (System.Char)('0' + (k - Keyboard.Key.Numpad0));
                 return true;
@@ -72,7 +72,7 @@ public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>, IKeyCharMap
         // row digits + punctuation
         foreach (var kv in _map)
         {
-            if (InputState.IsKeyPressed(kv.Key))
+            if (KeyboardManager.Instance.IsKeyPressed(kv.Key))
             {
                 c = shift ? kv.Value.shift : kv.Value.normal;
                 return true;

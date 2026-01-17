@@ -192,7 +192,11 @@ public static class GraphicsEngine
     private static void UpdateFrame(System.Single deltaTime)
     {
         FrameUpdate?.Invoke(deltaTime);
-        InputState.Update(_window);
+
+        MouseManager.Instance.Update(_window);
+        KeyboardManager.Instance.Update();
+        InputTimeline.Instance.Update();
+
         SceneManager.ProcessSceneChange();
         SceneManager.ProcessPendingDestroy();
         SceneManager.ProcessPendingSpawn();

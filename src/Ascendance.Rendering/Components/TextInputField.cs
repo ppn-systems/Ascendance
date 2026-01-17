@@ -224,9 +224,9 @@ public class TextInputField : RenderObject
     public override void Update(System.Single dt)
     {
         // (VN) Click chuột để focus/unfocus
-        if (InputState.IsMouseButtonPressed(Mouse.Button.Left))
+        if (MouseManager.Instance.IsMouseButtonPressed(Mouse.Button.Left))
         {
-            var mp = InputState.GetMousePosition();
+            Vector2i mp = MouseManager.Instance.GetMousePosition();
             Focused = _hitBox.Contains(mp.X, mp.Y);
         }
 
@@ -300,10 +300,10 @@ public class TextInputField : RenderObject
     /// </summary>
     private void HandleKeyInput(System.Single dt)
     {
-        System.Boolean shift = InputState.IsKeyDown(Keyboard.Key.LShift) || InputState.IsKeyDown(Keyboard.Key.RShift);
+        System.Boolean shift = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.LShift) || KeyboardManager.Instance.IsKeyDown(Keyboard.Key.RShift);
 
         // Submit: Enter
-        if (InputState.IsKeyPressed(Keyboard.Key.Enter))
+        if (KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Enter))
         {
             TextSubmitted?.Invoke(_buffer.ToString());
         }
@@ -320,7 +320,7 @@ public class TextInputField : RenderObject
         }
 
         // Backspace/Delete: edge + repeat
-        System.Boolean bsDown = InputState.IsKeyDown(Keyboard.Key.Backspace);
+        System.Boolean bsDown = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Backspace);
         if (bsDown && !_prevBackspace)
         {
             RemoveLastChar();
@@ -343,7 +343,7 @@ public class TextInputField : RenderObject
 
         _prevBackspace = bsDown;
 
-        System.Boolean delDown = InputState.IsKeyDown(Keyboard.Key.Delete);
+        System.Boolean delDown = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Delete);
         if (delDown && !_prevDelete)
         {
             // caret is always at the end => treat Delete same as Backspace
