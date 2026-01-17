@@ -25,7 +25,7 @@ public abstract class AnimatedSpriteObject : SpriteObject, System.IDisposable
     /// <summary>
     /// Indicates if the animator is currently playing.
     /// </summary>
-    public System.Boolean IsAnimationPlaying => SpriteAnimator.Playing;
+    public System.Boolean IsAnimationPlaying => SpriteAnimator.IsPlaying;
 
     /// <summary>
     /// Number of frames in the current animation.
@@ -156,8 +156,8 @@ public abstract class AnimatedSpriteObject : SpriteObject, System.IDisposable
     /// </summary>
     protected void AttachAnimatorEventHandlers()
     {
-        this.SpriteAnimator.OnLooped += OnAnimationLooped;
-        this.SpriteAnimator.OnCompleted += OnAnimationCompleted;
+        this.SpriteAnimator.AnimationLooped += OnAnimationLooped;
+        this.SpriteAnimator.AnimationCompleted += OnAnimationCompleted;
     }
 
     /// <summary>
@@ -167,8 +167,8 @@ public abstract class AnimatedSpriteObject : SpriteObject, System.IDisposable
     {
         if (disposing)
         {
-            this.SpriteAnimator.OnLooped -= OnAnimationLooped;
-            this.SpriteAnimator.OnCompleted -= OnAnimationCompleted;
+            this.SpriteAnimator.AnimationLooped -= OnAnimationLooped;
+            this.SpriteAnimator.AnimationCompleted -= OnAnimationCompleted;
         }
     }
 

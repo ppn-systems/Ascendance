@@ -28,16 +28,16 @@ public sealed class Animator : IRenderUpdatable
     #region Properties
 
     /// <summary>Event fired when animation completes (not looping).</summary>
-    public event System.Action OnCompleted;
+    public event System.Action AnimationCompleted;
 
     /// <summary>Event fired when animation loops from last frame to first.</summary>
-    public event System.Action OnLooped;
+    public event System.Action AnimationLooped;
 
     /// <summary>Whether the animation should loop on completion.</summary>
     public System.Boolean Loop { get; set; } = true;
 
     /// <summary>Whether the animation is currently playing.</summary>
-    public System.Boolean Playing { get; private set; }
+    public System.Boolean IsPlaying { get; private set; }
 
     /// <summary>Total number of frames.</summary>
     public System.Int32 FrameCount => _frames.Count;
@@ -86,7 +86,7 @@ public sealed class Animator : IRenderUpdatable
             _frames.AddRange(frames);
         }
 
-        ResetHead();
+        ResetToFirstFrame();
         ApplyFrame();
     }
 
@@ -111,9 +111,13 @@ public sealed class Animator : IRenderUpdatable
 
     /// <summary>Go to a specific frame index immediately.</summary>
     /// <param name="index">Frame index (0-based).</param>
-    public void GotoFrame(System.Int32 index)
+    public void GoToFrame(System.Int32 index)
     {
-        if (_frames.Count == 0) { _index = 0; return; }
+        if (_frames.Count == 0)
+        {
+            _index = 0; return;
+        }
+
         _index = System.Math.Clamp(index, 0, _frames.Count - 1);
         _accumulator = 0f;
         ApplyFrame();
@@ -151,20 +155,20 @@ public sealed class Animator : IRenderUpdatable
     /// <summary>
     /// Start advancing frames.
     /// </summary>
-    public void Play() => Playing = true;
+    public void Play() => IsPlaying = true;
 
     /// <summary>
     /// Pause advancing frames.
     /// </summary>
-    public void Pause() => Playing = false;
+    public void Pause() => IsPlaying = false;
 
     /// <summary>
     /// Stop and reset to first frame.
     /// </summary>
     public void Stop()
     {
-        Playing = false;
-        ResetHead();
+        IsPlaying = false;
+        ResetToFirstFrame();
         ApplyFrame();
     }
 
@@ -178,7 +182,7 @@ public sealed class Animator : IRenderUpdatable
     /// </summary>
     public void Update(System.Single deltaTime)
     {
-        if (!Playing || _frames.Count == 0)
+        if (!IsPlaying || _frames.Count == 0)
         {
             return;
         }
@@ -194,14 +198,14 @@ public sealed class Animator : IRenderUpdatable
                 if (Loop)
                 {
                     next = 0;
-                    OnLooped?.Invoke();
+                    AnimationLooped?.Invoke();
                 }
                 else
                 {
                     _index = _frames.Count - 1;
                     ApplyFrame();
-                    Playing = false;
-                    OnCompleted?.Invoke();
+                    IsPlaying = false;
+                    AnimationCompleted?.Invoke();
                     break;
                 }
             }
@@ -215,7 +219,7 @@ public sealed class Animator : IRenderUpdatable
 
     #region Private Methods
 
-    private void ResetHead()
+    private void ResetToFirstFrame()
     {
         _index = 0;
         _accumulator = 0f;
