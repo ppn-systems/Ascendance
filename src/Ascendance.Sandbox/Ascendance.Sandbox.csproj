@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<IsTrimmable>true</IsTrimmable>
+		<Deterministic>true</Deterministic>
+		<TargetFramework>net10.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Nalix.Logging" Version="9.9.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Rendering\" />
+	</ItemGroup>
+</Project>
