@@ -9,12 +9,18 @@ namespace Ascendance.Physics.Colliders;
 /// </summary>
 public class CircleCollider : ICollider
 {
+    #region Properties
+
     /// <inheritdoc/>
     public Vector2f Position { get; set; }
     /// <summary>
     /// Gets or sets the radius of the circle.
     /// </summary>
     public System.Single Radius { get; set; }
+
+    #endregion Properties
+
+    #region Constructor
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CircleCollider"/> class.
@@ -27,6 +33,10 @@ public class CircleCollider : ICollider
         this.Radius = radius;
         this.Position = position;
     }
+
+    #endregion Constructor
+
+    #region Public Methods
 
     /// <inheritdoc/>
     public System.Boolean IsColliding(ICollider other)
@@ -42,4 +52,6 @@ public class CircleCollider : ICollider
 
         return other is RectangleCollider rect && rect.IsColliding(this);
     }
+
+    #endregion Public Methods
 }

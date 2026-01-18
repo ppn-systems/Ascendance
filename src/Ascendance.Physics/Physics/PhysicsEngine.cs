@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Shared.Abstractions;
 using SFML.System;
 
 namespace Ascendance.Physics.Physics;
@@ -7,8 +8,10 @@ namespace Ascendance.Physics.Physics;
 /// <summary>
 /// Handles the main simulation loop and physical updates for all rigid bodies.
 /// </summary>
-public class PhysicsEngine
+public class PhysicsEngine : IUpdatable
 {
+    #region Properties
+
     /// <summary>
     /// Gets the list of all rigid bodies managed by the engine.
     /// </summary>
@@ -18,6 +21,10 @@ public class PhysicsEngine
     /// Gets or sets the gravity acceleration vector.
     /// </summary>
     public Vector2f Gravity { get; set; } = new(0, 500f);
+
+    #endregion Properties
+
+    #region APIs
 
     /// <summary>
     /// Advances the physics simulation and updates all rigid bodies.
@@ -29,9 +36,9 @@ public class PhysicsEngine
         {
             if (!body.IsStatic)
             {
-                body.ApplyForce(Gravity * body.Mass);
+                body.AddForce(Gravity * body.Mass);
             }
-            body.Integrate(deltaTime);
+            body.Update(deltaTime);
         }
     }
 
@@ -40,4 +47,6 @@ public class PhysicsEngine
     /// </summary>
     /// <param name="body">The rigid body to add.</param>
     public void AddBody(RigidBody body) => Bodies.Add(body);
+
+    #endregion APIs
 }

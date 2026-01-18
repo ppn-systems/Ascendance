@@ -7,10 +7,16 @@ namespace Ascendance.Physics.Physics;
 /// </summary>
 public class CollisionManager
 {
+    #region Properties
+
     /// <summary>
     /// Gets the list of bodies to process collision for.
     /// </summary>
     public System.Collections.Generic.List<RigidBody> Bodies { get; }
+
+    #endregion Properties
+
+    #region Constructor
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CollisionManager"/> class.
@@ -18,6 +24,10 @@ public class CollisionManager
     /// <param name="bodies">List of rigid bodies for collision checking.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public CollisionManager(System.Collections.Generic.List<RigidBody> bodies) => Bodies = bodies;
+
+    #endregion Constructor
+
+    #region APIs
 
     /// <summary>
     /// Performs collision checks and resolves all collisions.
@@ -33,18 +43,22 @@ public class CollisionManager
                 var b = Bodies[j];
                 if (a.Collider.IsColliding(b.Collider))
                 {
-                    ResolveCollision(a, b);
+                    RESOLVE_COLLISION(a, b);
                 }
             }
         }
     }
+
+    #endregion APIs
+
+    #region Private Methods
 
     /// <summary>
     /// Resolves a collision event between two rigid bodies.
     /// </summary>
     /// <param name="a">The first rigid body.</param>
     /// <param name="b">The second rigid body.</param>
-    private static void ResolveCollision(RigidBody a, RigidBody b)
+    private static void RESOLVE_COLLISION(RigidBody a, RigidBody b)
     {
         // Skip collision response if both bodies are static
         if (a.IsStatic && b.IsStatic)
@@ -63,4 +77,6 @@ public class CollisionManager
             b.Velocity = -b.Velocity * 0.7f;
         }
     }
+
+    #endregion Private Methods
 }

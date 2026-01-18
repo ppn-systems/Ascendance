@@ -9,12 +9,19 @@ namespace Ascendance.Physics.Colliders;
 /// </summary>
 public class RectangleCollider : ICollider
 {
+    #region Properties
+
     /// <inheritdoc/>
     public Vector2f Position { get; set; }
+
     /// <summary>
     /// Gets or sets the size of the rectangle.
     /// </summary>
     public Vector2f Size { get; set; }
+
+    #endregion Properties
+
+    #region Constructor
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectangleCollider"/> class.
@@ -27,6 +34,10 @@ public class RectangleCollider : ICollider
         this.Size = size;
         this.Position = position;
     }
+
+    #endregion Constructor
+
+    #region Methods
 
     /// <inheritdoc/>
     public System.Boolean IsColliding(ICollider other)
@@ -49,4 +60,6 @@ public class RectangleCollider : ICollider
         }
         return false;
     }
+
+    #endregion Methods
 }
