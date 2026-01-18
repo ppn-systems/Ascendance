@@ -26,7 +26,7 @@ public static class GraphicsEngine
     private static System.Boolean _renderCacheDirty;
     private static System.Collections.Generic.List<RenderObject> _renderObjectCache;
 
-    #endregion
+    #endregion Fields
 
     #region Properties
 
@@ -50,7 +50,7 @@ public static class GraphicsEngine
     /// </summary>
     public static System.Action<System.Single> FrameUpdate { get; set; }
 
-    #endregion
+    #endregion Properties
 
     #region Constructor
 
@@ -60,9 +60,9 @@ public static class GraphicsEngine
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
 
         _isFocused = true;
-        _renderCacheDirty = true;
         _backgroundFps = 15;
         _renderObjectCache = [];
+        _renderCacheDirty = true;
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
         var ctx = new ContextSettings
@@ -74,15 +74,13 @@ public static class GraphicsEngine
 
         _window = new RenderWindow(
             new VideoMode(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight),
-            GraphicsConfig.Title,
-            Styles.Titlebar | Styles.Close,
-            ctx
+            GraphicsConfig.Title, Styles.Titlebar | Styles.Close, ctx
         );
 
         // Window events
         _window.Closed += (_, _) => _window.Close();
-        _window.GainedFocus += (_, _) => HandleFocusChanged(true);
         _window.LostFocus += (_, _) => HandleFocusChanged(false);
+        _window.GainedFocus += (_, _) => HandleFocusChanged(true);
         _window.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
 
         // Prefer VSync if available
@@ -96,14 +94,14 @@ public static class GraphicsEngine
         }
     }
 
-    #endregion
+    #endregion Constructor
 
     #region Methods
 
     /// <summary>
     /// Enables or disables debug mode.
     /// </summary>
-    public static void EnableDebugMode(System.Boolean enable) => IsDebugMode = enable;
+    public static void DebugMode() => IsDebugMode = !IsDebugMode;
 
     /// <summary>
     /// Sets the icon for the game window.
@@ -186,6 +184,10 @@ public static class GraphicsEngine
         try { MusicManager.Dispose(); } catch { /* intentionally ignore */ }
     }
 
+    #endregion Methods
+
+    #region Private Methods
+
     /// <summary>
     /// Per-frame: updates input, scenes, and user code.
     /// </summary>
@@ -236,5 +238,5 @@ public static class GraphicsEngine
         }
     }
 
-    #endregion
+    #endregion Private Methods
 }

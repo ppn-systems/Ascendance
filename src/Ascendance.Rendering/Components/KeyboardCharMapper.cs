@@ -50,7 +50,7 @@ public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>, IKeyCharMap
         c = '\0';
 
         // A..Z
-        for (var k = Keyboard.Key.A; k <= Keyboard.Key.Z; k++)
+        for (Keyboard.Key k = Keyboard.Key.A; k <= Keyboard.Key.Z; k++)
         {
             if (KeyboardManager.Instance.IsKeyPressed(k))
             {
@@ -60,7 +60,7 @@ public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>, IKeyCharMap
         }
 
         // numpad 0..9
-        for (var k = Keyboard.Key.Numpad0; k <= Keyboard.Key.Numpad9; k++)
+        for (Keyboard.Key k = Keyboard.Key.Numpad0; k <= Keyboard.Key.Numpad9; k++)
         {
             if (KeyboardManager.Instance.IsKeyPressed(k))
             {

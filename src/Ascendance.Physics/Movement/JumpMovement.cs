@@ -5,7 +5,7 @@ using SFML.System;
 
 namespace Ascendance.Physics.Movement;
 
-public class JumpMovement : IMovementBehavior
+public class JumpMovement : IMovement
 {
     private readonly System.Single _speed = 300f;
 

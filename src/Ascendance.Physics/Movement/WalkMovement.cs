@@ -5,7 +5,7 @@ using SFML.System;
 
 namespace Ascendance.Physics.Movement;
 
-public class WalkMovement : IMovementBehavior
+public class WalkMovement : IMovement
 {
     private readonly System.Single _speed = 150f;
 

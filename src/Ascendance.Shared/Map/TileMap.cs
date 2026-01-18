@@ -21,13 +21,13 @@ public class TileMap(System.Int32 width, System.Int32 height)
     /// <summary>
     /// Map height (number of tiles).
     /// </summary>
-    [SerializeOrder(0)]
+    [SerializeOrder(1)]
     public System.Int32 Height { get; } = height;
 
     /// <summary>
     /// 2D tile array, accessed by [x, y].
     /// </summary>
-    [SerializeOrder(0)]
+    [SerializeOrder(2)]
     public Tile[,] Tiles { get; } = new Tile[width, height];
 
     #endregion Properties

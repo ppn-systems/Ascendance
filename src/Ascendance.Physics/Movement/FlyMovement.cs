@@ -5,7 +5,7 @@ using SFML.System;
 
 namespace Ascendance.Physics.Movement;
 
-public class FlyMovement : IMovementBehavior
+public class FlyMovement : IMovement
 {
     private readonly System.Single _speed = 180f;
 

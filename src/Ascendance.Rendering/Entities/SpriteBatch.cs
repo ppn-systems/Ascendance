@@ -8,6 +8,8 @@ namespace Ascendance.Rendering.Entities;
 /// </summary>
 public class SpriteBatch
 {
+    #region Fields and Structs
+
     private readonly Texture _texture;
     private readonly VertexArray _vertices;
     private readonly System.Collections.Generic.List<BatchItem> _items;
@@ -15,31 +17,22 @@ public class SpriteBatch
     /// <summary>
     /// Represents a single batched sprite with transform and appearance options.
     /// </summary>
-    private struct BatchItem
+    private struct BatchItem(
+        Vector2f pos, IntRect src,
+        Color color, Vector2f scale,
+        System.Single rot, Vector2f origin)
     {
-        public Vector2f Position;
-        public Vector2f Scale;
-        public System.Single Rotation;
-        public IntRect SourceRect;
-        public Color Color;
-        public Vector2f Origin;
-
-        public BatchItem(
-            Vector2f pos,
-            IntRect src,
-            Color color,
-            Vector2f scale,
-            System.Single rot,
-            Vector2f origin)
-        {
-            Position = pos;
-            Scale = scale;
-            Rotation = rot;
-            SourceRect = src;
-            Color = color;
-            Origin = origin;
-        }
+        public Color Color = color;
+        public Vector2f Scale = scale;
+        public Vector2f Position = pos;
+        public IntRect SourceRect = src;
+        public Vector2f Origin = origin;
+        public System.Single Rotation = rot;
     }
+
+    #endregion Fields and Structs
+
+    #region Construction
 
     /// <summary>
     /// Initializes a new SpriteBatch for the given texture atlas.
@@ -52,6 +45,10 @@ public class SpriteBatch
         _vertices = new VertexArray(PrimitiveType.Quads);
         _items = new System.Collections.Generic.List<BatchItem>(512);
     }
+
+    #endregion Construction
+
+    #region APIs
 
     /// <summary>
     /// Clears all batched sprites for a new frame.
@@ -90,15 +87,34 @@ public class SpriteBatch
     }
 
     /// <summary>
+    /// Draws all batched sprites to the target in a single call.
+    /// </summary>
+    /// <param name="target">The render target (usually your window).</param>
+    public void Draw(RenderTarget target)
+    {
+        if (_items.Count == 0)
+        {
+            return;
+        }
+
+        BUILD_VERTEX_ARRAY();
+        target.Draw(_vertices, new RenderStates(_texture));
+    }
+
+    #endregion APIs
+
+    #region Private Methods
+
+    /// <summary>
     /// Builds the vertex array from queued sprites.
     /// </summary>
-    private void BuildVertexArray()
+    private void BUILD_VERTEX_ARRAY()
     {
         _vertices.Clear();
 
-        foreach (var item in _items)
+        foreach (BatchItem item in _items)
         {
-            var (p, s, rot, src, col, org) = (
+            (Vector2f p, Vector2f s, System.Single rot, IntRect src, Color col, Vector2f org) = (
                 item.Position,
                 item.Scale,
                 item.Rotation,
@@ -149,18 +165,5 @@ public class SpriteBatch
         }
     }
 
-    /// <summary>
-    /// Draws all batched sprites to the target in a single call.
-    /// </summary>
-    /// <param name="target">The render target (usually your window).</param>
-    public void Draw(RenderTarget target)
-    {
-        if (_items.Count == 0)
-        {
-            return;
-        }
-
-        BuildVertexArray();
-        target.Draw(_vertices, new RenderStates(_texture));
-    }
+    #endregion Private Methods
 }

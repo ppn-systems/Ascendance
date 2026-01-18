@@ -23,6 +23,9 @@ public class Tile
     [SerializeOrder(1)]
     public System.Boolean IsPassable { get; set; }
 
+    /// <summary>
+    /// Tile constructor.
+    /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public Tile(TileType type, System.Boolean isPassable)
     {

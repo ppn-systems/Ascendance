@@ -11,7 +11,7 @@ public class MovementController
     #region Fields
 
     private readonly System.Single _gravity = 980f;
-    private readonly System.Collections.Generic.Dictionary<MovementType, IMovementBehavior> _strategies;
+    private readonly System.Collections.Generic.Dictionary<MovementType, IMovement> _strategies;
 
     private Vector2f _direction;
     private MovementType _currentType;
@@ -37,7 +37,7 @@ public class MovementController
         IsGrounded = true;
         Position = initialPosition;
         Velocity = new Vector2f(0, 0);
-        _strategies = new System.Collections.Generic.Dictionary<MovementType, IMovementBehavior>
+        _strategies = new System.Collections.Generic.Dictionary<MovementType, IMovement>
         {
             { MovementType.Walk, new WalkMovement() },
             { MovementType.Jump, new JumpMovement() },
@@ -62,7 +62,7 @@ public class MovementController
         Vector2f velocity = Velocity;
         System.Boolean isGrounded = IsGrounded;
 
-        if (_strategies.TryGetValue(_currentType, out IMovementBehavior strategy))
+        if (_strategies.TryGetValue(_currentType, out IMovement strategy))
         {
             strategy.Move(ref position, ref velocity, _direction, ref isGrounded, deltaTime);
         }
