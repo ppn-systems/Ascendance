@@ -42,8 +42,7 @@ public static class SceneManager
     /// <returns>ScreenSize HashSet of all objects of the specified type.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static System.Collections.Generic.IReadOnlyCollection<T> GetAllObjectsOfType<T>()
-        where T : SceneObject
+    public static System.Collections.Generic.IReadOnlyCollection<T> GetAllObjectsOfType<T>() where T : SceneObject
         => System.Linq.Enumerable.ToList(System.Linq.Enumerable.OfType<T>(_activeSceneObjects));
 
     /// <summary>
@@ -153,9 +152,9 @@ public static class SceneManager
             return;
         }
 
-        ClearScene();
+        CLEAR_SCENE();
         System.String lastScene = _currentScene?.Name ?? "";
-        LoadScene(_nextScene);
+        LOAD_SCENE(_nextScene);
         SceneChanged?.Invoke(lastScene, _nextScene);
         _nextScene = "";
     }
@@ -297,7 +296,7 @@ public static class SceneManager
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void ClearScene()
+    private static void CLEAR_SCENE()
     {
         foreach (SceneObject sceneObject in _activeSceneObjects)
         {
@@ -320,7 +319,7 @@ public static class SceneManager
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void LoadScene(System.String name)
+    private static void LOAD_SCENE(System.String name)
     {
         BaseScene found = System.Linq.Enumerable.FirstOrDefault(_loadedScenes, scene => scene.Name == name);
         if (found == null)

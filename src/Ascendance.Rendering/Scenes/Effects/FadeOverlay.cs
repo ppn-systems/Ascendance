@@ -2,7 +2,7 @@
 
 using SFML.Graphics;
 
-namespace Ascendance.Rendering.Scenes.Transitions.Effects;
+namespace Ascendance.Rendering.Scenes.Effects;
 
 /// <summary>
 /// Overlay effect that produces a fade in/out by gradually adjusting overlay alpha from 0→255 then 255→0.

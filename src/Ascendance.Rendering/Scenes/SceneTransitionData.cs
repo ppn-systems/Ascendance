@@ -42,6 +42,8 @@ public sealed class SceneTransitionData<T> : SceneObject
 
     #endregion Constructor
 
+    #region Public Methods
+
     /// <summary>
     /// Extracts the stored information.
     /// </summary>
@@ -63,15 +65,6 @@ public sealed class SceneTransitionData<T> : SceneObject
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override void OnBeforeDestroy() => SceneManager.SceneChanged -= OnSceneChange;
-
-    /// <summary>
-    /// Handles the scene change event by setting the <see cref="_hasSceneChanged"/> flag.
-    /// </summary>
-    /// <param name="lastScene">The name of the last scene.</param>
-    /// <param name="nextScene">The name of the next scene.</param>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private void OnSceneChange(System.String lastScene, System.String nextScene) => _hasSceneChanged = true;
 
     /// <summary>
     /// Updates the state of the SceneChangeInfo object and destroys it after a scene change.
@@ -101,4 +94,19 @@ public sealed class SceneTransitionData<T> : SceneObject
         SceneTransitionData<T> info = SceneManager.FindFirstObjectOfType<SceneTransitionData<T>>();
         return info == null ? defaultValue : info.Name != name ? defaultValue : info.GetData();
     }
+
+    #endregion Public Methods
+
+    #region Private Methods
+
+    /// <summary>
+    /// Handles the scene change event by setting the <see cref="_hasSceneChanged"/> flag.
+    /// </summary>
+    /// <param name="lastScene">The name of the last scene.</param>
+    /// <param name="nextScene">The name of the next scene.</param>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private void OnSceneChange(System.String lastScene, System.String nextScene) => _hasSceneChanged = true;
+
+    #endregion Private Methods
 }

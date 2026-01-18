@@ -14,12 +14,40 @@ namespace Ascendance.Rendering.Scenes;
 /// <param name="name">The name of the scene.</param>
 public abstract class BaseScene(System.String name)
 {
+    #region Fields
+
+    private readonly System.Collections.Generic.List<SceneObject> _sceneObjects = [];
+
+    #endregion Fields
+
+    #region Properties
+
     /// <summary>
     /// Gets the name of the scene.
     /// </summary>
     public readonly System.String Name = name;
 
-    private readonly System.Collections.Generic.List<SceneObject> _sceneObjects = [];
+    #endregion Properties
+
+    #region Protected Methods
+
+    /// <summary>
+    /// An abstract method that must be implemented by derived scenes to load their specific objects.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    protected abstract void LoadObjects();
+
+    /// <summary>
+    /// Clears all objects from the initial objects list.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private void ClearObjects() => _sceneObjects.Clear();
+
+    #endregion Protected Methods
+
+    #region Public Methods
 
     /// <summary>
     /// Retrieves the list of initial objects in the scene.
@@ -48,17 +76,5 @@ public abstract class BaseScene(System.String name)
         this.LoadObjects();
     }
 
-    /// <summary>
-    /// An abstract method that must be implemented by derived scenes to load their specific objects.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected abstract void LoadObjects();
-
-    /// <summary>
-    /// Clears all objects from the initial objects list.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private void ClearObjects() => _sceneObjects.Clear();
+    #endregion Public Methods
 }

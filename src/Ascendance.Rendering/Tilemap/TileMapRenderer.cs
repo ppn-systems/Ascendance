@@ -9,14 +9,40 @@ using SFML.System;
 
 namespace Ascendance.Rendering.Tilemap;
 
+/// <summary>
+/// Responsible for rendering a <see cref="TileMap"/> using tile textures and batching for performance.
+/// Supports both full map rendering and camera-based visible-region rendering.
+/// </summary>
 public class TileMapRenderer
 {
+    #region Fields
+
     private readonly TileMap _map;
     private readonly SpriteBatch[] _batches;
     private readonly Texture[] _tileTextures;
     private readonly System.Int32 _tileWidth;
     private readonly System.Int32 _tileHeight;
 
+    #endregion Fields
+
+    #region Constructor
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TileMapRenderer"/> class.
+    /// </summary>
+    /// <param name="tileTextures">
+    /// An array of <see cref="Texture"/> objects representing all tile graphics.
+    /// Each index corresponds to a tile type.
+    /// </param>
+    /// <param name="tileWidth">
+    /// The width (in pixels) of each tile.
+    /// </param>
+    /// <param name="tileHeight">
+    /// The height (in pixels) of each tile.
+    /// </param>
+    /// <param name="map">
+    /// The <see cref="TileMap"/> instance to render.
+    /// </param>
     public TileMapRenderer(Texture[] tileTextures, System.Int32 tileWidth, System.Int32 tileHeight, TileMap map)
     {
         _map = map;
@@ -49,6 +75,16 @@ public class TileMapRenderer
         }
     }
 
+    #endregion Constructor
+
+    #region Public Methods
+
+    /// <summary>
+    /// Draws the entire tile map to the specified render target.
+    /// </summary>
+    /// <param name="target">
+    /// The <see cref="RenderTarget"/> onto which the tile map will be drawn (e.g., window or buffer).
+    /// </param>
     public void Draw(RenderTarget target)
     {
         foreach (var batch in _batches)
@@ -58,10 +94,15 @@ public class TileMapRenderer
     }
 
     /// <summary>
-    /// Draws only the visible region of TileMap within the Camera2D's view.
+    /// Draws only the visible region of the tile map that is within the view of the specified <see cref="Camera2D"/>.
+    /// This method performs batching per frame for the current view.
     /// </summary>
-    /// <param name="target">The render target (window/screen).</param>
-    /// <param name="camera">The current camera controlling view.</param>
+    /// <param name="target">
+    /// The <see cref="RenderTarget"/> onto which the (visible region of) tile map will be drawn.
+    /// </param>
+    /// <param name="camera">
+    /// The <see cref="Camera2D"/> controlling the current view and determining which tiles are visible.
+    /// </param>
     public void Draw(RenderTarget target, Camera2D camera)
     {
         // Lấy view của camera
@@ -111,4 +152,6 @@ public class TileMapRenderer
             batch?.Draw(target);
         }
     }
+
+    #endregion Public Methods
 }

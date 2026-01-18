@@ -17,6 +17,8 @@ namespace Ascendance.Rendering.Managers;
 /// <param name="rootFolder">The root directory for assets.</param>
 public sealed class AssetManager(System.String rootFolder = null!) : SingletonBase<AssetManager>, System.IDisposable
 {
+    #region Properties
+
     /// <summary>
     /// Gets the font loader instance.
     /// </summary>
@@ -31,6 +33,10 @@ public sealed class AssetManager(System.String rootFolder = null!) : SingletonBa
     /// Gets the sound effects loader instance.
     /// </summary>
     public SoundEffectLoader SoundEffectManager { get; } = new SoundEffectLoader(rootFolder ?? Directories.BaseAssetsDirectory);
+
+    #endregion Properties
+
+    #region Public Methods
 
     /// <summary>
     /// Load a texture by name (from file or memory).
@@ -83,4 +89,6 @@ public sealed class AssetManager(System.String rootFolder = null!) : SingletonBa
         this.TextureManager.Dispose();
         this.SoundEffectManager.Dispose();
     }
+
+    #endregion Public Methods
 }

@@ -68,6 +68,8 @@ public abstract class AssetLoader<[
 
     #endregion Constructor
 
+    #region Public Methods
+
     /// <summary>
     /// Loads or retrieves an already loaded instance of T from a File or Raw Data Source
     /// </summary>
@@ -254,6 +256,8 @@ public abstract class AssetLoader<[
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     protected virtual T CreateInstanceFromPath(System.String path) => (T)System.Activator.CreateInstance(typeof(T), [path]);
+
+    #endregion Public Methods
 
     #region Private Methods
 

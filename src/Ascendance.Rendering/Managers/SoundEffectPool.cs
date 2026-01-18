@@ -60,6 +60,8 @@ public class SoundEffectPool : System.IDisposable
 
     #endregion Constructor
 
+    #region Public Methods
+
     /// <summary>
     /// Retrieves a sound when available. The amount of sounds per frame is limited.
     /// </summary>
@@ -122,4 +124,6 @@ public class SoundEffectPool : System.IDisposable
             Disposed = true;
         }
     }
+
+    #endregion Public Methods
 }

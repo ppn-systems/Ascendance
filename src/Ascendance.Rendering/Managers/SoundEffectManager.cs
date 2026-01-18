@@ -18,9 +18,15 @@ namespace Ascendance.Rendering.Managers;
 /// <exception cref="System.ArgumentNullException">loader</exception>
 public class SoundEffectManager(SoundEffectLoader loader, System.Func<System.Int32> volume)
 {
+    #region Fields
+
     private readonly System.Func<System.Int32> _getCurrentVolume = volume;
     private readonly System.Collections.Generic.Dictionary<System.String, SoundEffectPool> _soundLibrary = [];
     private readonly SoundEffectLoader _soundEffectLoader = loader ?? throw new System.ArgumentNullException(nameof(loader));
+
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
     /// Gets or sets the global listener position for spatial sounds.
@@ -42,6 +48,10 @@ public class SoundEffectManager(SoundEffectLoader loader, System.Func<System.Int
     /// Defines how fast the volume drops beyond the <see cref="VolumeDropoffStartDistance"/>
     /// </summary>
     public System.Single VolumeDropoffFactor { get; set; } = 10;
+
+    #endregion Properties
+
+    #region APIs
 
     /// <summary>
     /// Loads all compatible files from a folder into the sound library.
@@ -181,4 +191,6 @@ public class SoundEffectManager(SoundEffectLoader loader, System.Func<System.Int
 
         sound.Play();
     }
+
+    #endregion APIs
 }
