@@ -11,8 +11,14 @@ namespace Ascendance.Rendering.Camera;
 /// </summary>
 public class Camera2D
 {
+    #region Fields
+
     private System.Single _zoom = 1f;
     private System.Single _shakeAmount;
+
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
     /// Gets the current SFML View used for rendering.
@@ -21,6 +27,10 @@ public class Camera2D
 
     public FloatRect Bounds { get; set; }
 
+    #endregion Properties
+
+    #region Constructor
+
     /// <summary>
     /// Initializes a new Camera2D instance.
     /// </summary>
@@ -28,6 +38,10 @@ public class Camera2D
     /// <param name="size">Initial viewport size (screen, usually in pixels).</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public Camera2D(Vector2f center, Vector2f size) => this.SFMLView = new View(center, size);
+
+    #endregion Constructor
+
+    #region Public Methods
 
     public void ClampToBounds()
     {
@@ -132,4 +146,6 @@ public class Camera2D
         this.SFMLView.Size = size;
         SetZoom(1f);
     }
+
+    #endregion Public Methods
 }

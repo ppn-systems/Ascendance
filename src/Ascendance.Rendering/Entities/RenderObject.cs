@@ -10,12 +10,22 @@ namespace Ascendance.Rendering.Entities;
 /// </summary>
 public abstract class RenderObject : SceneObject
 {
+    #region Fields
+
     private System.Int32 _zIndex;
+
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
     /// Gets or sets whether the object is visible.
     /// </summary>
     public System.Boolean IsVisible { get; private set; } = true;
+
+    #endregion Properties
+
+    #region APIs
 
     /// <summary>
     /// Gets the drawable object to be rendered.
@@ -78,4 +88,6 @@ public abstract class RenderObject : SceneObject
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static System.Int32 CompareZIndex(RenderObject r1, RenderObject r2)
         => r1 == null && r2 == null ? 0 : r1 == null ? -1 : r2 == null ? 1 : r1._zIndex - r2._zIndex;
+
+    #endregion APIs
 }
