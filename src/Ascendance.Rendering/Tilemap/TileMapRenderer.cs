@@ -87,7 +87,7 @@ public class TileMapRenderer
     /// </param>
     public void Draw(RenderTarget target)
     {
-        foreach (var batch in _batches)
+        foreach (SpriteBatch batch in _batches)
         {
             batch?.Draw(target);
         }
