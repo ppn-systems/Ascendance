@@ -13,7 +13,7 @@ namespace Ascendance.Rendering.Entities;
 /// (VN) Lớp nền cho mọi object dùng Sprite và có hoạt ảnh khung hình.
 /// Dùng SetAnimationFrames hoặc SetAnimationFromGrid để khởi tạo và chạy animation.
 /// </remarks>
-public abstract class AnimatedSpriteObject : SpriteObject, System.IDisposable
+public abstract class AnimatorObject : SpriteObject, System.IDisposable
 {
     #region Properties 
 
@@ -42,19 +42,19 @@ public abstract class AnimatedSpriteObject : SpriteObject, System.IDisposable
     #region Construction
 
     /// <inheritdoc/>
-    protected AnimatedSpriteObject(Texture texture)
+    protected AnimatorObject(Texture texture)
         : base(texture) => SpriteAnimator = new Animator(Sprite);
 
     /// <inheritdoc/>
-    protected AnimatedSpriteObject(Texture texture, IntRect rect)
+    protected AnimatorObject(Texture texture, IntRect rect)
         : base(texture, rect) => SpriteAnimator = new Animator(Sprite);
 
     /// <inheritdoc/>
-    protected AnimatedSpriteObject(Texture texture, Vector2f position, Vector2f scale, System.Single rotation)
+    protected AnimatorObject(Texture texture, Vector2f position, Vector2f scale, System.Single rotation)
         : base(texture, position, scale, rotation) => SpriteAnimator = new Animator(Sprite);
 
     /// <inheritdoc/>
-    protected AnimatedSpriteObject(Texture texture, IntRect rect, Vector2f position, Vector2f scale, System.Single rotation)
+    protected AnimatorObject(Texture texture, IntRect rect, Vector2f position, Vector2f scale, System.Single rotation)
         : base(texture, rect, position, scale, rotation) => SpriteAnimator = new Animator(Sprite);
 
     #endregion Construction
