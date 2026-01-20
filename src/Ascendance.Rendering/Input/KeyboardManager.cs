@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Internal.Input;
 using Nalix.Framework.Injection.DI;
 using SFML.Window;
 
@@ -65,6 +66,12 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
         for (System.Int32 i = 0; i < AllKeys.Length; i++)
         {
             System.Int32 idx = (System.Int32)AllKeys[i];
+
+            if (idx < 0 || idx >= KeyState.Length)
+            {
+                continue;
+            }
+
             PreviousKeyState[idx] = KeyState[idx];
             KeyState[idx] = Keyboard.IsKeyPressed(AllKeys[i]);
         }

@@ -51,18 +51,18 @@ public abstract class RenderObject : SceneObject
     }
 
     /// <summary>
-    /// Hides the object, making it not visible.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Hide() => IsVisible = false;
-
-    /// <summary>
     /// Makes the object visible.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void Show() => IsVisible = true;
+
+    /// <summary>
+    /// Hides the object, making it not visible.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void Hide() => IsVisible = false;
 
     /// <summary>
     /// Sets the Z-Index of the object for rendering order.

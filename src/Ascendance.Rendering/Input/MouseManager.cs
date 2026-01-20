@@ -55,9 +55,16 @@ public class MouseManager : SingletonBase<MouseManager>
         for (System.Int32 i = 0; i < AllButtons.Length; i++)
         {
             System.Int32 idx = (System.Int32)AllButtons[i];
+
+            if (AllButtons[i] == Mouse.Button.ButtonCount)
+            {
+                continue;
+            }
+
             PreviousMouseButtonState[idx] = MouseButtonState[idx];
             MouseButtonState[idx] = Mouse.IsButtonPressed(AllButtons[i]);
         }
+
         _mousePosition = Mouse.GetPosition(window);
     }
 

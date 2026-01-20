@@ -243,11 +243,11 @@ public static class SceneManager
             }
 
             // Check if the class has the IgnoredLoadAttribute
-            if (System.Reflection.CustomAttributeExtensions.GetCustomAttribute<IgnoredLoadAttribute>(type) != null)
+            if (System.Reflection.CustomAttributeExtensions.GetCustomAttribute<AutoLoadAttribute>(type) == null)
             {
-                NLogixFx.Debug(
-                    message: $"Skipping load of scene {type.Name} because it is marked as not loadable.",
-                    source: type.Name);
+                //NLogixFx.Debug(
+                //    message: $"Skipping load of scene {type.Name} because it is marked as not loadable.",
+                //    source: type.Name);
 
                 continue;
             }

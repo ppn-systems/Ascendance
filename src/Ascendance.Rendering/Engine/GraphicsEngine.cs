@@ -2,8 +2,10 @@
 
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Input;
+using Ascendance.Rendering.Internal.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
+using Nalix.Framework.Injection;
 using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
@@ -79,8 +81,8 @@ public static class GraphicsEngine
 
         // Window events
         _window.Closed += (_, _) => _window.Close();
-        _window.LostFocus += (_, _) => HandleFocusChanged(false);
-        _window.GainedFocus += (_, _) => HandleFocusChanged(true);
+        _window.LostFocus += (_, _) => HANDLE_FOCUS_CHANGED(false);
+        _window.GainedFocus += (_, _) => HANDLE_FOCUS_CHANGED(true);
         _window.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
 
         // Prefer VSync if available
@@ -115,8 +117,9 @@ public static class GraphicsEngine
     public static void Run()
     {
         const System.Single targetDelta = 1f / 60f;
-        var clock = new Clock();
+
         System.Single accumulator = 0f;
+        Clock clock = InstanceManager.Instance.GetOrCreateInstance<Clock>();
 
         SceneManager.InitializeScenes();
 
@@ -135,12 +138,12 @@ public static class GraphicsEngine
                 accumulator += frameDelta;
                 while (accumulator >= targetDelta)
                 {
-                    UpdateFrame(targetDelta);
+                    UPDATE_FRAME(targetDelta);
                     accumulator -= targetDelta;
                 }
 
                 _window.Clear();
-                Draw(_window);
+                DRAW(_window);
                 _window.Display();
 
                 if (!_isFocused)
@@ -181,7 +184,11 @@ public static class GraphicsEngine
     {
         _window.Close();
 
-        try { MusicManager.Dispose(); } catch { /* intentionally ignore */ }
+        try
+        {
+            MusicManager.Dispose();
+        }
+        catch { /* intentionally ignore */ }
     }
 
     #endregion Methods
@@ -191,7 +198,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Per-frame: updates input, scenes, and user code.
     /// </summary>
-    private static void UpdateFrame(System.Single deltaTime)
+    private static void UPDATE_FRAME(System.Single deltaTime)
     {
         FrameUpdate?.Invoke(deltaTime);
 
@@ -208,7 +215,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Draws all visible scene objects, sorted by Z-index.
     /// </summary>
-    private static void Draw(RenderTarget target)
+    private static void DRAW(RenderTarget target)
     {
         if (_renderCacheDirty)
         {
@@ -229,7 +236,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Handles application focus changes (foreground/background).
     /// </summary>
-    private static void HandleFocusChanged(System.Boolean focused)
+    private static void HANDLE_FOCUS_CHANGED(System.Boolean focused)
     {
         _isFocused = focused;
         if (!GraphicsConfig.VSync)

@@ -1,16 +1,17 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Input;
 using Nalix.Framework.Injection.DI;
 using SFML.System;
 
-namespace Ascendance.Rendering.Input;
+namespace Ascendance.Rendering.Internal.Input;
 
 /// <summary>
 /// Provides a timeline-based system for recording and replaying
 /// keyboard and mouse input on a per-frame basis.
 /// Commonly used for input replay, debugging, testing, or deterministic simulations.
 /// </summary>
-public class InputTimeline : SingletonBase<InputTimeline>
+internal class InputTimeline : SingletonBase<InputTimeline>
 {
     #region Nested Classes
 
