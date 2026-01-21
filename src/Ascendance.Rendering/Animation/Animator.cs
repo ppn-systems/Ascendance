@@ -86,8 +86,8 @@ public sealed class Animator : IUpdatable
             _frames.AddRange(frames);
         }
 
-        ResetToFirstFrame();
-        ApplyFrame();
+        RESET_TO_FIRST_FRAME();
+        APPLY_FRAME();
     }
 
     /// <summary>Adds a single frame to the end.</summary>
@@ -120,7 +120,7 @@ public sealed class Animator : IUpdatable
 
         _index = System.Math.Clamp(index, 0, _frames.Count - 1);
         _accumulator = 0f;
-        ApplyFrame();
+        APPLY_FRAME();
     }
 
     /// <summary>
@@ -168,8 +168,8 @@ public sealed class Animator : IUpdatable
     public void Stop()
     {
         IsPlaying = false;
-        ResetToFirstFrame();
-        ApplyFrame();
+        RESET_TO_FIRST_FRAME();
+        APPLY_FRAME();
     }
 
     /// <summary>
@@ -203,14 +203,14 @@ public sealed class Animator : IUpdatable
                 else
                 {
                     _index = _frames.Count - 1;
-                    ApplyFrame();
+                    APPLY_FRAME();
                     IsPlaying = false;
                     AnimationCompleted?.Invoke();
                     break;
                 }
             }
             _index = next;
-            ApplyFrame();
+            APPLY_FRAME();
         }
     }
 
@@ -219,13 +219,13 @@ public sealed class Animator : IUpdatable
 
     #region Private Methods
 
-    private void ResetToFirstFrame()
+    private void RESET_TO_FIRST_FRAME()
     {
         _index = 0;
         _accumulator = 0f;
     }
 
-    private void ApplyFrame()
+    private void APPLY_FRAME()
     {
         if (_frames.Count == 0)
         {

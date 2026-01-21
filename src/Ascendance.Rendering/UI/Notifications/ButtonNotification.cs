@@ -21,14 +21,14 @@ public sealed class ButtonNotification : Notification
     private readonly Button _actionButton;
 
     /// <summary>
-    /// Callback fired when button is clicked.
+    /// Vertical gap (in pixels) between message text and the button.
     /// </summary>
-    private event System.Action OnClicked;
+    private const System.Single VerticalGapPx = 12f;
 
     /// <summary>
-    /// Extra vertical offset for the button after layout.
+    /// Font size for button text (in pixels).
     /// </summary>
-    public System.Single ButtonExtraOffsetY { get; set; }
+    private const System.UInt32 ButtonFontSize = 18;
 
     /// <summary>
     /// Default button width.
@@ -40,17 +40,21 @@ public sealed class ButtonNotification : Notification
     /// </summary>
     private const System.Single DefaultButtonHeight = 36f;
 
-    /// <summary>
-    /// Vertical gap (in pixels) between message text and the button.
-    /// </summary>
-    private const System.Single VerticalGapPx = 12f;
-
-    /// <summary>
-    /// Font size for button text (in pixels).
-    /// </summary>
-    private const System.UInt32 ButtonFontSize = 18;
-
     #endregion
+
+    #region Properties
+
+    /// <summary>
+    /// Callback fired when button is clicked.
+    /// </summary>
+    private event System.Action OnClicked;
+
+    /// <summary>
+    /// Extra vertical offset for the button after layout.
+    /// </summary>
+    public System.Single ButtonExtraOffsetY { get; set; }
+
+    #endregion Properties
 
     #region Constructor
 

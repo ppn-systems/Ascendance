@@ -35,7 +35,7 @@ public sealed class Spinner : RenderObject, IUpdatable
     /// </summary>
     private const System.Single DegreesToRadians = 0.017453292519943295f;
 
-    #endregion
+    #endregion Constants
 
     #region Fields
 
@@ -79,7 +79,7 @@ public sealed class Spinner : RenderObject, IUpdatable
     /// </summary>
     private readonly CircleShape[] _segmentShapes;
 
-    #endregion
+    #endregion Fields
 
     #region Constructor
 
@@ -103,7 +103,7 @@ public sealed class Spinner : RenderObject, IUpdatable
         }
     }
 
-    #endregion
+    #endregion Constructor
 
     #region Public API
 
@@ -164,7 +164,7 @@ public sealed class Spinner : RenderObject, IUpdatable
         return this;
     }
 
-    #endregion
+    #endregion Public API
 
     #region Main Loop
 
@@ -227,5 +227,5 @@ public sealed class Spinner : RenderObject, IUpdatable
     protected override Drawable GetDrawable() =>
         new RectangleShape(new Vector2f(1, 1)) { FillColor = new Color(0, 0, 0, 0) };
 
-    #endregion
+    #endregion Main Loop
 }

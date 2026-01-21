@@ -35,6 +35,8 @@ public static class SceneManager
 
     #endregion Fields
 
+    #region APIs
+
     /// <summary>
     /// Retrieves all objects in the scene of a specific type.
     /// </summary>
@@ -129,6 +131,8 @@ public static class SceneManager
         System.Collections.Generic.IReadOnlyCollection<T> objects = GetAllObjectsOfType<T>();
         return objects.Count != 0 ? System.Linq.Enumerable.First(objects) : null;
     }
+
+    #endregion APIs
 
     #region Internal Methods
 

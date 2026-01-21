@@ -43,7 +43,7 @@ public abstract class SpriteObject : RenderObject
         System.Single rotation)
     {
         this.Sprite = new Sprite(texture, rect);
-        ApplyTransform(ref this.Sprite, position, scale, rotation);
+        APPLY_TRANSFORM(ref this.Sprite, position, scale, rotation);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public abstract class SpriteObject : RenderObject
         System.Single rotation)
     {
         this.Sprite = new Sprite(texture);
-        ApplyTransform(ref this.Sprite, position, scale, rotation);
+        APPLY_TRANSFORM(ref this.Sprite, position, scale, rotation);
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public abstract class SpriteObject : RenderObject
     protected SpriteObject(Texture texture, IntRect rect)
     {
         Sprite = new Sprite(texture, rect);
-        ApplyTransform(ref Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
+        APPLY_TRANSFORM(ref Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public abstract class SpriteObject : RenderObject
     protected SpriteObject(Texture texture)
     {
         this.Sprite = new Sprite(texture);
-        ApplyTransform(ref this.Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
+        APPLY_TRANSFORM(ref this.Sprite, new Vector2f(0f, 0f), new Vector2f(1f, 1f), 0f);
     }
 
     #endregion Constructions
@@ -109,7 +109,7 @@ public abstract class SpriteObject : RenderObject
     /// <param name="rotation">The rotation angle of the Sprite in degrees.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void ApplyTransform(ref Sprite s, Vector2f position, Vector2f scale, System.Single rotation)
+    private static void APPLY_TRANSFORM(ref Sprite s, Vector2f position, Vector2f scale, System.Single rotation)
     {
         s.Position = position;
         s.Scale = scale;

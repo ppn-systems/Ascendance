@@ -76,14 +76,14 @@ public sealed class NineSlicePanel : Drawable
     {
         this.Texture = texture ?? throw new System.ArgumentNullException(nameof(texture));
 
-        ValidateBorderThickness(border);
+        VALIDATE_BORDER_THICKNESS(border);
         this.BorderThickness = border;
 
         this.TextureSourceRect = sourceRect == default
             ? new IntRect(0, 0, (System.Int32)texture.Size.X, (System.Int32)texture.Size.Y)
             : sourceRect;
 
-        ValidateTextureSourceRect(TextureSourceRect, BorderThickness);
+        VALIDATE_TEXTURE_SOURCE_RECT(TextureSourceRect, BorderThickness);
 
         this.Size = new Vector2f(TextureSourceRect.Width, TextureSourceRect.Height);
 
@@ -140,7 +140,7 @@ public sealed class NineSlicePanel : Drawable
     /// <exception cref="System.ArgumentException">Thrown if <paramref name="border"/> is invalid.</exception>
     public NineSlicePanel SetBorderThickness(Thickness border)
     {
-        ValidateBorderThickness(border);
+        VALIDATE_BORDER_THICKNESS(border);
 
         if (!border.Equals(BorderThickness))
         {
@@ -158,7 +158,7 @@ public sealed class NineSlicePanel : Drawable
     /// <exception cref="System.ArgumentException">Thrown if <paramref name="rect"/> is too small for borders.</exception>
     public NineSlicePanel SetTextureSourceRect(IntRect rect)
     {
-        ValidateTextureSourceRect(rect, BorderThickness);
+        VALIDATE_TEXTURE_SOURCE_RECT(rect, BorderThickness);
 
         if (rect != TextureSourceRect)
         {
@@ -196,7 +196,7 @@ public sealed class NineSlicePanel : Drawable
     {
         if (_dirty)
         {
-            RebuildVertices();
+            REBUILD_VERTICES();
         }
 
         states.Texture = Texture;
@@ -209,7 +209,7 @@ public sealed class NineSlicePanel : Drawable
 
     #region Layout
 
-    private void RebuildVertices()
+    private void REBUILD_VERTICES()
     {
         System.Int32 L = BorderThickness.Left;
         System.Int32 T = BorderThickness.Top;
@@ -260,13 +260,13 @@ public sealed class NineSlicePanel : Drawable
 
         for (System.Int32 i = 0; i < SliceCount; i++)
         {
-            WriteSliceQuad(i, dst[i], src[i]);
+            WRITE_SLICE_QUAD(i, dst[i], src[i]);
         }
 
         _dirty = false;
     }
 
-    private void WriteSliceQuad(System.Int32 index, FloatRect dst, IntRect src)
+    private void WRITE_SLICE_QUAD(System.Int32 index, FloatRect dst, IntRect src)
     {
         System.Int32 v = index * VerticesPerSlice;
 
@@ -290,7 +290,7 @@ public sealed class NineSlicePanel : Drawable
 
     #region Validation
 
-    private static void ValidateBorderThickness(Thickness border)
+    private static void VALIDATE_BORDER_THICKNESS(Thickness border)
     {
         if (border.Left < 0 || border.Top < 0 ||
             border.Right < 0 || border.Bottom < 0)
@@ -299,7 +299,7 @@ public sealed class NineSlicePanel : Drawable
         }
     }
 
-    private static void ValidateTextureSourceRect(IntRect rect, Thickness border)
+    private static void VALIDATE_TEXTURE_SOURCE_RECT(IntRect rect, Thickness border)
     {
         if (rect.Width < border.Left + border.Right ||
             rect.Height < border.Top + border.Bottom)
