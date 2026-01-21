@@ -2,7 +2,6 @@
 
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Scenes;
-using Ascendance.Rendering.UI.Indicators;
 
 namespace Ascendance.Sandbox.Rendering.Scenes;
 
@@ -17,11 +16,13 @@ internal sealed class MainScene : BaseScene
 
     protected override void LoadObjects()
     {
-        LoadingOverlay loading = new();
+        // Successfully loaded scene objects
+        //LoadingOverlay loading = new();
 
-        base.AddObject(loading);
+        //base.AddObject(loading);
+        //loading.Show();
 
-        loading.SetZIndex(999);
-        loading.Show();
+        //AssetManager.Instance.LoadTexture(GraphicsConfig.AssetRoot + "");
+        //Button button = new("OK", );
     }
 }

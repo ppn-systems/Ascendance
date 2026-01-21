@@ -10,8 +10,8 @@
 		<PublishSingleFile>true</PublishSingleFile>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<InvariantGlobalization>true</InvariantGlobalization>
+		<RuntimeIdentifiers>win-x64;linux-x64;</RuntimeIdentifiers>
 		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-		<RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
 	</PropertyGroup>
 
 	<ItemGroup>
