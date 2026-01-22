@@ -8,30 +8,27 @@ using SFML.System;
 namespace Ascendance.Rendering.UI.Indicators;
 
 /// <summary>
-/// Procedural animated spinner used as a loading indicator. Optimized for low allocations.
-/// Reuses segment shapes for better performance.
+/// Procedural animated spinner used as a loading indicator.
+/// Can be shown independently or embedded as part of composite UI.
 /// </summary>
 public sealed class Spinner : RenderObject, IUpdatable
 {
     #region Constants
 
     /// <summary>
-    /// Number of bar segments composing the spinner.
+    /// Number of bar segments making up the spinner.
     /// </summary>
     private const System.Int32 SegmentCount = 12;
-
     /// <summary>
-    /// Spinner radius (distance from center to segment centers).
+    /// Spinner bar radius.
     /// </summary>
     private const System.Single SpinnerRadius = 32f;
-
     /// <summary>
     /// Thickness of each spinner bar segment.
     /// </summary>
     private const System.Single SegmentThickness = 7f;
-
     /// <summary>
-    /// Conversion factor from degrees to radians.
+    /// Conversion constant from degrees to radians.
     /// </summary>
     private const System.Single DegreesToRadians = 0.017453292519943295f;
 
@@ -39,79 +36,33 @@ public sealed class Spinner : RenderObject, IUpdatable
 
     #region Fields
 
-    /// <summary>
-    /// The center point of the spinner on the screen.
-    /// </summary>
     private Vector2f _center;
-
-    /// <summary>
-    /// The base color for the spinner segments.
-    /// </summary>
-    private Color _spinnerColor = new(255, 255, 255);
-
-    /// <summary>
-    /// The base (mean) scale for the spinner.
-    /// </summary>
-    private System.Single _baseScale = 1.0f;
-
-    /// <summary>
-    /// Amplitude of scale oscillation ("breathing" effect).
-    /// </summary>
-    private System.Single _oscillationAmplitude = 0.06f;
-
-    /// <summary>
-    /// The spinner's current total rotation angle, in degrees.
-    /// </summary>
-    private System.Single _currentAngle = 0f;
-
-    /// <summary>
-    /// Spinner rotation speed in degrees per second.
-    /// </summary>
-    private System.Single _rotationDegreesPerSecond = 150f;
-
-    /// <summary>
-    /// Opacity (alpha) of the spinner, from 0 (transparent) to 255 (opaque).
-    /// </summary>
     private System.Byte _alpha = 255;
-
-    /// <summary>
-    /// Cached pool of CircleShape objects, one per segment, reused every frame.
-    /// </summary>
-    private readonly CircleShape[] _segmentShapes;
+    private System.Single _baseScale = 1.0f;
+    private System.Single _currentAngle = 0f;
+    private Color _spinnerColor = new(255, 255, 255);
+    private System.Single _oscillationAmplitude = 0.06f;
+    private System.Single _rotationDegreesPerSecond = 150f;
 
     #endregion Fields
 
     #region Constructor
 
     /// <summary>
-    /// Initializes a new <see cref="Spinner"/> at a specified center position.
+    /// Constructs a new spinner instance at a given center.
     /// </summary>
-    /// <param name="center">The coordinate to center the spinner on screen.</param>
-    public Spinner(Vector2f center)
-    {
-        _center = center;
-        _segmentShapes = new CircleShape[SegmentCount];
-        System.Single r = SegmentThickness * _baseScale / 2f;
-        for (System.Int32 i = 0; i < SegmentCount; i++)
-        {
-            var seg = new CircleShape(r)
-            {
-                Origin = new Vector2f(r, r),
-                FillColor = _spinnerColor
-            };
-            _segmentShapes[i] = seg;
-        }
-    }
+    /// <param name="center">Center point for the spinner.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
+    public Spinner(Vector2f center) => _center = center;
 
     #endregion Constructor
 
-    #region Public API
+    #region API
 
     /// <summary>
     /// Sets the color for the spinner segments.
     /// </summary>
-    /// <param name="color">The RGB segment color. Alpha is managed internally via <see cref="SetAlpha"/>.</param>
-    /// <returns>This spinner for fluent chaining.</returns>
+    /// <param name="color">Segment color (alpha channel is managed internally).</param>
     public Spinner SetSpinnerColor(Color color)
     {
         _spinnerColor = new Color(color.R, color.G, color.B, _alpha);
@@ -119,10 +70,9 @@ public sealed class Spinner : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Sets the overall spinner opacity.
+    /// Sets the alpha (opacity) for the whole spinner.
     /// </summary>
-    /// <param name="alpha">Alpha value (0 transparent, 255 opaque).</param>
-    /// <returns>This spinner for fluent chaining.</returns>
+    /// <param name="alpha">Alpha value (0-255).</param>
     public Spinner SetAlpha(System.Byte alpha)
     {
         _alpha = alpha;
@@ -130,11 +80,10 @@ public sealed class Spinner : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Sets the base scale and oscillation amplitude.
+    /// Sets the spinner scale and its oscillation amplitude ("breathing" effect).
     /// </summary>
-    /// <param name="scale">Base spinner scale (1.0 = normal).</param>
+    /// <param name="scale">Base scale of the spinner.</param>
     /// <param name="oscillation">Oscillation amplitude (default 0.06f).</param>
-    /// <returns>This spinner for fluent chaining.</returns>
     public Spinner SetBaseScale(System.Single scale, System.Single oscillation = 0.06f)
     {
         _baseScale = scale;
@@ -143,10 +92,9 @@ public sealed class Spinner : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Sets the rotation speed (degrees per second).
+    /// Sets the spinner's rotation speed (degrees per second).
     /// </summary>
-    /// <param name="degreesPerSecond">Spinner rotation speed.</param>
-    /// <returns>This spinner for fluent chaining.</returns>
+    /// <param name="degreesPerSecond">Rotation speed.</param>
     public Spinner SetRotationSpeed(System.Single degreesPerSecond)
     {
         _rotationDegreesPerSecond = degreesPerSecond;
@@ -154,24 +102,20 @@ public sealed class Spinner : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Updates the center position of the spinner to a new value.
+    /// Updates the center location of the spinner.
     /// </summary>
-    /// <param name="newCenter">The new center coordinates.</param>
-    /// <returns>This spinner for fluent chaining.</returns>
+    /// <param name="newCenter">New center point.</param>
     public Spinner SetCenter(Vector2f newCenter)
     {
         _center = newCenter;
         return this;
     }
 
-    #endregion Public API
+    #endregion API
 
     #region Main Loop
 
-    /// <summary>
-    /// Advances the spinner's animation by a time step (in seconds).
-    /// </summary>
-    /// <param name="deltaTime">Elapsed time since last update, in seconds.</param>
+    /// <inheritdoc />
     public override void Update(System.Single deltaTime)
     {
         _currentAngle += deltaTime * _rotationDegreesPerSecond;
@@ -182,50 +126,41 @@ public sealed class Spinner : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Draws the spinner segments efficiently without excessive allocations.
-    /// Segment shapes are reused and only position/size/color are updated.
+    /// Renders the spinner into the specified render target.
     /// </summary>
-    /// <param name="target">Render target for drawing (e.g. the game window).</param>
+    /// <param name="target">Target for rendering (usually the current window or view).</param>
     public override void Draw(RenderTarget target)
     {
         const System.Single anglePerSegment = 360f / SegmentCount;
+
         System.Single scale = _baseScale + (System.MathF.Sin(_currentAngle * DegreesToRadians) * _oscillationAmplitude);
-        System.Single segRadius = SpinnerRadius * scale;
-        System.Single segShapeRadius = SegmentThickness * scale / 2f;
 
         for (System.Int32 i = 0; i < SegmentCount; i++)
         {
             System.Single progress = (System.Single)i / SegmentCount;
-            System.Byte segmentAlpha = (System.Byte)(_alpha * (0.2f + (0.8f * progress))); // trail effect
+            System.Byte segmentAlpha = (System.Byte)(_alpha * (0.2f + (0.8f * progress))); // trailing "tail" effect
 
             System.Single segAngle = _currentAngle + (i * anglePerSegment);
             System.Single angleRad = segAngle * DegreesToRadians;
 
-            System.Single x = _center.X + (System.MathF.Cos(angleRad) * segRadius);
-            System.Single y = _center.Y + (System.MathF.Sin(angleRad) * segRadius);
+            System.Single radius = SpinnerRadius * scale;
+            System.Single x = _center.X + (System.MathF.Cos(angleRad) * radius);
+            System.Single y = _center.Y + (System.MathF.Sin(angleRad) * radius);
 
-            CircleShape segCircle = _segmentShapes[i];
-
-            // Only adjust size if changed (rare, for dynamic scaling)
-            if (segCircle.Radius != segShapeRadius)
+            // Draw segment as a filled circle (dot style)
+            CircleShape segCircle = new(SegmentThickness * scale / 2f)
             {
-                segCircle.Radius = segShapeRadius;
-                segCircle.Origin = new Vector2f(segShapeRadius, segShapeRadius);
-            }
-            segCircle.Position = new Vector2f(x, y);
-            segCircle.FillColor = new Color(_spinnerColor.R, _spinnerColor.G, _spinnerColor.B, segmentAlpha);
-
+                Position = new Vector2f(x, y),
+                Origin = new Vector2f(SegmentThickness * scale / 2f, SegmentThickness * scale / 2f),
+                FillColor = new Color(_spinnerColor.R, _spinnerColor.G, _spinnerColor.B, segmentAlpha)
+            };
             target.Draw(segCircle);
         }
     }
 
-    /// <summary>
-    /// Returns a dummy <see cref="Drawable"/> to maintain compatibility with render pipeline.
-    /// Actual spinner rendering is handled by <see cref="Draw(RenderTarget)"/>.
-    /// </summary>
-    /// <returns>An invisible rectangle as a dummy drawable object.</returns>
+    /// <inheritdoc />
     protected override Drawable GetDrawable() =>
-        new RectangleShape(new Vector2f(1, 1)) { FillColor = new Color(0, 0, 0, 0) };
+        throw new System.NotSupportedException("Spinner uses procedural geometry. Call Render() directly.");
 
     #endregion Main Loop
 }

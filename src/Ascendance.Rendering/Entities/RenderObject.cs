@@ -44,7 +44,7 @@ public abstract class RenderObject : SceneObject
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual void Draw(RenderTarget target)
     {
-        if (IsVisible)
+        if (this.IsVisible)
         {
             target.Draw(GetDrawable());
         }
@@ -55,14 +55,14 @@ public abstract class RenderObject : SceneObject
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Show() => IsVisible = true;
+    public void Show() => this.IsVisible = true;
 
     /// <summary>
     /// Hides the object, making it not visible.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Hide() => IsVisible = false;
+    public void Hide() => this.IsVisible = false;
 
     /// <summary>
     /// Sets the Z-Index of the object for rendering order.

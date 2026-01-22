@@ -26,13 +26,14 @@ public sealed class LoadingOverlay : RenderObject, IUpdatable
     private Vector2f _spinnerCenter;
     private System.Byte _currentAlphaByte = 0;
     private System.Single _currentAlphaF = 0f;
-    private System.Boolean _isFadingIn = true;
-    private System.Boolean _isFadingOut = false;
     private System.Single _fadeAlphaPerSecond = 300f;
     private Vector2u _previousScreenSize = GraphicsEngine.ScreenSize;
 
     private readonly Spinner _spinner;
     private readonly RectangleShape _overlayRect;
+
+    // The target alpha state, used to determine if overlay is fading in or out.
+    private System.Boolean _shouldBeVisible = true;
 
     #endregion Fields
 
@@ -52,17 +53,18 @@ public sealed class LoadingOverlay : RenderObject, IUpdatable
     /// </summary>
     public LoadingOverlay()
     {
-        var screenSize = GraphicsEngine.ScreenSize;
-        var sizeVec = new Vector2f(screenSize.X, screenSize.Y);
-
-        _overlayRect = new RectangleShape(sizeVec)
+        _overlayRect = new RectangleShape(new Vector2f(GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y))
         {
             FillColor = new Color(0, 0, 0, 0),
             Position = default
         };
+
         UPDATE_SPINNER_CENTER();
         _spinner = new Spinner(_spinnerCenter);
-        Show();
+
+        this.Show();
+        this.SetZIndex(System.Int32.MaxValue - 2);
+        _spinner.SetZIndex(System.Int32.MaxValue - 1);
     }
 
     #endregion Constructor
@@ -75,8 +77,10 @@ public sealed class LoadingOverlay : RenderObject, IUpdatable
     public new LoadingOverlay Show()
     {
         base.Show();
-        _isFadingIn = true;
-        _isFadingOut = false;
+        _spinner.Show();
+
+        _shouldBeVisible = true; // Mark as should be faded in
+
         return this;
     }
 
@@ -86,8 +90,10 @@ public sealed class LoadingOverlay : RenderObject, IUpdatable
     public new LoadingOverlay Hide()
     {
         base.Hide();
-        _isFadingOut = true;
-        _isFadingIn = false;
+        _spinner.Hide();
+
+        _shouldBeVisible = false; // Mark as should be faded out
+
         return this;
     }
 
@@ -135,7 +141,8 @@ public sealed class LoadingOverlay : RenderObject, IUpdatable
     /// <inheritdoc />
     public override void Update(System.Single deltaTime)
     {
-        if (!IsVisible && !_isFadingOut)
+        // Overlay should be updated if it's visible, or alpha is not fully faded
+        if (!_shouldBeVisible && _currentAlphaF <= 0f)
         {
             return;
         }
@@ -161,7 +168,8 @@ public sealed class LoadingOverlay : RenderObject, IUpdatable
     /// <param name="target">The render target (screen/window).</param>
     public override void Draw(RenderTarget target)
     {
-        if (!IsVisible && !_isFadingOut)
+        // Draw overlay if it's visible or alpha > 0
+        if (!_shouldBeVisible && _currentAlphaF <= 0f)
         {
             return;
         }
@@ -183,28 +191,31 @@ public sealed class LoadingOverlay : RenderObject, IUpdatable
     /// </summary>
     private void UPDATE_ALPHA_TRANSITION(System.Single deltaTime)
     {
-        if (!_isFadingIn && !_isFadingOut && !IsVisible)
+        // Determine target alpha
+        System.Single targetAlpha = _shouldBeVisible ? MaxAlpha : 0f;
+
+        if (_currentAlphaF == targetAlpha)
         {
             return;
         }
 
-        if (_isFadingIn)
+        // Move towards target alpha
+        System.Single alphaDelta = _fadeAlphaPerSecond * deltaTime;
+        if (_shouldBeVisible)
         {
-            _currentAlphaF += deltaTime * _fadeAlphaPerSecond;
-            if (_currentAlphaF >= MaxAlpha)
+            _currentAlphaF = System.Math.Min(_currentAlphaF + alphaDelta, MaxAlpha);
+
+            if (_currentAlphaF == MaxAlpha)
             {
-                _currentAlphaF = MaxAlpha;
-                _isFadingIn = false;
                 base.Show();
             }
         }
-        else if (_isFadingOut)
+        else
         {
-            _currentAlphaF -= deltaTime * _fadeAlphaPerSecond;
-            if (_currentAlphaF <= 0f)
+            _currentAlphaF = System.Math.Max(_currentAlphaF - alphaDelta, 0f);
+
+            if (_currentAlphaF == 0f)
             {
-                _currentAlphaF = 0f;
-                _isFadingOut = false;
                 base.Hide();
             }
         }
