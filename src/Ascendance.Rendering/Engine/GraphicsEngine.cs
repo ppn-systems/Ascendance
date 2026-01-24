@@ -5,6 +5,7 @@ using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Internal.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
+using Nalix.Framework.Configuration;
 using Nalix.Framework.Injection;
 using Nalix.Logging.Extensions;
 using SFML.Graphics;
@@ -58,7 +59,7 @@ public static class GraphicsEngine
 
     static GraphicsEngine()
     {
-        GraphicsConfig = new GraphicsConfig();
+        GraphicsConfig = ConfigurationManager.Instance.Get<GraphicsConfig>();
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
 
         _isFocused = true;
@@ -67,7 +68,7 @@ public static class GraphicsEngine
         _renderCacheDirty = true;
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
-        var ctx = new ContextSettings
+        ContextSettings ctx = new()
         {
             AntialiasingLevel = 0,
             DepthBits = 0,
@@ -108,8 +109,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Sets the icon for the game window.
     /// </summary>
-    public static void SetWindowIcon(Image image)
-        => _window.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
+    public static void SetWindowIcon(Image image) => _window.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
 
     /// <summary>
     /// Starts the main game window loop.
