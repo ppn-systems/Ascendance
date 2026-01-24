@@ -9,7 +9,7 @@ public static class Program
 {
     public static void Main()
     {
-        Image icon = DecodeIconImage(IconBase64);
+        Image icon = GetImageFromBase64(IconBase64);
         GraphicsEngine.SetWindowIcon(icon);
         GraphicsEngine.Run();
 
@@ -17,7 +17,7 @@ public static class Program
         System.Console.ReadLine();
     }
 
-    public static Image DecodeIconImage(System.String base64)
+    internal static Image GetImageFromBase64(System.String base64)
     {
         System.Byte[] bytes = System.Convert.FromBase64String(base64);
         using System.IO.MemoryStream ms = new(bytes);
