@@ -32,14 +32,6 @@
 
 ---
 
-## Map Editing
-
-- Use **Ascendance.MapEditor** or Tiled/other open-source map editors.
-- Store map files in JSON, TMX, or custom formats.
-- See `/Ascendance.MapEditor/example-maps` for samples.
-
----
-
 ## Contribution
 
 Ascendance is in early development. Issues, suggestions, and pull requests are welcome!
