@@ -125,7 +125,7 @@ public class TextInputField : RenderObject
             _ = _panel.SetPosition(value);
             RelayoutText();
             UpdateHitBox();
-            UpdateCaretImmediate();
+            UPDATE_CARET_IMMEDIATE();
         }
     }
 
@@ -135,7 +135,7 @@ public class TextInputField : RenderObject
         get => _panel.Size;
         set
         {
-            _ = _panel.SetSize(EnsureMinSize(value, _panel.BorderThickness));
+            _ = _panel.SetSize(EnsureMinSize(value, _panel.Border));
             RelayoutText();
             UpdateHitBox();
             ResetScrollAndCaret();
@@ -161,7 +161,7 @@ public class TextInputField : RenderObject
         set
         {
             _caretWidth = System.MathF.Max(0.5f, value);
-            UpdateCaretImmediate();
+            UPDATE_CARET_IMMEDIATE();
         }
     }
 
@@ -211,7 +211,7 @@ public class TextInputField : RenderObject
         this.ValidationRule = new UsernameValidationRule();
 
         UpdateHitBox();
-        UpdateCaretImmediate();
+        UPDATE_CARET_IMMEDIATE();
 
         // (VN) Cho UI nổi lên một chút; tùy engine của bạn
         SetZIndex(800);
@@ -241,12 +241,12 @@ public class TextInputField : RenderObject
                 _caretTimer = 0f;
             }
 
-            HandleKeyInput(dt);
+            HANDLE_KEY_INPUT(dt);
         }
 
         // Cập nhật phần text hiển thị (scroll cửa sổ nhìn)
-        UpdateVisibleText();
-        UpdateCaretImmediate();
+        UPDATE_VISIBLE_TEXT();
+        UPDATE_CARET_IMMEDIATE();
     }
 
     /// <inheritdoc/>
@@ -257,7 +257,7 @@ public class TextInputField : RenderObject
             return;
         }
 
-        target.Draw(_panel);
+        _panel.Draw(target);
         target.Draw(_text);
 
         if (Focused && _caretVisible)
@@ -299,7 +299,7 @@ public class TextInputField : RenderObject
     /// Handles key presses and key repeats for Backspace/Delete.
     /// (VN) Xử lý gõ phím & giữ phím để repeat.
     /// </summary>
-    private void HandleKeyInput(System.Single dt)
+    private void HANDLE_KEY_INPUT(System.Single dt)
     {
         System.Boolean shift = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.LShift) || KeyboardManager.Instance.IsKeyDown(Keyboard.Key.RShift);
 
@@ -317,7 +317,7 @@ public class TextInputField : RenderObject
                 return;
             }
 
-            AppendChar(ch);
+            APPEND_CHAR(ch);
         }
 
         // Backspace/Delete: edge + repeat
@@ -373,7 +373,7 @@ public class TextInputField : RenderObject
     /// Updates caret position/size immediately to the end of visible text.
     /// (VN) Cập nhật vị trí/size caret ngay lập tức về cuối chuỗi hiển thị.
     /// </summary>
-    private void UpdateCaretImmediate()
+    private void UPDATE_CARET_IMMEDIATE()
     {
         // bounds.Left may be non-zero due to glyph bearings
         var b = _text.GetLocalBounds();
@@ -388,7 +388,7 @@ public class TextInputField : RenderObject
     /// Computes the portion of <see cref="GetRenderText"/> that fits into the inner width,
     /// ensuring the tail (caret at end) remains visible. Then assigns to <see cref="_text"/>.
     /// </summary>
-    private void UpdateVisibleText()
+    private void UPDATE_VISIBLE_TEXT()
     {
         System.String full = GetRenderText();
         _measure.DisplayedString = full;
@@ -436,7 +436,7 @@ public class TextInputField : RenderObject
     /// <summary>
     /// Append a char with MaxLength enforcement and change notification.
     /// </summary>
-    private void AppendChar(System.Char c)
+    private void APPEND_CHAR(System.Char c)
     {
         if (MaxLength.HasValue && _buffer.Length >= MaxLength.Value)
         {
@@ -502,8 +502,8 @@ public class TextInputField : RenderObject
         _scrollStart = 0;
         _caretVisible = true;
         _caretTimer = 0f;
-        UpdateVisibleText();
-        UpdateCaretImmediate();
+        UPDATE_VISIBLE_TEXT();
+        UPDATE_CARET_IMMEDIATE();
     }
 
     #endregion Private Methods

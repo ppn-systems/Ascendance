@@ -1,129 +1,115 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Entities;
 using SFML.Graphics;
 using SFML.System;
 
 namespace Ascendance.Rendering.Layout;
 
 /// <summary>
-/// High-performance 9-slice panel using a single VertexArray draw call.
+/// A lightweight and efficient 9-slice panel for crisp, scalable UI frames.
+/// Corners are not scaled, edges only scale in one axis, and the center scales in both axes.
 /// </summary>
-public sealed class NineSlicePanel : Drawable
+public sealed class NineSlicePanel : RenderObject
 {
-    #region Constants
-
-    private const System.Int32 SliceCount = 9;
-    private const System.Int32 VerticesPerSlice = 4;
-
-    #endregion Constants
-
     #region Fields
 
-    private readonly VertexArray _vertexArray;
-
     private System.Boolean _dirty;
+    private readonly Sprite[] _parts;
 
     #endregion Fields
 
     #region Properties
 
     /// <summary>
-    /// Gets the texture used by this panel.
+    /// Gets the texture used for rendering the panel.
     /// </summary>
     public Texture Texture { get; }
 
     /// <summary>
-    /// Gets the current size of the panel in pixels.
+    /// Gets the overall size (in pixels) of the panel.
     /// </summary>
     public Vector2f Size { get; private set; }
 
     /// <summary>
-    /// Gets the current position of the panel.
+    /// Gets the border thickness (in source pixels) for each edge.
+    /// </summary>
+    public Thickness Border { get; private set; }
+
+    /// <summary>
+    /// Gets the current position of the panel (top-left corner) in screen coordinates.
     /// </summary>
     public Vector2f Position { get; private set; }
 
     /// <summary>
-    /// Gets the border (in pixels) separating the slices.
+    /// Gets the source rectangle used on the texture for slicing.
     /// </summary>
-    public Thickness BorderThickness { get; private set; }
-
-    /// <summary>
-    /// Gets the region from the texture to use for slicing.
-    /// </summary>
-    public IntRect TextureSourceRect { get; private set; }
-
-    /// <summary>
-    /// Gets the tint color applied to the panel.
-    /// </summary>
-    public Color TintColor { get; private set; } = Color.White;
+    public IntRect SourceRect { get; private set; }
 
     #endregion Properties
 
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NineSlicePanel"/> class.
+    /// Initializes a new <see cref="NineSlicePanel"/> instance.
     /// </summary>
-    /// <param name="texture">The texture to use.</param>
-    /// <param name="border">The border thickness for the 9-slice (pixels).</param>
-    /// <param name="sourceRect">Optional. The source rectangle from the texture, or default for full texture.</param>
-    /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="texture"/> is null.</exception>
-    /// <exception cref="System.ArgumentException">Thrown if border or sourceRect are invalid.</exception>
-    public NineSlicePanel(
-        Texture texture,
-        Thickness border,
-        IntRect sourceRect = default)
+    /// <param name="texture">The source texture for the panel.</param>
+    /// <param name="border">
+    /// The thickness of each border in source pixels (left, top, right, bottom).
+    /// Determines the size of corners and edges.
+    /// </param>
+    /// <param name="sourceRect">
+    /// (Optional) The rectangle region in the texture to use. If not set, uses the entire texture.
+    /// </param>
+    /// <exception cref="System.ArgumentNullException">
+    /// Thrown if <paramref name="texture"/> is null.
+    /// </exception>
+    public NineSlicePanel(Texture texture, Thickness border, IntRect sourceRect = default)
     {
         this.Texture = texture ?? throw new System.ArgumentNullException(nameof(texture));
-
-        VALIDATE_BORDER_THICKNESS(border);
-        this.BorderThickness = border;
-
-        this.TextureSourceRect = sourceRect == default
+        this.Border = border;
+        this.SourceRect = sourceRect == default
             ? new IntRect(0, 0, (System.Int32)texture.Size.X, (System.Int32)texture.Size.Y)
             : sourceRect;
 
-        VALIDATE_TEXTURE_SOURCE_RECT(TextureSourceRect, BorderThickness);
-
-        this.Size = new Vector2f(TextureSourceRect.Width, TextureSourceRect.Height);
-
         _dirty = true;
-        _vertexArray = new(PrimitiveType.Quads, SliceCount * VerticesPerSlice);
+        _parts = new Sprite[9];
+
+        for (System.Int32 i = 0; i < 9; i++)
+        {
+            _parts[i] = new Sprite(Texture);
+        }
+
+        this.Position = default;
+        this.Size = new Vector2f(SourceRect.Width, SourceRect.Height);
     }
 
     #endregion Constructor
 
-    #region Fluent API
+    #region Fluent Setters
 
     /// <summary>
-    /// Sets the panel's position in screen coordinates.
+    /// Sets the top-left position of the panel in screen coordinates.
     /// </summary>
-    /// <param name="position">The new position.</param>
-    /// <returns>This panel instance (for chaining).</returns>
-    public NineSlicePanel SetPosition(Vector2f position)
+    /// <param name="pos">The new position of the panel.</param>
+    /// <returns>This panel instance for fluent chaining.</returns>
+    public NineSlicePanel SetPosition(Vector2f pos)
     {
-        if (position != Position)
+        if (pos != Position)
         {
-            Position = position;
+            Position = pos;
             _dirty = true;
         }
         return this;
     }
 
     /// <summary>
-    /// Sets the panel's size in pixels.
+    /// Sets the desired size of the panel in pixels.
     /// </summary>
-    /// <param name="size">The new size.</param>
-    /// <returns>This panel instance (for chaining).</returns>
-    /// <exception cref="System.ArgumentException">Thrown if size is smaller than borders.</exception>
+    /// <param name="size">The new size, in pixels.</param>
+    /// <returns>This panel instance for fluent chaining.</returns>
     public NineSlicePanel SetSize(Vector2f size)
     {
-        if (size.X < BorderThickness.Left + BorderThickness.Right ||
-            size.Y < BorderThickness.Top + BorderThickness.Bottom)
-        {
-            throw new System.ArgumentException("Size is too small for borders.", nameof(size));
-        }
-
         if (size != Size)
         {
             Size = size;
@@ -133,182 +119,159 @@ public sealed class NineSlicePanel : Drawable
     }
 
     /// <summary>
-    /// Sets the border thickness for slicing this panel.
+    /// Sets the source rectangle in texture coordinates for 9-slice slicing.
     /// </summary>
-    /// <param name="border">The border thickness.</param>
-    /// <returns>This panel instance (for chaining).</returns>
-    /// <exception cref="System.ArgumentException">Thrown if <paramref name="border"/> is invalid.</exception>
-    public NineSlicePanel SetBorderThickness(Thickness border)
+    /// <param name="rect">The new source region on the texture.</param>
+    /// <returns>This panel instance for fluent chaining.</returns>
+    public NineSlicePanel SetSourceRect(IntRect rect)
     {
-        VALIDATE_BORDER_THICKNESS(border);
-
-        if (!border.Equals(BorderThickness))
+        if (rect != SourceRect)
         {
-            BorderThickness = border;
+            SourceRect = rect;
             _dirty = true;
         }
         return this;
     }
 
     /// <summary>
-    /// Sets the source rectangle from the texture for this panel.
+    /// Sets the border thickness used for slicing.
     /// </summary>
-    /// <param name="rect">The source texture rectangle.</param>
-    /// <returns>This panel instance (for chaining).</returns>
-    /// <exception cref="System.ArgumentException">Thrown if <paramref name="rect"/> is too small for borders.</exception>
-    public NineSlicePanel SetTextureSourceRect(IntRect rect)
+    /// <param name="border">The new border thickness.</param>
+    /// <returns>This panel instance for fluent chaining.</returns>
+    public NineSlicePanel SetBorder(Thickness border)
     {
-        VALIDATE_TEXTURE_SOURCE_RECT(rect, BorderThickness);
-
-        if (rect != TextureSourceRect)
+        if (!border.Equals(Border))
         {
-            TextureSourceRect = rect;
+            Border = border;
             _dirty = true;
         }
         return this;
     }
 
     /// <summary>
-    /// Sets the panel color tint.
+    /// Sets the tint color applied to all 9 slices of the panel.
     /// </summary>
-    /// <param name="color">The panel color.</param>
-    /// <returns>This panel instance (for chaining).</returns>
+    /// <param name="color">The tint color to apply.</param>
+    /// <returns>This panel instance for fluent chaining.</returns>
     public NineSlicePanel SetTintColor(Color color)
     {
-        if (color != TintColor)
+        for (System.Int32 i = 0; i < _parts.Length; i++)
         {
-            TintColor = color;
-            _dirty = true;
+            _parts[i].Color = color;
         }
+        // Tint does not require relayout, so _dirty not set.
         return this;
     }
 
-    #endregion Fluent API
+    /// <summary>
+    /// Gets the current tint color of all slices (returns color of the top-left slice).
+    /// </summary>
+    /// <returns>The current tint color.</returns>
+    public Color GetTintColor() => _parts.Length > 0 ? _parts[0].Color : Color.White;
 
-    #region Draw
+    #endregion Fluent Setters
+
+    #region Overrides
 
     /// <summary>
-    /// Draws the panel to the target using the specified render states.
+    /// Draws the panel to the given render target.
     /// </summary>
-    /// <param name="target">The render target.</param>
-    /// <param name="states">The render states.</param>
-    public void Draw(RenderTarget target, RenderStates states)
+    /// <param name="target">The render target (e.g. window, texture) to draw to.</param>
+    public override void Draw(RenderTarget target)
     {
-        if (_dirty)
-        {
-            REBUILD_VERTICES();
-        }
+        COMPUTE_RECTS();
 
-        states.Texture = Texture;
-        target.Draw(_vertexArray, states);
+        for (System.Int32 i = 0; i < 9; i++)
+        {
+            target.Draw(_parts[i]);
+        }
     }
 
-    #endregion Draw
+    /// <summary>
+    /// Returns a <see cref="Drawable"/> for advanced rendering scenarios.
+    /// Not supported for <see cref="NineSlicePanel"/>.
+    /// </summary>
+    /// <returns>None. This panel must be drawn via <see cref="Draw(RenderTarget)"/>.</returns>
+    /// <exception cref="System.NotImplementedException">Always thrown.</exception>
+    protected override Drawable GetDrawable()
+        => throw new System.NotImplementedException("Use Draw(RenderTarget) instead.");
 
-    #region Private Methods
+    #endregion Overrides
 
-    #region Layout
+    #region Private Layout Logic
 
-    private void REBUILD_VERTICES()
+    /// <summary>
+    /// Recomputes geometry and positioning for all 9 slices based on current state.
+    /// </summary>
+    private void COMPUTE_RECTS()
     {
-        System.Int32 L = BorderThickness.Left;
-        System.Int32 T = BorderThickness.Top;
-        System.Int32 R = BorderThickness.Right;
-        System.Int32 B = BorderThickness.Bottom;
-
-        System.Single x = System.MathF.Floor(Position.X);
-        System.Single y = System.MathF.Floor(Position.Y);
-        System.Single w = System.MathF.Max(Size.X, L + R);
-        System.Single h = System.MathF.Max(Size.Y, T + B);
-
-        System.Int32 sx = TextureSourceRect.Left;
-        System.Int32 sy = TextureSourceRect.Top;
-        System.Int32 sw = TextureSourceRect.Width;
-        System.Int32 sh = TextureSourceRect.Height;
-
-        // Source rects (texture space)
-        IntRect[] src =
-        [
-            new(sx, sy, L, T),
-            new(sx + L, sy, sw - L - R, T),
-            new(sx + sw - R, sy, R, T),
-
-            new(sx, sy + T, L, sh - T - B),
-            new(sx + L, sy + T, sw - L - R, sh - T - B),
-            new(sx + sw - R, sy + T, R, sh - T - B),
-
-            new(sx, sy + sh - B, L, B),
-            new(sx + L, sy + sh - B, sw - L - R, B),
-            new(sx + sw - R, sy + sh - B, R, B),
-        ];
-
-        // Destination rects (screen space)
-        FloatRect[] dst =
-        [
-            new(x, y, L, T),
-            new(x + L, y, w - L - R, T),
-            new(x + w - R, y, R, T),
-
-            new(x, y + T, L, h - T - B),
-            new(x + L, y + T, w - L - R, h - T - B),
-            new(x + w - R, y + T, R, h - T - B),
-
-            new(x, y + h - B, L, B),
-            new(x + L, y + h - B, w - L - R, B),
-            new(x + w - R, y + h - B, R, B),
-        ];
-
-        for (System.Int32 i = 0; i < SliceCount; i++)
+        if (!_dirty)
         {
-            WRITE_SLICE_QUAD(i, dst[i], src[i]);
+            return;
+        }
+
+        // Clamp to minimum size (border sum + 1) so center area never collapses.
+        System.Int32 L = Border.Left, T = Border.Top, R = Border.Right, B = Border.Bottom;
+        System.Single minW = L + R + 1, minH = T + B + 1;
+
+        System.Single x = (System.Single)System.Math.Round(Position.X);
+        System.Single y = (System.Single)System.Math.Round(Position.Y);
+        System.Single w = (System.Single)System.Math.Round(System.Math.Max(Size.X, minW));
+        System.Single h = (System.Single)System.Math.Round(System.Math.Max(Size.Y, minH));
+
+        System.Int32 sx = SourceRect.Left, sy = SourceRect.Top, sw = SourceRect.Width, sh = SourceRect.Height;
+
+        // Define source rectangles (texture space) for each 9-slice region.
+        // Corners
+        IntRect[] src = new IntRect[9];
+        src[0] = new IntRect(sx, sy, L, T);                           // Top-left
+        src[2] = new IntRect(sx + sw - R, sy, R, T);                  // Top-right
+        src[6] = new IntRect(sx, sy + sh - B, L, B);                  // Bottom-left
+        src[8] = new IntRect(sx + sw - R, sy + sh - B, R, B);         // Bottom-right
+        // Edges
+        src[1] = new IntRect(sx + L, sy, sw - L - R, T);              // Top edge
+        src[3] = new IntRect(sx, sy + T, L, sh - T - B);              // Left edge
+        src[5] = new IntRect(sx + sw - R, sy + T, R, sh - T - B);     // Right edge
+        src[7] = new IntRect(sx + L, sy + sh - B, sw - L - R, B);     // Bottom edge
+        // Center
+        src[4] = new IntRect(sx + L, sy + T, sw - L - R, sh - T - B); // Center
+
+        // Target rectangles (UI space): corners fixed size, edges/center stretch as needed.
+        System.Single Lw = L, Tw = T, Rw = R, Bw = B;
+        System.Single centerW = w - Lw - Rw;
+        System.Single centerH = h - Tw - Bw;
+
+        FloatRect[] dst = new FloatRect[9];
+        // Corners
+        dst[0] = new FloatRect(x, y, Lw, Tw);
+        dst[2] = new FloatRect(x + w - Rw, y, Rw, Tw);
+        dst[6] = new FloatRect(x, y + h - Bw, Lw, Bw);
+        dst[8] = new FloatRect(x + w - Rw, y + h - Bw, Rw, Bw);
+        // Edges
+        dst[1] = new FloatRect(x + Lw, y, centerW, Tw);               // Top edge (stretch X)
+        dst[3] = new FloatRect(x, y + Tw, Lw, centerH);               // Left edge (stretch Y)
+        dst[5] = new FloatRect(x + w - Rw, y + Tw, Rw, centerH);      // Right edge (stretch Y)
+        dst[7] = new FloatRect(x + Lw, y + h - Bw, centerW, Bw);      // Bottom edge (stretch X)
+        // Center
+        dst[4] = new FloatRect(x + Lw, y + Tw, centerW, centerH);
+
+        // Apply calculated geometry to each region.
+        for (System.Int32 i = 0; i < 9; i++)
+        {
+            // Clamp region widths/heights to be non-negative to prevent invalid transforms.
+            System.Single dw = System.Math.Max(0f, dst[i].Width);
+            System.Single dh = System.Math.Max(0f, dst[i].Height);
+            System.Single swp = System.Math.Max(1f, src[i].Width);
+            System.Single shp = System.Math.Max(1f, src[i].Height);
+
+            Sprite s = _parts[i];
+            s.TextureRect = src[i];
+            s.Scale = new Vector2f(dw / swp, dh / shp);
+            s.Position = new Vector2f(dst[i].Left, dst[i].Top);
         }
 
         _dirty = false;
     }
 
-    private void WRITE_SLICE_QUAD(System.Int32 index, FloatRect dst, IntRect src)
-    {
-        System.Int32 v = index * VerticesPerSlice;
-
-        System.Single dx = dst.Left;
-        System.Single dy = dst.Top;
-        System.Single dw = System.MathF.Max(0, dst.Width);
-        System.Single dh = System.MathF.Max(0, dst.Height);
-
-        System.Single sx = src.Left;
-        System.Single sy = src.Top;
-        System.Single sw = System.MathF.Max(1, src.Width);
-        System.Single sh = System.MathF.Max(1, src.Height);
-
-        _vertexArray[(System.UInt32)(v + 0)] = new Vertex(new(dx, dy), TintColor, new(sx, sy));
-        _vertexArray[(System.UInt32)(v + 1)] = new Vertex(new(dx + dw, dy), TintColor, new(sx + sw, sy));
-        _vertexArray[(System.UInt32)(v + 2)] = new Vertex(new(dx + dw, dy + dh), TintColor, new(sx + sw, sy + sh));
-        _vertexArray[(System.UInt32)(v + 3)] = new Vertex(new(dx, dy + dh), TintColor, new(sx, sy + sh));
-    }
-
-    #endregion Layout
-
-    #region Validation
-
-    private static void VALIDATE_BORDER_THICKNESS(Thickness border)
-    {
-        if (border.Left < 0 || border.Top < 0 ||
-            border.Right < 0 || border.Bottom < 0)
-        {
-            throw new System.ArgumentException("Border thickness must be >= 0.", nameof(border));
-        }
-    }
-
-    private static void VALIDATE_TEXTURE_SOURCE_RECT(IntRect rect, Thickness border)
-    {
-        if (rect.Width < border.Left + border.Right ||
-            rect.Height < border.Top + border.Bottom)
-        {
-            throw new System.ArgumentException("SourceRect is too small for borders.", nameof(rect));
-        }
-    }
-
-    #endregion Validation
-
-    #endregion Private Methods
+    #endregion Private Layout Logic
 }

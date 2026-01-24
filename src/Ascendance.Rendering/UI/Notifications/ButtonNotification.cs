@@ -123,15 +123,15 @@ public sealed class ButtonNotification : Notification
     /// <summary>
     /// Renders notification base and action button.
     /// </summary>
-    public new void Render(RenderTarget target)
+    public new void Draw(RenderTarget target)
     {
         if (!IsVisible)
         {
             return;
         }
 
-        base.Render(target);
-        _actionButton.Render(target);
+        base.Draw(target);
+        _actionButton.Draw(target);
     }
 
     /// <summary>

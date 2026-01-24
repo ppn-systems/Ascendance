@@ -60,5 +60,5 @@ public sealed class GraphicsConfig : ConfigurationLoader
     /// Gets the base path for assets. Default value is <see cref="Directories.BasePath"/>.
     /// </summary>
     [ConfiguredIgnore]
-    public System.String AssetRoot { get; init; } = Directories.BaseAssetsDirectory;
+    public static System.String AssetRoot { get; } = System.AppDomain.CurrentDomain.BaseDirectory;
 }

@@ -1,7 +1,7 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Loaders;
-using Nalix.Common.Environment;
 using Nalix.Framework.Injection.DI;
 using SFML.Audio;
 using SFML.Graphics;
@@ -22,19 +22,25 @@ public sealed class AssetManager(System.String rootFolder = null!) : SingletonBa
     /// <summary>
     /// Gets the font loader instance.
     /// </summary>
-    public FontLoader FontManager { get; } = new FontLoader(rootFolder ?? Directories.BaseAssetsDirectory);
+    public FontLoader FontManager { get; } = new FontLoader(rootFolder ?? GraphicsConfig.AssetRoot);
 
     /// <summary>
     /// Gets the texture loader instance.
     /// </summary>
-    public TextureLoader TextureManager { get; } = new TextureLoader(rootFolder ?? Directories.BaseAssetsDirectory);
+    public TextureLoader TextureManager { get; } = new TextureLoader(rootFolder ?? GraphicsConfig.AssetRoot);
 
     /// <summary>
     /// Gets the sound effects loader instance.
     /// </summary>
-    public SoundEffectLoader SoundEffectManager { get; } = new SoundEffectLoader(rootFolder ?? Directories.BaseAssetsDirectory);
+    public SoundEffectLoader SoundEffectManager { get; } = new SoundEffectLoader(rootFolder ?? GraphicsConfig.AssetRoot);
 
     #endregion Properties
+
+    #region Constructors
+
+    public AssetManager() : this(null) { }
+
+    #endregion Constructors
 
     #region Public Methods
 

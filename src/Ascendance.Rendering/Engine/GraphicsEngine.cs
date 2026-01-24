@@ -203,9 +203,9 @@ public static class GraphicsEngine
     {
         FrameUpdate?.Invoke(deltaTime);
 
-        MouseManager.Instance.Update(_window);
-        KeyboardManager.Instance.Update();
         InputTimeline.Instance.Update();
+        KeyboardManager.Instance.Update();
+        MouseManager.Instance.Update(_window);
 
         SceneManager.ProcessSceneChange();
         SceneManager.ProcessPendingDestroy();

@@ -1,5 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Entities;
@@ -8,7 +9,7 @@ namespace Ascendance.Rendering.Entities;
 /// Represents an abstract base class for objects that can be rendered on a target.
 /// Manages visibility, Z-Index ordering, and provides a method for rendering.
 /// </summary>
-public abstract class RenderObject : SceneObject
+public abstract class RenderObject : SceneObject, IRenderable
 {
     #region Fields
 

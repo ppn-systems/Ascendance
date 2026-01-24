@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Input;
 using Nalix.Framework.Injection.DI;
 using SFML.Window;
@@ -8,7 +7,7 @@ using SFML.Window;
 namespace Ascendance.Rendering.Internal.Input;
 
 /// <inheritdoc/>
-public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>, IKeyCharMapper
+public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>
 {
     #region Fields
 

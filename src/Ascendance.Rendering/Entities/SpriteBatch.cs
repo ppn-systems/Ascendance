@@ -1,33 +1,39 @@
-﻿using SFML.Graphics;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Nalix.Framework.Injection.DI;
+using SFML.Graphics;
 using SFML.System;
 
 namespace Ascendance.Rendering.Entities;
 
 /// <summary>
-/// Efficiently draws multiple sprites in a single draw call with support for custom position, scale, rotation, color, and animation frames on a texture atlas.
+/// Efficiently draws multiple sprites in a single draw call with support for custom position, scale, rotation, color, animation frames and extra user data.
+/// Supports singleton instance per T (using SingletonBase).
 /// </summary>
-public class SpriteBatch
+/// <typeparam name="T">
+/// Type of extra metadata stored per batch item, must be a reference type with parameterless constructor.
+/// </typeparam>
+public class SpriteBatch<T> : SingletonBase<SpriteBatch<T>>
+    where T : class, new()
 {
     #region Fields and Structs
 
-    private readonly Texture _texture;
+    private Texture _texture;
     private readonly VertexArray _vertices;
     private readonly System.Collections.Generic.List<BatchItem> _items;
 
     /// <summary>
-    /// Represents a single batched sprite with transform and appearance options.
+    /// Represents a single batched sprite with transform, appearance, and custom data.
     /// </summary>
-    private struct BatchItem(
-        Vector2f pos, IntRect src,
-        Color color, Vector2f scale,
-        System.Single rot, Vector2f origin)
+    private struct BatchItem(Vector2f pos, IntRect src, Color color, Vector2f scale, System.Single rot, Vector2f origin, T extra)
     {
-        public Color Color = color;
-        public Vector2f Scale = scale;
         public Vector2f Position = pos;
         public IntRect SourceRect = src;
-        public Vector2f Origin = origin;
+        public Color Color = color;
+        public Vector2f Scale = scale;
         public System.Single Rotation = rot;
+        public Vector2f Origin = origin;
+        public T Extra = extra; // Custom data
     }
 
     #endregion Fields and Structs
@@ -37,11 +43,9 @@ public class SpriteBatch
     /// <summary>
     /// Initializes a new SpriteBatch for the given texture atlas.
     /// </summary>
-    /// <param name="texture">Texture atlas to be used by the batch.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
-    public SpriteBatch(Texture texture)
+    public SpriteBatch()
     {
-        _texture = texture ?? throw new System.ArgumentNullException(nameof(texture));
         _vertices = new VertexArray(PrimitiveType.Quads);
         _items = new System.Collections.Generic.List<BatchItem>(512);
     }
@@ -60,7 +64,7 @@ public class SpriteBatch
     }
 
     /// <summary>
-    /// Adds a sprite to the batch with full transform and coloring options.
+    /// Adds a sprite to the batch with transform, color, and custom user data.
     /// </summary>
     /// <param name="position">Position of the sprite on screen.</param>
     /// <param name="sourceRect">Rectangle on the texture (animation frame).</param>
@@ -68,13 +72,15 @@ public class SpriteBatch
     /// <param name="scale">Scaling factor. Default (1,1).</param>
     /// <param name="rotation">Rotation angle in degrees. Default 0.</param>
     /// <param name="origin">Origin within the frame for transform center. Default (0,0).</param>
+    /// <param name="extra">Custom per-sprite data (type T). If null, new T() is used.</param>
     public void Add(
         Vector2f position,
         IntRect sourceRect,
         Color? color = null,
         Vector2f? scale = null,
         System.Single rotation = 0f,
-        Vector2f? origin = null)
+        Vector2f? origin = null,
+        T extra = null)
     {
         _items.Add(new BatchItem(
             position,
@@ -82,9 +88,15 @@ public class SpriteBatch
             color ?? Color.White,
             scale ?? new Vector2f(1f, 1f),
             rotation,
-            origin ?? new Vector2f(0f, 0f)
+            origin ?? new Vector2f(0f, 0f),
+            extra ?? new T()
         ));
     }
+
+    /// <summary>
+    /// Sets the texture atlas used for all batched sprites.
+    /// </summary>
+    public void SetTexture(Texture texture) => _texture = texture;
 
     /// <summary>
     /// Draws all batched sprites to the target in a single call.
@@ -122,39 +134,44 @@ public class SpriteBatch
                 item.Color,
                 item.Origin);
 
-            // Calculate corners relative to origin
+            // Calculate corners relative to origin.
             Vector2f size = new(src.Width * s.X, src.Height * s.Y);
 
-            // 4 corners before rotation: TL, TR, BR, BL (origin is custom)
+            // 4 corners: TL, TR, BR, BL (origin is custom)
             Vector2f[] corners =
             [
-                new(-org.X, -org.Y),                    // Top-left
-                new(size.X - org.X, -org.Y),            // Top-right
-                new(size.X - org.X, size.Y - org.Y),    // Bottom-right
-                new(-org.X, size.Y - org.Y)             // Bottom-left
+                new(-org.X, -org.Y),                        // Top-left
+                new(size.X - org.X, -org.Y),                // Top-right
+                new(size.X - org.X, size.Y - org.Y),        // Bottom-right
+                new(-org.X, size.Y - org.Y)                 // Bottom-left
             ];
 
-            System.Single rad = (System.Single)(rot * System.Math.PI / 180.0);
+            System.Single rad = rot * (System.Single)System.Math.PI / 180f;
 
             // Rotate and translate corners
+            if (rot != 0)
+            {
+                System.Single cos = (System.Single)System.Math.Cos(rad);
+                System.Single sin = (System.Single)System.Math.Sin(rad);
+                for (System.Int32 i = 0; i < 4; ++i)
+                {
+                    System.Single x = corners[i].X, y = corners[i].Y;
+                    corners[i].X = (x * cos) - (y * sin);
+                    corners[i].Y = (x * sin) + (y * cos);
+                }
+            }
             for (System.Int32 i = 0; i < 4; ++i)
             {
-                System.Single x = corners[i].X, y = corners[i].Y;
-                if (rot != 0)
-                {
-                    corners[i].X = (x * (System.Single)System.Math.Cos(rad)) - (y * (System.Single)System.Math.Sin(rad));
-                    corners[i].Y = (x * (System.Single)System.Math.Sin(rad)) + (y * (System.Single)System.Math.Cos(rad));
-                }
                 corners[i] += p;
             }
 
             // Texture coordinates
             Vector2f[] texCoords =
             [
-                new(src.Left, src.Top),                                 // TL
-                new(src.Left + src.Width, src.Top),                     // TR
-                new(src.Left + src.Width, src.Top + src.Height),        // BR
-                new(src.Left, src.Top + src.Height)                     // BL
+                new(src.Left, src.Top),                             // TL
+                new(src.Left + src.Width, src.Top),                 // TR
+                new(src.Left + src.Width, src.Top + src.Height),    // BR
+                new(src.Left, src.Top + src.Height)                 // BL
             ];
 
             // Append 4 vertex making a quad

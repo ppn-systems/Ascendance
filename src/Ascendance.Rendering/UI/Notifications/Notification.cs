@@ -158,19 +158,19 @@ public class Notification : RenderObject
     /// Renders the notification panel and message onto the given target.
     /// </summary>
     /// <param name="target">Render target.</param>
-    public void Render(RenderTarget target)
+    public override void Draw(RenderTarget target)
     {
         if (!IsVisible)
         {
             return;
         }
 
-        target.Draw(_panel);
+        _panel.Draw(target);
         target.Draw(_messageText);
     }
 
     /// <summary>
-    /// Not supported for <see cref="Notification"/>. Use <see cref="Render(RenderTarget)"/> instead.
+    /// Not supported for <see cref="Notification"/>. Use <see cref="Draw(RenderTarget)"/> instead.
     /// </summary>
     protected override Drawable GetDrawable() =>
         throw new System.NotSupportedException("Use Render() instead.");

@@ -18,7 +18,7 @@ public class Button : RenderObject, IUpdatable
 {
     #region Constants
 
-    private const System.Single DefaultHeight = 50f;
+    private const System.Single DefaultHeight = 64f;
     private const System.Single DefaultWidth = 100f;
     private const System.UInt32 DefaultFontSize = 20;
     private const System.Single HorizontalPaddingDefault = 16f;
@@ -34,24 +34,26 @@ public class Button : RenderObject, IUpdatable
     private readonly NineSlicePanel _panel;
 
     // States
-    private System.Boolean _isHovered, _isPressed, _wasMousePressed;
+    private System.Boolean _isHovered;
+    private System.Boolean _isPressed;
+    private System.Boolean _wasMousePressed;
     private System.Boolean _keyboardPressed;
     private System.Boolean _isEnabled = true;
 
     // Layout
+    private FloatRect _totalBounds;
     private System.Single _buttonWidth;
+    private Vector2f _position = new(0, 0);
     private System.Single _buttonHeight = DefaultHeight;
     private System.Single _horizontalPadding = HorizontalPaddingDefault;
-    private FloatRect _totalBounds;
-    private Vector2f _position = new(0, 0);
 
     // Color Themes
-    private Color _panelNormal = new(30, 30, 30);
     private Color _panelHover = new(60, 60, 60);
+    private Color _panelNormal = new(30, 30, 30);
     private Color _panelDisabled = new(40, 40, 40, 180);
 
-    private Color _textNormal = new(200, 200, 200);
     private Color _textHover = new(255, 255, 255);
+    private Color _textNormal = new(200, 200, 200);
     private Color _textDisabled = new(160, 160, 160, 200);
 
     private event System.Action OnClick;
@@ -298,22 +300,21 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Renders the button and its label.
     /// </summary>
-    public void Render(RenderTarget target)
+    public override void Draw(RenderTarget target)
     {
         if (!IsVisible)
         {
             return;
         }
 
-        target.Draw(_panel);
+        _panel.Draw(target);
         target.Draw(_label);
     }
 
     /// <summary>
     /// This button does not support GetDrawable (use Render).
     /// </summary>
-    protected override Drawable GetDrawable() =>
-        throw new System.NotSupportedException("Use Render() instead.");
+    protected override Drawable GetDrawable() => throw new System.NotSupportedException("Use Render() instead.");
 
     #endregion
 
@@ -325,26 +326,25 @@ public class Button : RenderObject, IUpdatable
     private void UPDATE_LAYOUT()
     {
         // Ensure enough room for text + padding
-        var tb = _label.GetLocalBounds();
+        FloatRect tb = _label.GetLocalBounds();
+
         System.Single minTextWidth = tb.Width + (_horizontalPadding * 2f);
+        System.Single minWidth = _panel.Border.Left + _panel.Border.Right;
+        System.Single minHeight = _panel.Border.Top + _panel.Border.Bottom;
 
         System.Single totalWidth = System.Math.Max(_buttonWidth, System.Math.Max(DefaultWidth, minTextWidth));
-        System.Single totalHeight = System.Math.Max(_buttonHeight, DefaultHeight);
+        totalWidth = System.Math.Max(totalWidth, minWidth);
 
+        System.Single totalHeight = System.Math.Max(_buttonHeight, DefaultHeight);
+        totalHeight = System.Math.Max(totalHeight, minHeight);
+
+        System.Single x = _position.X + ((totalWidth - tb.Width) * 0.5f) - tb.Left;
+        System.Single y = _position.Y + ((totalHeight - tb.Height) * 0.5f) - tb.Top;
+
+
+        _label.Position = new Vector2f(x, y);
         _panel.SetPosition(_position).SetSize(new Vector2f(totalWidth, totalHeight));
         _totalBounds = new FloatRect(_position.X, _position.Y, totalWidth, totalHeight);
-        CENTER_LABEL(totalWidth, totalHeight);
-    }
-
-    /// <summary>
-    /// Centers the label text within the button area.
-    /// </summary>
-    private void CENTER_LABEL(System.Single totalWidth, System.Single totalHeight)
-    {
-        var tb = _label.GetLocalBounds();
-        System.Single x = _position.X + ((totalWidth - tb.Width) * 0.5f) - tb.Left;
-        System.Single y = _position.Y + ((totalHeight - tb.Height) * 0.5f) - tb.Top + 8f;
-        _label.Position = new Vector2f(x, y);
     }
 
     #endregion Layout
