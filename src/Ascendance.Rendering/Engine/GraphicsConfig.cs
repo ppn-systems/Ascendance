@@ -42,7 +42,7 @@ public sealed class GraphicsConfig : ConfigurationLoader
     public System.UInt32 ScreenHeight { get; init; } = 720;
 
     /// <summary>
-    /// Gets the title of the application. Default value is "Nalix".
+    /// Gets the title of the application. Default value is "Ascendance".
     /// </summary>
     public System.String Title { get; init; } = "Ascendance";
 
