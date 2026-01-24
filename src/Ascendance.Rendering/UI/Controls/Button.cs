@@ -39,6 +39,7 @@ public class Button : RenderObject, IUpdatable
     private System.Boolean _wasMousePressed;
     private System.Boolean _keyboardPressed;
     private System.Boolean _isEnabled = true;
+    private System.Boolean _needsLayout = false;
 
     // Layout
     private FloatRect _totalBounds;
@@ -113,6 +114,7 @@ public class Button : RenderObject, IUpdatable
     {
         _buttonWidth = width;
         _buttonHeight = height;
+        _needsLayout = true;
         UPDATE_LAYOUT();
         return this;
     }
@@ -247,7 +249,13 @@ public class Button : RenderObject, IUpdatable
     /// </summary>
     public override void Update(System.Single dt)
     {
-        if (!IsVisible)
+        if (_needsLayout)
+        {
+            UPDATE_LAYOUT();
+            _needsLayout = false;
+        }
+
+        if (!this.IsVisible)
         {
             return;
         }
@@ -284,7 +292,7 @@ public class Button : RenderObject, IUpdatable
 
         // Keyboard (Enter/Space) when hovered for gamepad/keyboard navigation
         System.Boolean keyDown = KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Enter) ||
-                       KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Space);
+                                 KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Space);
 
         if (_isEnabled && _isHovered)
         {
