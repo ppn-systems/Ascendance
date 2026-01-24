@@ -122,6 +122,7 @@ public static class GraphicsEngine
         Clock clock = InstanceManager.Instance.GetOrCreateInstance<Clock>();
 
         SceneManager.InitializeScenes();
+        System.Threading.Thread.Sleep(20);
 
         try
         {
@@ -143,7 +144,7 @@ public static class GraphicsEngine
                 }
 
                 _window.Clear();
-                DRAW(_window);
+                GraphicsEngine.DRAW(_window);
                 _window.Display();
 
                 if (!_isFocused)
