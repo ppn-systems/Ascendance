@@ -15,6 +15,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Content Include="..\..\res\**\*.*">
+			<Link>res\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Nalix.Logging" Version="9.9.0" />
 		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
 		<ProjectReference Include="..\Ascendance.Physics\Ascendance.Physics.csproj" />

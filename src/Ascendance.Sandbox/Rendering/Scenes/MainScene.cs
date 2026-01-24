@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Attributes;
+using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
+using Ascendance.Rendering.UI.Controls;
 using Ascendance.Rendering.UI.Indicators;
+using SFML.Graphics;
 
 namespace Ascendance.Sandbox.Rendering.Scenes;
 
@@ -20,9 +23,10 @@ internal sealed class MainScene : BaseScene
 
     protected override void LoadObjects()
     {
-        base.AddObject(_overlay);
-        //System.Console.WriteLine("Đã Add DummyRect vào scene!");
-        //AssetManager.Instance.LoadTexture(GraphicsConfig.AssetRoot + "");//Button button = new("OK", );
-        _overlay.Show();
+        Texture texture = AssetManager.Instance.LoadTexture("res/texture/panels/000.png");
+        Font font = AssetManager.Instance.LoadFont("res/fonts/1.ttf");
+        Button button = new("OK", texture, font);
+        button.SetPosition(new(20, 20));
+        base.AddObject(button);
     }
 }
