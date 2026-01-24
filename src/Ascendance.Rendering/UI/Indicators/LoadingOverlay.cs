@@ -32,13 +32,16 @@ public sealed class LoadingOverlay : RenderObject
     {
         _overlayRect = new RectangleShape(new Vector2f(GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y))
         {
-            FillColor = new Color(255, 0, 0, DefaultOverlayAlpha), // Black, alpha 160
+            FillColor = new Color(0, 0, 0, DefaultOverlayAlpha), // Black, alpha 160
             Position = default
         };
-        _spinner = new Spinner(new Vector2f(GraphicsEngine.ScreenSize.X / 2f, GraphicsEngine.ScreenSize.Y / 2f));
-        _spinner.SetRotationSpeed(180f).SetZIndex(System.Int32.MaxValue - 1); // 180 degrees per second
 
-        SetZIndex(System.Int32.MaxValue - 2);
+
+        base.SetZIndex(System.Int32.MaxValue - 2);
+
+        _spinner = new Spinner(new Vector2f(GraphicsEngine.ScreenSize.X / 2f, GraphicsEngine.ScreenSize.Y / 2f));
+        _spinner.SetRotationSpeed(180f)
+                .SetZIndex(System.Int32.MaxValue - 1); // 180 degrees per second
     }
 
     #endregion
@@ -73,7 +76,7 @@ public sealed class LoadingOverlay : RenderObject
 
     public override void Draw(RenderTarget target)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }

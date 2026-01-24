@@ -18,6 +18,5 @@ internal sealed class MainScene : BaseScene
         _overlay.Show();
     }
 
-
     protected override void LoadObjects() => base.AddObject(_overlay);//AssetManager.Instance.LoadTexture(GraphicsConfig.AssetRoot + "");//Button button = new("OK", );
 }

@@ -154,6 +154,7 @@ public sealed class Spinner : RenderObject, IUpdatable
                 Origin = new Vector2f(SegmentThickness * scale / 2f, SegmentThickness * scale / 2f),
                 FillColor = new Color(_spinnerColor.R, _spinnerColor.G, _spinnerColor.B, segmentAlpha)
             };
+
             target.Draw(segCircle);
         }
     }

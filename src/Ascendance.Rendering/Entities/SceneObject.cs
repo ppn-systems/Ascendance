@@ -22,17 +22,17 @@ public abstract class SceneObject : IUpdatable
     /// <summary>
     /// Indicates whether the object is paused.
     /// </summary>
-    public System.Boolean IsPaused { get; set; }
+    public System.Boolean IsPaused { get; set; } = false;
 
     /// <summary>
     /// Indicates whether the object is enabled and active.
     /// </summary>
-    public System.Boolean IsEnabled { get; set; }
+    public System.Boolean IsEnabled { get; set; } = false;
 
     /// <summary>
     /// Indicates whether the object has been initialized.
     /// </summary>
-    public System.Boolean IsInitialized { get; private set; }
+    public System.Boolean IsInitialized { get; private set; } = false;
 
     /// <summary>
     /// Determines whether the object persists on a scene change. Default is false.
