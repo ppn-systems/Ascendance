@@ -58,7 +58,7 @@ public sealed class LoadingOverlay : RenderObject
         return this;
     }
 
-    #endregion
+    #endregion Public API
 
     #region Main Loop
 

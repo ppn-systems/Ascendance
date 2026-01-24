@@ -22,10 +22,6 @@ namespace Ascendance.Rendering.UI.Controls;
 /// - Text scrolls to ensure the caret (at end) is always visible inside the box width.<br/>
 /// - Rendering order: panel → text → caret (if focused &amp; visible).<br/>
 /// </para>
-/// <para>
-/// Ô nhập 1 dòng: click để focus, caret nhấp nháy, hỗ trợ gõ cơ bản, giữ Backspace/Delete để xóa nhanh,
-/// và auto cuộn để luôn thấy caret ở cuối.
-/// </para>
 /// </remarks>
 public class TextInputField : RenderObject
 {
@@ -91,20 +87,24 @@ public class TextInputField : RenderObject
     /// </summary>
     public ITextValidationRule ValidationRule { get; set; }
 
-    /// <summary>Gets or sets the current text content.</summary>
+    /// <summary>
+    /// Gets or sets the current text content.
+    /// </summary>
     public System.String Text
     {
         get => _buffer.ToString();
         set
         {
             _ = _buffer.Clear().Append(value ?? System.String.Empty);
-            ClampToMaxLength();
-            ResetScrollAndCaret();
-            TextChanged?.Invoke(_buffer.ToString());
+            this.CLAMP_TO_MAX_LENGTH();
+            this.RESET_SCROLL_AND_CARET();
+            this.TextChanged?.Invoke(_buffer.ToString());
         }
     }
 
-    /// <summary>Gets or sets whether the field is focused.</summary>
+    /// <summary>
+    /// Gets or sets whether the field is focused.
+    /// </summary>
     public System.Boolean Focused
     {
         get => _focused;
@@ -116,52 +116,60 @@ public class TextInputField : RenderObject
         }
     }
 
-    /// <summary>Text position is derived from panel position + padding.</summary>
+    /// <summary>
+    /// Text position is derived from panel position + padding.
+    /// </summary>
     public Vector2f Position
     {
         get => _panel.Position;
         set
         {
             _ = _panel.SetPosition(value);
-            RelayoutText();
-            UpdateHitBox();
-            UPDATE_CARET_IMMEDIATE();
+            this.RELAYOUT_TEXT();
+            this.UPDATE_HIT_BOX();
+            this.UPDATE_CARET_IMMEDIATE();
         }
     }
 
-    /// <summary>Panel size; text area is inner size minus padding.</summary>
+    /// <summary>
+    /// Panel size; text area is inner size minus padding.
+    /// </summary>
     public Vector2f Size
     {
         get => _panel.Size;
         set
         {
-            _ = _panel.SetSize(EnsureMinSize(value, _panel.Border));
-            RelayoutText();
-            UpdateHitBox();
-            ResetScrollAndCaret();
+            _ = _panel.SetSize(ENSURE_MIN_SIZE(value, _panel.Border));
+            this.RELAYOUT_TEXT();
+            this.UPDATE_HIT_BOX();
+            this.RESET_SCROLL_AND_CARET();
         }
     }
 
-    /// <summary>Padding (x,y) inside the panel.</summary>
+    /// <summary>
+    /// Padding (x,y) inside the panel.
+    /// </summary>
     public Vector2f Padding
     {
         get => _padding;
         set
         {
             _padding = value;
-            RelayoutText();
-            ResetScrollAndCaret();
+            this.RELAYOUT_TEXT();
+            this.RESET_SCROLL_AND_CARET();
         }
     }
 
-    /// <summary>Width of the caret in pixels.</summary>
+    /// <summary>
+    /// Width of the caret in pixels.
+    /// </summary>
     public System.Single CaretWidth
     {
         get => _caretWidth;
         set
         {
             _caretWidth = System.MathF.Max(0.5f, value);
-            UPDATE_CARET_IMMEDIATE();
+            this.UPDATE_CARET_IMMEDIATE();
         }
     }
 
@@ -179,16 +187,13 @@ public class TextInputField : RenderObject
     /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
-    public TextInputField(
-        Texture panelTexture, Thickness border, IntRect sourceRect,
-        Font font, System.UInt32 fontSize,
-        Vector2f size, Vector2f position)
+    public TextInputField(Texture panelTexture, Thickness border, IntRect sourceRect, Font font, System.UInt32 fontSize, Vector2f size, Vector2f position)
     {
         _caretWidth = 1f;
         _fontSize = fontSize;
         _padding = new(DefaultPaddingX, DefaultPaddingY);
         _panel = new NineSlicePanel(panelTexture, border, sourceRect);
-        _ = _panel.SetPosition(position).SetSize(EnsureMinSize(size, border));
+        _ = _panel.SetPosition(position).SetSize(ENSURE_MIN_SIZE(size, border));
 
         // (VN) _measure chỉ dùng đo kích thước/khoảng cách glyph → tránh xê dịch do bearings
         _measure = new Text(System.String.Empty, font, _fontSize)
@@ -201,7 +206,7 @@ public class TextInputField : RenderObject
             FillColor = new Color(30, 30, 30)
         };
 
-        RelayoutText();
+        this.RELAYOUT_TEXT();
 
         _caret = new RectangleShape(new Vector2f(_caretWidth, _fontSize))
         {
@@ -210,12 +215,25 @@ public class TextInputField : RenderObject
 
         this.ValidationRule = new UsernameValidationRule();
 
-        UpdateHitBox();
-        UPDATE_CARET_IMMEDIATE();
+        this.UPDATE_HIT_BOX();
+        this.UPDATE_CARET_IMMEDIATE();
 
         // (VN) Cho UI nổi lên một chút; tùy engine của bạn
-        SetZIndex(800);
+        base.SetZIndex(800);
     }
+
+    /// <summary>
+    /// Creates a new <see cref="TextInputField"/>.
+    /// </summary>
+    /// <param name="panelTexture">9-slice texture.</param>
+    /// <param name="sourceRect">Texture rect.</param>
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
+    /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
+    /// <param name="position">Top-left position.</param>
+    public TextInputField(Texture panelTexture, IntRect sourceRect, Font font, System.UInt32 fontSize, Vector2f size, Vector2f position)
+        : this(panelTexture, new Thickness(32), sourceRect, font, fontSize, size, position)
+    { }
 
     #endregion Construction
 
@@ -241,12 +259,12 @@ public class TextInputField : RenderObject
                 _caretTimer = 0f;
             }
 
-            HANDLE_KEY_INPUT(dt);
+            this.HANDLE_KEY_INPUT(dt);
         }
 
         // Cập nhật phần text hiển thị (scroll cửa sổ nhìn)
-        UPDATE_VISIBLE_TEXT();
-        UPDATE_CARET_IMMEDIATE();
+        this.UPDATE_VISIBLE_TEXT();
+        this.UPDATE_CARET_IMMEDIATE();
     }
 
     /// <inheritdoc/>
@@ -324,7 +342,7 @@ public class TextInputField : RenderObject
         System.Boolean bsDown = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Backspace);
         if (bsDown && !_prevBackspace)
         {
-            RemoveLastChar();
+            this.REMOVE_LAST_CHAR();
             _repeatBackspace = true;
             _repeatTimer = KeyRepeatFirstDelay;
         }
@@ -333,7 +351,7 @@ public class TextInputField : RenderObject
             _repeatTimer -= dt;
             if (_repeatTimer <= 0f)
             {
-                RemoveLastChar();
+                this.REMOVE_LAST_CHAR();
                 _repeatTimer = KeyRepeatNextDelay;
             }
         }
@@ -348,7 +366,7 @@ public class TextInputField : RenderObject
         if (delDown && !_prevDelete)
         {
             // caret is always at the end => treat Delete same as Backspace
-            RemoveLastChar();
+            this.REMOVE_LAST_CHAR();
             _repeatDelete = true;
             _repeatTimer = KeyRepeatFirstDelay;
         }
@@ -357,7 +375,7 @@ public class TextInputField : RenderObject
             _repeatTimer -= dt;
             if (_repeatTimer <= 0f)
             {
-                RemoveLastChar();
+                this.REMOVE_LAST_CHAR();
                 _repeatTimer = KeyRepeatNextDelay;
             }
         }
@@ -404,7 +422,7 @@ public class TextInputField : RenderObject
         {
             _scrollStart = 0;
             _text.DisplayedString = System.String.Empty;
-            ApplyTextPosition();
+            this.APPLY_TEXT_POSITION();
             return;
         }
 
@@ -413,7 +431,7 @@ public class TextInputField : RenderObject
         {
             _scrollStart = 0;
             _text.DisplayedString = full;
-            ApplyTextPosition();
+            this.APPLY_TEXT_POSITION();
             return;
         }
 
@@ -430,7 +448,7 @@ public class TextInputField : RenderObject
         }
 
         _text.DisplayedString = full[_scrollStart..];
-        ApplyTextPosition();
+        this.APPLY_TEXT_POSITION();
     }
 
     /// <summary>
@@ -448,7 +466,7 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>Remove one char at end, if any; raises <see cref="TextChanged"/>.</summary>
-    private void RemoveLastChar()
+    private void REMOVE_LAST_CHAR()
     {
         if (_buffer.Length == 0)
         {
@@ -460,7 +478,7 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>Clamp current text to <see cref="MaxLength"/> if needed.</summary>
-    private void ClampToMaxLength()
+    private void CLAMP_TO_MAX_LENGTH()
     {
         if (MaxLength.HasValue && _buffer.Length > MaxLength.Value)
         {
@@ -469,7 +487,7 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>Recompute hit-box based on panel position &amp; size.</summary>
-    private void UpdateHitBox()
+    private void UPDATE_HIT_BOX()
     {
         var s = _panel.Size;
         var p = _panel.Position;
@@ -477,7 +495,7 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>Ensure panel size never violates border minimums.</summary>
-    private static Vector2f EnsureMinSize(Vector2f size, Thickness b)
+    private static Vector2f ENSURE_MIN_SIZE(Vector2f size, Thickness b)
     {
         System.Single minW = b.Left + b.Right + 1f;
         System.Single minH = b.Top + b.Bottom + 1f;
@@ -485,9 +503,9 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>Reposition both measure/draw texts from panel position and padding.</summary>
-    private void RelayoutText() => ApplyTextPosition();
+    private void RELAYOUT_TEXT() => this.APPLY_TEXT_POSITION();
 
-    private void ApplyTextPosition()
+    private void APPLY_TEXT_POSITION()
     {
         System.Single textY = _panel.Position.Y + ((_panel.Size.Y - _fontSize) / 2f) - 2f;
         System.Single textX = _panel.Position.X + _padding.X;
@@ -497,13 +515,13 @@ public class TextInputField : RenderObject
     }
 
     /// <summary>Reset scrolling window and caret visibility after large layout changes.</summary>
-    private void ResetScrollAndCaret()
+    private void RESET_SCROLL_AND_CARET()
     {
         _scrollStart = 0;
         _caretVisible = true;
         _caretTimer = 0f;
-        UPDATE_VISIBLE_TEXT();
-        UPDATE_CARET_IMMEDIATE();
+        this.UPDATE_VISIBLE_TEXT();
+        this.UPDATE_CARET_IMMEDIATE();
     }
 
     #endregion Private Methods

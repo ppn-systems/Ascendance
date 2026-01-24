@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Sandbox.Rendering.Scenes;
+namespace Ascendance.Sandbox;
 
 /// <summary>
 /// Chứa tên của các cảnh (scene) trong trò chơi để dễ dàng quản lý.
 /// </summary>
-internal static class SceneNames
+public static class SceneConstants
 {
     /// <summary>
     /// Cảnh chính của trò chơi (menu hoặc màn chơi chính).

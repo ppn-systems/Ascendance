@@ -3,6 +3,7 @@
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Layout;
+using Ascendance.Rendering.UI.Theme;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
@@ -48,15 +49,6 @@ public class Button : RenderObject, IUpdatable
     private System.Single _buttonHeight = DefaultHeight;
     private System.Single _horizontalPadding = HorizontalPaddingDefault;
 
-    // Color Themes
-    private Color _panelHover = new(60, 60, 60);
-    private Color _panelNormal = new(30, 30, 30);
-    private Color _panelDisabled = new(40, 40, 40, 180);
-
-    private Color _textHover = new(255, 255, 255);
-    private Color _textNormal = new(200, 200, 200);
-    private Color _textDisabled = new(160, 160, 160, 200);
-
     private event System.Action OnClick;
 
     #endregion Fields
@@ -79,8 +71,8 @@ public class Button : RenderObject, IUpdatable
         _label = new Text(text, font, DefaultFontSize) { FillColor = Color.Black };
         _panel = new NineSlicePanel(texture, DefaultSlice, sourceRect == default ? DefaultSrc : sourceRect);
 
-        UPDATE_LAYOUT();
-        APPLY_TINT();
+        this.UPDATE_LAYOUT();
+        this.APPLY_TINT();
     }
 
     #endregion Constructor
@@ -93,7 +85,7 @@ public class Button : RenderObject, IUpdatable
     public Button SetWidth(System.Single width)
     {
         _buttonWidth = width;
-        UPDATE_LAYOUT();
+        this.UPDATE_LAYOUT();
         return this;
     }
 
@@ -103,7 +95,7 @@ public class Button : RenderObject, IUpdatable
     public Button SetHeight(System.Single height)
     {
         _buttonHeight = height;
-        UPDATE_LAYOUT();
+        this.UPDATE_LAYOUT();
         return this;
     }
 
@@ -115,7 +107,7 @@ public class Button : RenderObject, IUpdatable
         _buttonWidth = width;
         _buttonHeight = height;
         _needsLayout = true;
-        UPDATE_LAYOUT();
+        this.UPDATE_LAYOUT();
         return this;
     }
 
@@ -125,7 +117,7 @@ public class Button : RenderObject, IUpdatable
     public Button SetText(System.String text)
     {
         _label.DisplayedString = text;
-        UPDATE_LAYOUT();
+        this.UPDATE_LAYOUT();
         return this;
     }
 
@@ -135,7 +127,7 @@ public class Button : RenderObject, IUpdatable
     public Button SetFontSize(System.UInt32 size)
     {
         _label.CharacterSize = size;
-        UPDATE_LAYOUT();
+        this.UPDATE_LAYOUT();
         return this;
     }
 
@@ -145,7 +137,7 @@ public class Button : RenderObject, IUpdatable
     public Button SetPadding(System.Single horizontalPadding)
     {
         _horizontalPadding = System.MathF.Max(0f, horizontalPadding);
-        UPDATE_LAYOUT();
+        this.UPDATE_LAYOUT();
         return this;
     }
 
@@ -155,7 +147,7 @@ public class Button : RenderObject, IUpdatable
     public void SetPosition(Vector2f position)
     {
         _position = position;
-        UPDATE_LAYOUT();
+        this.UPDATE_LAYOUT();
     }
 
     /// <summary>
@@ -165,20 +157,20 @@ public class Button : RenderObject, IUpdatable
     {
         if (panelNormal.HasValue)
         {
-            _panelNormal = panelNormal.Value;
+            Themes.PanelTheme.Disabled = panelNormal.Value;
         }
 
         if (panelHover.HasValue)
         {
-            _panelHover = panelHover.Value;
+            Themes.PanelTheme.Disabled = panelHover.Value;
         }
 
         if (panelDisabled.HasValue)
         {
-            _panelDisabled = panelDisabled.Value;
+            Themes.PanelTheme.Disabled = panelDisabled.Value;
         }
 
-        APPLY_TINT();
+        this.APPLY_TINT();
         return this;
     }
 
@@ -189,20 +181,20 @@ public class Button : RenderObject, IUpdatable
     {
         if (textNormal.HasValue)
         {
-            _textNormal = textNormal.Value;
+            Themes.TextTheme.Normal = textNormal.Value;
         }
 
         if (textHover.HasValue)
         {
-            _textHover = textHover.Value;
+            Themes.TextTheme.Hover = textHover.Value;
         }
 
         if (textDisabled.HasValue)
         {
-            _textDisabled = textDisabled.Value;
+            Themes.TextTheme.Disabled = textDisabled.Value;
         }
 
-        APPLY_TINT();
+        this.APPLY_TINT();
         return this;
     }
 
@@ -212,7 +204,7 @@ public class Button : RenderObject, IUpdatable
     public Button SetEnabled(System.Boolean enabled)
     {
         _isEnabled = enabled;
-        APPLY_TINT();
+        this.APPLY_TINT();
         return this;
     }
 
@@ -251,7 +243,7 @@ public class Button : RenderObject, IUpdatable
     {
         if (_needsLayout)
         {
-            UPDATE_LAYOUT();
+            this.UPDATE_LAYOUT();
             _needsLayout = false;
         }
 
@@ -268,7 +260,7 @@ public class Button : RenderObject, IUpdatable
         if (_isHovered != (isOver && _isEnabled))
         {
             _isHovered = isOver && _isEnabled;
-            APPLY_TINT();
+            this.APPLY_TINT();
         }
 
         // Mouse click logic
@@ -280,7 +272,7 @@ public class Button : RenderObject, IUpdatable
             }
             else if (_isPressed && !isDown && isOver)
             {
-                FIRE_CLICK();
+                this.FIRE_CLICK();
                 _isPressed = false;
             }
             else if (!isDown)
@@ -296,8 +288,14 @@ public class Button : RenderObject, IUpdatable
 
         if (_isEnabled && _isHovered)
         {
-            if (keyDown && !_keyboardPressed) { _keyboardPressed = true; }
-            else if (!keyDown && _keyboardPressed) { _keyboardPressed = false; FIRE_CLICK(); }
+            if (keyDown && !_keyboardPressed)
+            {
+                _keyboardPressed = true;
+            }
+            else if (!keyDown && _keyboardPressed)
+            {
+                _keyboardPressed = false; this.FIRE_CLICK();
+            }
         }
         else
         {
@@ -366,18 +364,20 @@ public class Button : RenderObject, IUpdatable
     {
         if (!_isEnabled)
         {
-            _panel.SetTintColor(_panelDisabled);
-            _label.FillColor = _textDisabled;
+            _label.FillColor = Themes.TextTheme.Disabled;
+            _panel.SetTintColor(Themes.PanelTheme.Disabled);
+
             return;
         }
-        _panel.SetTintColor(_isHovered ? _panelHover : _panelNormal);
-        _label.FillColor = _isHovered ? _textHover : _textNormal;
+
+        _label.FillColor = _isHovered ? Themes.TextTheme.Hover : Themes.TextTheme.Normal;
+        _panel.SetTintColor(_isHovered ? Themes.PanelTheme.Hover : Themes.PanelTheme.Normal);
     }
 
     /// <summary>
     /// Triggers registered click callbacks.
     /// </summary>
-    private void FIRE_CLICK() => OnClick?.Invoke();
+    private void FIRE_CLICK() => this.OnClick?.Invoke();
 
     #endregion Visual Helpers
 }

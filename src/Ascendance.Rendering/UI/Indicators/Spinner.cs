@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.UI.Theme;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
@@ -40,7 +41,6 @@ public sealed class Spinner : RenderObject, IUpdatable
     private System.Byte _alpha = 255;
     private System.Single _baseScale = 1.0f;
     private System.Single _currentAngle = 0f;
-    private Color _spinnerColor = new(255, 255, 255);
     private System.Single _oscillationAmplitude = 0.06f;
     private System.Single _rotationDegreesPerSecond = 150f;
 
@@ -58,16 +58,6 @@ public sealed class Spinner : RenderObject, IUpdatable
     #endregion Constructor
 
     #region API
-
-    /// <summary>
-    /// Sets the color for the spinner segments.
-    /// </summary>
-    /// <param name="color">Segment color (alpha channel is managed internally).</param>
-    public Spinner SetSpinnerColor(Color color)
-    {
-        _spinnerColor = new Color(color.R, color.G, color.B, _alpha);
-        return this;
-    }
 
     /// <summary>
     /// Sets the alpha (opacity) for the whole spinner.
@@ -152,7 +142,7 @@ public sealed class Spinner : RenderObject, IUpdatable
             {
                 Position = new Vector2f(x, y),
                 Origin = new Vector2f(SegmentThickness * scale / 2f, SegmentThickness * scale / 2f),
-                FillColor = new Color(_spinnerColor.R, _spinnerColor.G, _spinnerColor.B, segmentAlpha)
+                FillColor = new Color(Themes.SpinnerColor.R, Themes.SpinnerColor.G, Themes.SpinnerColor.B, segmentAlpha)
             };
 
             target.Draw(segCircle);
