@@ -46,17 +46,17 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// </summary>
     private static readonly Vector2f ScrollDirection = new(-1f, 0f);
 
-    #endregion
+    #endregion Constants
 
     #region Fields
 
     private readonly Text _text;
-    private readonly System.Single _speedPxPerSec;
     private readonly RectangleShape _background;
+    private readonly System.Single _speedPxPerSec;
 
     private System.Single _textWidthPx;
 
-    #endregion
+    #endregion Fields
 
     #region Constructors
 
@@ -64,23 +64,19 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// Initializes a new instance of the <see cref="ScrollingBanner"/> class with the specified message and scrolling speed.
     /// </summary>
     /// <param name="message">The message to display in the banner.</param>
-    /// <param name="zIndex">The Z-index of this banner.</param>
     /// <param name="font">The font to use for the message text.</param>
     /// <param name="speedPxPerSec">Scrolling speed in pixels per second. Default is 100.</param>
-    public ScrollingBanner(System.String message, System.Int32 zIndex, Font font, System.Single speedPxPerSec = 100f)
+    public ScrollingBanner(System.String message, Font font, System.Single speedPxPerSec = 100f)
     {
-        SetZIndex(zIndex);
-        Show();
-
         _speedPxPerSec = speedPxPerSec;
-
         _background = CREATE_BACKGROUND();
         _text = CREATE_TEXT(message, font);
 
-        SetMessage(message);
+        base.Show();
+        this.SetMessage(message);
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Public Methods
 
@@ -92,7 +88,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     {
         _text.DisplayedString = message;
         _textWidthPx = _text.GetGlobalBounds().Width;
-        RESET_TEXT_POSITION();
+        this.RESET_TEXT_POSITION();
     }
 
     /// <summary>
@@ -110,7 +106,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
         target.Draw(_text);
     }
 
-    #endregion
+    #endregion Public Methods
 
     #region Overrides
 
@@ -122,7 +118,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
             return;
         }
 
-        MOVE_TEXT(deltaTime);
+        this.MOVE_TEXT(deltaTime);
 
         if (_text.Position.X + _textWidthPx < 0)
         {
@@ -137,7 +133,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     protected override Drawable GetDrawable() =>
         throw new System.NotSupportedException("Please use Render() instead of GetDrawable().");
 
-    #endregion
+    #endregion Overrides
 
     #region Private Helpers
 
@@ -180,5 +176,5 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// <param name="deltaTime">Elapsed time (in seconds) since last update.</param>
     private void MOVE_TEXT(System.Single deltaTime) => _text.Position += ScrollDirection * (_speedPxPerSec * deltaTime);
 
-    #endregion
+    #endregion Private Helpers
 }

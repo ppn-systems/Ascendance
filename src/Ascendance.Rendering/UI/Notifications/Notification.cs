@@ -19,17 +19,17 @@ public class Notification : RenderObject
     /// <summary>
     /// Default character size for notification text (in pixels).
     /// </summary>
-    protected const System.Single TextCharSizePx = 20f;
+    private const System.Single TextCharSizePx = 20f;
 
     /// <summary>
     /// Horizontal padding (in pixels) inside the panel.
     /// </summary>
-    protected const System.Single HorizontalPaddingPx = 12f;
+    private const System.Single HorizontalPaddingPx = 12f;
 
     /// <summary>
     /// Vertical padding (in pixels) inside the panel.
     /// </summary>
-    protected const System.Single VerticalPaddingPx = 30f;
+    private const System.Single VerticalPaddingPx = 30f;
 
     /// <summary>
     /// Relative Y position when anchored to top of the screen.
@@ -66,31 +66,28 @@ public class Notification : RenderObject
     /// </summary>
     private const System.Single MinInnerWidthPx = 50f;
 
-    #endregion
+    #endregion Constants
 
     #region Fields
 
-    /// <summary>
-    /// SFML Text object for displaying the notification message.
-    /// </summary>
-    protected readonly Text _messageText;
+    private Vector2f _textAnchor;
+    private readonly Thickness _border = new(32);
+
+    #endregion Fields
+
+    #region Properties
 
     /// <summary>
-    /// 9-Slice panel object for notification background.
+    /// Message text object.
     /// </summary>
-    protected readonly NineSlicePanel _panel;
+    protected readonly Text MessageText;
 
     /// <summary>
-    /// Panel border thickness.
+    /// Panel background object.
     /// </summary>
-    protected readonly Thickness _border = new(32);
+    protected readonly NineSlicePanel Panel;
 
-    /// <summary>
-    /// Anchor position to center the text within the panel.
-    /// </summary>
-    protected Vector2f _textAnchor;
-
-    #endregion
+    #endregion Properties
 
     #region Constructors
 
@@ -99,26 +96,25 @@ public class Notification : RenderObject
     /// </summary>
     /// <param name="initialMessage">Initial message to display.</param>
     /// <param name="side">Which side of the screen to display (Top or Bottom).</param>
-    public Notification(Font font, Texture frameTexture, System.Int32 zIndex, System.String initialMessage = "", Direction2D side = Direction2D.Up)
+    public Notification(Font font, Texture frameTexture, System.String initialMessage = "", Direction2D side = Direction2D.Up)
     {
         COMPUTE_LAYOUT(side, out System.Single panelY, out System.Single panelWidth, out System.Single panelX);
 
-        _panel = CREATE_PANEL(frameTexture, panelX, panelY, panelWidth);
+        Panel = this.CREATE_PANEL(frameTexture, panelX, panelY, panelWidth);
 
         System.Single innerWidth = COMPUTE_INNER_WIDTH(panelWidth);
-        _messageText = PREPARE_WRAPPED_TEXT(font, initialMessage, (System.UInt32)TextCharSizePx, innerWidth);
+        MessageText = PREPARE_WRAPPED_TEXT(font, initialMessage, (System.UInt32)TextCharSizePx, innerWidth);
 
-        System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(_messageText);
+        System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(MessageText);
         System.Single panelHeight = COMPUTE_TARGET_HEIGHT(textHeight);
 
-        _panel.SetSize(new Vector2f(panelWidth, panelHeight));
-        POSITION_TEXT_INSIDE_PANEL(_panel, textHeight, out _textAnchor);
+        Panel.SetSize(new Vector2f(panelWidth, panelHeight));
+        this.POSITION_TEXT_INSIDE_PANEL(Panel, textHeight, out _textAnchor);
 
         base.Show();
-        base.SetZIndex(zIndex);
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Public API
 
@@ -128,18 +124,15 @@ public class Notification : RenderObject
     /// <param name="newMessage">New message to display.</param>
     public virtual void UpdateMessage(System.String newMessage)
     {
-        System.Single innerWidth = COMPUTE_INNER_WIDTH(_panel.Size.X);
-
-        System.String wrapped = WrapText(_messageText.Font, newMessage, _messageText.CharacterSize, innerWidth);
-        _messageText.DisplayedString = wrapped;
+        MessageText.DisplayedString = WrapText(MessageText.Font, newMessage, MessageText.CharacterSize, COMPUTE_INNER_WIDTH(Panel.Size.X));
 
         // Re-center origin but preserve anchor position
-        var bounds = _messageText.GetLocalBounds();
-        _messageText.Origin = new Vector2f(bounds.Left + (bounds.Width / 2f), bounds.Top + (bounds.Height / 2f));
-        _messageText.Position = _textAnchor;
+        FloatRect bounds = MessageText.GetLocalBounds();
+        MessageText.Position = _textAnchor;
+        MessageText.Origin = new Vector2f(bounds.Left + (bounds.Width / 2f), bounds.Top + (bounds.Height / 2f));
     }
 
-    #endregion
+    #endregion Public API
 
     #region Overrides
 
@@ -165,8 +158,8 @@ public class Notification : RenderObject
             return;
         }
 
-        _panel.Draw(target);
-        target.Draw(_messageText);
+        Panel.Draw(target);
+        target.Draw(MessageText);
     }
 
     /// <summary>
@@ -175,7 +168,7 @@ public class Notification : RenderObject
     protected override Drawable GetDrawable() =>
         throw new System.NotSupportedException("Use Render() instead.");
 
-    #endregion
+    #endregion Overrides
 
     #region Layout Construction
 
@@ -262,7 +255,7 @@ public class Notification : RenderObject
     }
 
     /// <summary>
-    /// Positions the <see cref="_messageText"/> centered within the inner panel bounds and computes anchor position.
+    /// Positions the <see cref="MessageText"/> centered within the inner panel bounds and computes anchor position.
     /// </summary>
     /// <param name="panel">Panel object.</param>
     /// <param name="textHeight">Measured text height.</param>
@@ -274,11 +267,11 @@ public class Notification : RenderObject
         System.Single innerCenterX = (innerLeft + innerRight) / 2f;
         System.Single innerTop = panel.Position.Y + _border.Top + VerticalPaddingPx;
 
-        _messageText.Position = new Vector2f(innerCenterX, innerTop + (textHeight * 0.5f));
-        anchorOut = _messageText.Position;
+        MessageText.Position = new Vector2f(innerCenterX, innerTop + (textHeight * 0.5f));
+        anchorOut = MessageText.Position;
     }
 
-    #endregion
+    #endregion Layout Construction
 
     #region Helpers
 
@@ -349,5 +342,5 @@ public class Notification : RenderObject
             LerpComponent(a.A, b.A));
     }
 
-    #endregion
+    #endregion Helpers
 }

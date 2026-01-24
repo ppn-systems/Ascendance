@@ -50,16 +50,16 @@ public class RollingBanner : RenderObject
     /// </summary>
     private static readonly Vector2f ScrollDirection = new(-1f, 0f);
 
-    #endregion
+    #endregion Constants
 
     #region Fields
 
-    private readonly System.Collections.Generic.List<Text> _texts = [];
-    private readonly System.Single _speedPxPerSec;
-    private readonly RectangleShape _background;
     private readonly Font _font;
+    private readonly RectangleShape _background;
+    private readonly System.Single _speedPxPerSec;
+    private readonly System.Collections.Generic.List<Text> _texts = [];
 
-    #endregion
+    #endregion Fields
 
     #region Constructors
 
@@ -80,7 +80,7 @@ public class RollingBanner : RenderObject
         this.INITIALIZE_TEXTS(messages);
     }
 
-    #endregion
+    #endregion Constructors
 
     #region Public API
 
@@ -94,7 +94,7 @@ public class RollingBanner : RenderObject
         this.INITIALIZE_TEXTS(messages);
     }
 
-    #endregion
+    #endregion Public API
 
     #region Overrides
 
@@ -148,7 +148,7 @@ public class RollingBanner : RenderObject
     protected override Drawable GetDrawable() =>
         throw new System.NotSupportedException("Please use Render() instead of GetDrawable().");
 
-    #endregion
+    #endregion Overrides
 
     #region Private Helpers
 
@@ -211,5 +211,5 @@ public class RollingBanner : RenderObject
         }
     }
 
-    #endregion
+    #endregion Private Helpers
 }

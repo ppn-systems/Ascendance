@@ -40,7 +40,7 @@ public sealed class ButtonNotification : Notification
     /// </summary>
     private const System.Single DefaultButtonHeight = 36f;
 
-    #endregion
+    #endregion Fields
 
     #region Properties
 
@@ -63,18 +63,16 @@ public sealed class ButtonNotification : Notification
     /// </summary>
     /// <param name="font">Font for notification and button text.</param>
     /// <param name="buttonTexture">Texture for button panel.</param>
-    /// <param name="zIndex">Z-layer index.</param>
     /// <param name="initialMessage">Initial notification message.</param>
     /// <param name="side">Side of the screen to display notification.</param>
     /// <param name="buttonText">Label of action button.</param>
     public ButtonNotification(
         Font font,
         Texture buttonTexture,
-        System.Int32 zIndex,
         System.String initialMessage = "",
         Direction2D side = Direction2D.Down,
         System.String buttonText = "OK")
-        : base(font, buttonTexture, zIndex, initialMessage, side)
+        : base(font, buttonTexture, initialMessage, side)
     {
         // Tạo button, có thể chỉnh pad, màu tuỳ ý qua các hàm của Button.
         _actionButton = new Button(buttonText, buttonTexture, font)
@@ -85,24 +83,24 @@ public sealed class ButtonNotification : Notification
         _actionButton.RegisterClickHandler(ON_BUTTON_PRESSED);
 
         // Lần đầu layout nút.
-        UPDATE_BUTTON_LAYOUT();
+        this.UPDATE_BUTTON_LAYOUT();
     }
 
-    #endregion
+    #endregion Constructor
 
     #region Event Registration
 
     /// <summary>
     /// Registers a callback to be invoked when the button is clicked.
     /// </summary>
-    public void RegisterAction(System.Action handler) => OnClicked += handler;
+    public void RegisterAction(System.Action handler) => this.OnClicked += handler;
 
     /// <summary>
     /// Unregisters a previously registered action callback.
     /// </summary>
-    public void UnregisterAction(System.Action handler) => OnClicked -= handler;
+    public void UnregisterAction(System.Action handler) => this.OnClicked -= handler;
 
-    #endregion
+    #endregion Event Registration
 
     #region Overrides
 
@@ -111,7 +109,7 @@ public sealed class ButtonNotification : Notification
     /// </summary>
     public override void Update(System.Single deltaTime)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }
@@ -125,7 +123,7 @@ public sealed class ButtonNotification : Notification
     /// </summary>
     public new void Draw(RenderTarget target)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }
@@ -140,10 +138,10 @@ public sealed class ButtonNotification : Notification
     public override void UpdateMessage(System.String newMessage)
     {
         base.UpdateMessage(newMessage);
-        UPDATE_BUTTON_LAYOUT();
+        this.UPDATE_BUTTON_LAYOUT();
     }
 
-    #endregion
+    #endregion Overrides
 
     #region Private Logic
 
@@ -152,15 +150,15 @@ public sealed class ButtonNotification : Notification
     /// </summary>
     private void UPDATE_BUTTON_LAYOUT()
     {
-        var messageBounds = _messageText.GetGlobalBounds();
+        FloatRect messageBounds = MessageText.GetGlobalBounds();
 
         // Trung tâm theo chiều ngang notification, bên dưới message một đoạn.
-        System.Single notifWidth = _panel.Size.X;
+        System.Single notifWidth = Panel.Size.X;
         System.Single btnWidth = DefaultButtonWidth;
-        System.Single btnX = _panel.Position.X + ((notifWidth - btnWidth) / 2f);
-        System.Single btnY = messageBounds.Top + messageBounds.Height + VerticalGapPx + ButtonExtraOffsetY;
+        System.Single x = Panel.Position.X + ((notifWidth - btnWidth) / 2f);
+        System.Single y = messageBounds.Top + messageBounds.Height + VerticalGapPx + ButtonExtraOffsetY;
 
-        _actionButton.SetPosition(new Vector2f(btnX, btnY));
+        _actionButton.SetPosition(new Vector2f(x, y));
     }
 
     /// <summary>
@@ -169,8 +167,8 @@ public sealed class ButtonNotification : Notification
     private void ON_BUTTON_PRESSED()
     {
         OnClicked?.Invoke();
-        Hide();
+        base.Hide();
     }
 
-    #endregion
+    #endregion Private Logic
 }
