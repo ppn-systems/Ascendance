@@ -5,6 +5,7 @@ using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Internal.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
+using Ascendance.Rendering.Time;
 using Nalix.Framework.Configuration;
 using Nalix.Framework.Injection;
 using Nalix.Logging.Extensions;
@@ -116,12 +117,10 @@ public static class GraphicsEngine
     /// </summary>
     public static void Run()
     {
-        const System.Single targetDelta = 1f / 60f;
-
         System.Single accumulator = 0f;
-        Clock clock = InstanceManager.Instance.GetOrCreateInstance<Clock>();
-
         SceneManager.InitializeScenes();
+        TimeService time = InstanceManager.Instance.GetOrCreateInstance<TimeService>();
+
         System.Threading.Thread.Sleep(20);
 
         try
@@ -130,17 +129,13 @@ public static class GraphicsEngine
             {
                 _window.DispatchEvents();
 
-                System.Single frameDelta = clock.Restart().AsSeconds();
-                if (frameDelta > 0.25f)
-                {
-                    frameDelta = 0.25f;
-                }
+                time.Update();
 
-                accumulator += frameDelta;
-                while (accumulator >= targetDelta)
+                accumulator += time.Current.DeltaTime;
+                while (accumulator >= time.FixedDeltaTime)
                 {
-                    UPDATE_FRAME(targetDelta);
-                    accumulator -= targetDelta;
+                    UPDATE_FRAME(time.FixedDeltaTime);
+                    accumulator -= time.FixedDeltaTime;
                 }
 
                 _window.Clear();
@@ -240,6 +235,7 @@ public static class GraphicsEngine
     private static void HANDLE_FOCUS_CHANGED(System.Boolean focused)
     {
         _isFocused = focused;
+
         if (!GraphicsConfig.VSync)
         {
             _window.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
