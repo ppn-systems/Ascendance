@@ -21,7 +21,7 @@ internal sealed class MainScene : BaseScene
     protected override void LoadObjects()
     {
         Font font = AssetManager.Instance.LoadFont("res/fonts/1.ttf");
-        Texture texture = AssetManager.Instance.LoadTexture("res/texture/panels/015");
+        Texture texture = AssetManager.Instance.LoadTexture("res/texture/transparent_border/015");
 
         Button button = new("OK", texture, font);
         PasswordField passwordField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(200, 200));
