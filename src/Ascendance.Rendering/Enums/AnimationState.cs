@@ -5,7 +5,7 @@ namespace Ascendance.Rendering.Enums;
 /// <summary>
 /// Trạng thái của Animator. (VN: Quản lý tình trạng hoạt ảnh)
 /// </summary>
-public enum AnimationState
+public enum AnimationState : System.Byte
 {
     Idle,
     Playing,

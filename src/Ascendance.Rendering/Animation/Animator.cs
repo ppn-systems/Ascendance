@@ -116,8 +116,8 @@ public sealed class Animator : IUpdatable, System.IDisposable
             _frames.AddRange(frames);
         }
 
-        ResetToFirstFrame();
-        ApplyFrame();
+        RESET_TO_FIRST_FRAME();
+        APPLY_FRAME();
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
         System.Int32 prev = _index;
         _index = System.Math.Clamp(index, 0, _frames.Count - 1);
         _accumulator = 0f;
-        ApplyFrame();
+        APPLY_FRAME();
         if (_index != prev)
         {
             FrameChanged?.Invoke(_index);
@@ -206,7 +206,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
     {
         if (_frames.Count == 0)
         {
-            ResetToFirstFrame();
+            RESET_TO_FIRST_FRAME();
             State = AnimationState.Idle;
             return;
         }
@@ -227,8 +227,8 @@ public sealed class Animator : IUpdatable, System.IDisposable
     public void Stop()
     {
         State = AnimationState.Stopped;
-        ResetToFirstFrame();
-        ApplyFrame();
+        RESET_TO_FIRST_FRAME();
+        APPLY_FRAME();
     }
 
     public void Resume()
@@ -301,13 +301,13 @@ public sealed class Animator : IUpdatable, System.IDisposable
                 if (Loop)
                 {
                     _index = _reverse ? _frames.Count - 1 : 0;
-                    ApplyFrame();
+                    APPLY_FRAME();
                     AnimationLooped?.Invoke();
                 }
                 else
                 {
                     _index = _reverse ? 0 : _frames.Count - 1;
-                    ApplyFrame();
+                    APPLY_FRAME();
                     State = AnimationState.Stopped;
                     AnimationCompleted?.Invoke();
                     break;
@@ -316,7 +316,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
             else
             {
                 _index = System.Math.Clamp(next, 0, _frames.Count - 1);
-                ApplyFrame();
+                APPLY_FRAME();
                 if (_index != prev)
                 {
                     FrameChanged?.Invoke(_index);
@@ -329,13 +329,13 @@ public sealed class Animator : IUpdatable, System.IDisposable
 
     #region Private Helpers
 
-    private void ResetToFirstFrame()
+    private void RESET_TO_FIRST_FRAME()
     {
         _index = _reverse ? _frames.Count - 1 : 0;
         _accumulator = 0f;
     }
 
-    private void ApplyFrame()
+    private void APPLY_FRAME()
     {
         if (_frames.Count == 0)
         {
