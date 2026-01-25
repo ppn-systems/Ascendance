@@ -1,100 +1,134 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Enums;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
+using System.Collections.Generic;
 
 namespace Ascendance.Rendering.Animation;
 
 /// <summary>
-/// Handles frame-based animation for a SFML Sprite using an IntRect frame list.
+/// Handles advanced frame-based animation for a SFML <see cref="Sprite"/> using a list of <see cref="IntRect"/> frames.
+/// Supports state tracking, frame events, reverse playback, and more.
 /// </summary>
-/// <remarks>
-/// (VN) Quản lý hoạt ảnh theo khung hình (spritesheet). Gọi Update mỗi frame để tiến thời gian.
-/// Dùng OnLooped, OnCompleted event để bắt trạng thái kết thúc.
-/// </remarks>
-public sealed class Animator : IUpdatable
+public sealed class Animator : IUpdatable, System.IDisposable
 {
     #region Fields
 
     private readonly Sprite _sprite;
-    private readonly System.Collections.Generic.List<IntRect> _frames = [];
+    private readonly List<IntRect> _frames = [];
+    private System.Int32 _index;          // Current frame index
+    private System.Single _frameTime = 0.1f;    // Seconds per frame
+    private System.Single _accumulator;
+    private System.Boolean _reverse;
 
-    private System.Int32 _index;          // current frame index
-    private System.Single _frameTime;     // seconds per frame
-    private System.Single _accumulator;   // accumulated time since last advance
+    #endregion
 
-    #endregion Fields
+    #region Events
+
+    /// <summary>
+    /// Occurs when the animation completes (when <see cref="Loop"/> is false).
+    /// </summary>
+    public event System.Action AnimationCompleted;
+
+    /// <summary>
+    /// Occurs when the animation loops from the last frame to the first frame.
+    /// </summary>
+    public event System.Action AnimationLooped;
+
+    /// <summary>
+    /// Raised each time the frame index changes.
+    /// </summary>
+    public event System.Action<System.Int32> FrameChanged;
+
+    #endregion
 
     #region Properties
 
-    /// <summary>Event fired when animation completes (not looping).</summary>
-    public event System.Action AnimationCompleted;
+    public AnimationState State { get; private set; } = AnimationState.Idle;
 
-    /// <summary>Event fired when animation loops from last frame to first.</summary>
-    public event System.Action AnimationLooped;
-
-    /// <summary>Whether the animation should loop on completion.</summary>
+    /// <summary>
+    /// Gets or sets a value indicating whether the animation should loop when it reaches the last frame.
+    /// </summary>
     public System.Boolean Loop { get; set; } = true;
 
-    /// <summary>Whether the animation is currently playing.</summary>
-    public System.Boolean IsPlaying { get; private set; }
+    /// <summary>
+    /// True if animation is actively playing (State==Playing).
+    /// </summary>
+    public System.Boolean IsPlaying => State == AnimationState.Playing;
 
-    /// <summary>Total number of frames.</summary>
+    /// <summary>
+    /// Total frames.
+    /// </summary>
     public System.Int32 FrameCount => _frames.Count;
 
-    /// <summary>Current frame index (0-based). -1 if no frame.</summary>
+    /// <summary>
+    /// Chỉ số khung hình hiện tại (zero-based), trả về -1 nếu trống.
+    /// </summary>
     public System.Int32 CurrentFrameIndex => _frames.Count == 0 ? -1 : _index;
 
-    /// <summary>True if not frames are set.</summary>
+    /// <summary>
+    /// Trả về true nếu không có frame nào.
+    /// </summary>
     public System.Boolean IsEmpty => _frames.Count == 0;
 
-    /// <summary>Seconds per frame. Min = 0.001s.</summary>
+    /// <summary>
+    /// Thời gian mỗi frame (giây), tối thiểu 0.001.
+    /// </summary>
     public System.Single FrameTime
     {
         get => _frameTime;
         set => _frameTime = System.MathF.Max(0.001f, value);
     }
 
-    #endregion Properties
+    /// <summary>
+    /// Playback in reverse if true.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1085:Use auto-implemented property", Justification = "<Pending>")]
+    public System.Boolean Reverse
+    {
+        get => _reverse;
+        set => _reverse = value;
+    }
+
+    #endregion
 
     #region Construction
 
-    /// <summary>
-    /// Creates a new animator bound to a Sprite.
-    /// </summary>
-    /// <param name="sprite">Target Sprite.</param>
-    /// <param name="frameTime">Seconds per frame.</param>
-    /// <exception cref="System.ArgumentNullException"></exception>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public Animator(Sprite sprite, System.Single frameTime = 0.1f)
     {
-        _frames = [];
         _sprite = sprite ?? throw new System.ArgumentNullException(nameof(sprite));
-        _frameTime = System.MathF.Max(0.001f, frameTime);
+        FrameTime = frameTime;
     }
 
-    #endregion Construction
+    #endregion
 
     #region APIs
 
-    /// <summary>Replaces all frames and resets to the first frame.</summary>
-    public void SetFrames(System.Collections.Generic.IReadOnlyList<IntRect> frames)
+    /// <summary>
+    /// Đổi toàn bộ frame của hoạt ảnh và reset về đầu.
+    /// </summary>
+    public void SetFrames(IReadOnlyList<IntRect> frames)
     {
         _frames.Clear();
-        if (frames != null)
+        if (frames is not null)
         {
             _frames.AddRange(frames);
         }
 
-        RESET_TO_FIRST_FRAME();
-        APPLY_FRAME();
+        ResetToFirstFrame();
+        ApplyFrame();
     }
 
-    /// <summary>Adds a single frame to the end.</summary>
+    /// <summary>
+    /// Add 1 frame cuối danh sách.
+    /// </summary>
     public void AddFrame(IntRect frame) => _frames.Add(frame);
 
-    /// <summary>Adds multiple frames to the end.</summary>
-    public void AddFrames(System.Collections.Generic.IEnumerable<IntRect> frames)
+    /// <summary>
+    /// Add nhiều frame cuối danh sách.
+    /// </summary>
+    public void AddFrames(IEnumerable<IntRect> frames)
     {
         if (frames != null)
         {
@@ -102,29 +136,118 @@ public sealed class Animator : IUpdatable
         }
     }
 
-    /// <summary>Clears all frames and stops animation.</summary>
+    /// <summary>
+    /// Xóa toàn bộ frame.
+    /// </summary>
     public void ClearFrames()
     {
         _frames.Clear();
         Stop();
     }
 
-    /// <summary>Go to a specific frame index immediately.</summary>
-    /// <param name="index">Frame index (0-based).</param>
     public void GoToFrame(System.Int32 index)
     {
         if (_frames.Count == 0)
         {
-            _index = 0; return;
+            _index = 0;
+            return;
         }
-
+        System.Int32 prev = _index;
         _index = System.Math.Clamp(index, 0, _frames.Count - 1);
         _accumulator = 0f;
-        APPLY_FRAME();
+        ApplyFrame();
+        if (_index != prev)
+        {
+            FrameChanged?.Invoke(_index);
+        }
     }
 
     /// <summary>
-    /// Builds frames from a grid (rows x cols) in a spritesheet.
+    /// Next frame (dừng nếu cuối, hoặc loop nếu Loop=true). Không thay đổi accumulator.
+    /// </summary>
+    public void NextFrame()
+    {
+        if (_frames.Count < 2)
+        {
+            return;
+        }
+
+        if (_index + 1 >= _frames.Count)
+        {
+            GoToFrame(Loop ? 0 : _index);
+        }
+        else
+        {
+            GoToFrame(_index + 1);
+        }
+    }
+
+    /// <summary>
+    /// Previous frame.
+    /// </summary>
+    public void PrevFrame()
+    {
+        if (_frames.Count < 2)
+        {
+            return;
+        }
+
+        if (_index < 1)
+        {
+            GoToFrame(Loop ? _frames.Count - 1 : _index);
+        }
+        else
+        {
+            GoToFrame(_index - 1);
+        }
+    }
+
+    public void Play()
+    {
+        if (_frames.Count == 0)
+        {
+            ResetToFirstFrame();
+            State = AnimationState.Idle;
+            return;
+        }
+        if (State != AnimationState.Playing)
+        {
+            State = AnimationState.Playing;
+        }
+    }
+
+    public void Pause()
+    {
+        if (State == AnimationState.Playing)
+        {
+            State = AnimationState.Paused;
+        }
+    }
+
+    public void Stop()
+    {
+        State = AnimationState.Stopped;
+        ResetToFirstFrame();
+        ApplyFrame();
+    }
+
+    public void Resume()
+    {
+        if (State == AnimationState.Paused)
+        {
+            State = AnimationState.Playing;
+        }
+    }
+
+    public void SetFrameTime(System.Single seconds) => FrameTime = seconds;
+
+    /// <summary>
+    /// Lấy bản sao readonly frames.
+    /// </summary>
+    public IReadOnlyList<IntRect> GetFramesReadonly() => _frames.AsReadOnly();
+
+    /// <summary>
+    /// Tạo frame dạng lưới (cho spritesheet phổ thông).
     /// </summary>
     public void BuildGridFrames(
         System.Int32 cellWidth, System.Int32 cellHeight,
@@ -132,7 +255,7 @@ public sealed class Animator : IUpdatable
         System.Int32 startCol = 0, System.Int32 startRow = 0,
         System.Int32? count = null)
     {
-        System.Collections.Generic.List<IntRect> list = [];
+        List<IntRect> list = [];
         System.Int32 total = columns * rows;
         System.Int32 start = (startRow * columns) + startCol;
         System.Int32 take = count ?? (total - start);
@@ -153,36 +276,11 @@ public sealed class Animator : IUpdatable
     }
 
     /// <summary>
-    /// Start advancing frames.
-    /// </summary>
-    public void Play() => IsPlaying = true;
-
-    /// <summary>
-    /// Pause advancing frames.
-    /// </summary>
-    public void Pause() => IsPlaying = false;
-
-    /// <summary>
-    /// Stop and reset to first frame.
-    /// </summary>
-    public void Stop()
-    {
-        IsPlaying = false;
-        RESET_TO_FIRST_FRAME();
-        APPLY_FRAME();
-    }
-
-    /// <summary>
-    /// Set seconds per frame.
-    /// </summary>
-    public void SetFrameTime(System.Single seconds) => FrameTime = seconds;
-
-    /// <summary>
-    /// Advance animation by deltaTime seconds.
+    /// Cập nhật theo thời gian trôi qua (deltaTime - giây).
     /// </summary>
     public void Update(System.Single deltaTime)
     {
-        if (!IsPlaying || _frames.Count == 0)
+        if (State != AnimationState.Playing || _frames.Count == 0)
         {
             return;
         }
@@ -191,41 +289,53 @@ public sealed class Animator : IUpdatable
         while (_accumulator >= _frameTime)
         {
             _accumulator -= _frameTime;
-            System.Int32 next = _index + 1;
 
-            if (next >= _frames.Count)
+            System.Int32 prev = _index;
+            System.Int32 next = _reverse ? _index - 1 : _index + 1;
+
+            System.Boolean rewinding = _reverse && next < 0;
+            System.Boolean reachingEnd = !_reverse && next >= _frames.Count;
+
+            if (rewinding || reachingEnd)
             {
                 if (Loop)
                 {
-                    next = 0;
+                    _index = _reverse ? _frames.Count - 1 : 0;
+                    ApplyFrame();
                     AnimationLooped?.Invoke();
                 }
                 else
                 {
-                    _index = _frames.Count - 1;
-                    APPLY_FRAME();
-                    IsPlaying = false;
+                    _index = _reverse ? 0 : _frames.Count - 1;
+                    ApplyFrame();
+                    State = AnimationState.Stopped;
                     AnimationCompleted?.Invoke();
                     break;
                 }
             }
-            _index = next;
-            APPLY_FRAME();
+            else
+            {
+                _index = System.Math.Clamp(next, 0, _frames.Count - 1);
+                ApplyFrame();
+                if (_index != prev)
+                {
+                    FrameChanged?.Invoke(_index);
+                }
+            }
         }
     }
 
+    #endregion
 
-    #endregion APIs
+    #region Private Helpers
 
-    #region Private Methods
-
-    private void RESET_TO_FIRST_FRAME()
+    private void ResetToFirstFrame()
     {
-        _index = 0;
+        _index = _reverse ? _frames.Count - 1 : 0;
         _accumulator = 0f;
     }
 
-    private void APPLY_FRAME()
+    private void ApplyFrame()
     {
         if (_frames.Count == 0)
         {
@@ -235,5 +345,16 @@ public sealed class Animator : IUpdatable
         _sprite.TextureRect = _frames[_index];
     }
 
-    #endregion Private Methods
+    #endregion
+
+    #region IDisposable
+
+    public void Dispose()
+    {
+        AnimationCompleted = null;
+        AnimationLooped = null;
+        FrameChanged = null;
+    }
+
+    #endregion
 }

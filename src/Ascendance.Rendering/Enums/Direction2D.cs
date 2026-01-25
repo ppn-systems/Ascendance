@@ -1,4 +1,6 @@
-﻿namespace Ascendance.Rendering.Enums;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+namespace Ascendance.Rendering.Enums;
 
 /// <summary>
 /// Represents a 2D directional orientation in game space.
