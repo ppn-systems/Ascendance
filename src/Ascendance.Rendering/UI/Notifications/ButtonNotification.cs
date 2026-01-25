@@ -21,6 +21,11 @@ public sealed class ButtonNotification : Notification
     private readonly Button _actionButton;
 
     /// <summary>
+    /// Button extra vertical offset after layout.
+    /// </summary>
+    private System.Single _buttonExtraOffsetY = 35;
+
+    /// <summary>
     /// Vertical gap (in pixels) between message text and the button.
     /// </summary>
     private const System.Single VerticalGapPx = 12f;
@@ -33,12 +38,12 @@ public sealed class ButtonNotification : Notification
     /// <summary>
     /// Default button width.
     /// </summary>
-    private const System.Single DefaultButtonWidth = 120f;
+    private const System.Single DefaultButtonWidth = 150f;
 
     /// <summary>
     /// Default button height.
     /// </summary>
-    private const System.Single DefaultButtonHeight = 36f;
+    private const System.Single DefaultButtonHeight = 32f;
 
     #endregion Fields
 
@@ -52,7 +57,15 @@ public sealed class ButtonNotification : Notification
     /// <summary>
     /// Extra vertical offset for the button after layout.
     /// </summary>
-    public System.Single ButtonExtraOffsetY { get; set; }
+    public System.Single ButtonExtraOffsetY
+    {
+        get => _buttonExtraOffsetY;
+        set
+        {
+            _buttonExtraOffsetY = value;
+            this.UPDATE_BUTTON_LAYOUT();
+        }
+    }
 
     #endregion Properties
 
@@ -105,6 +118,15 @@ public sealed class ButtonNotification : Notification
     #region Overrides
 
     /// <summary>
+    /// Sets Z-Index of notification and its button.
+    /// </summary>
+    public new void SetZIndex(System.Int32 zOrder)
+    {
+        base.SetZIndex(zOrder);
+        _actionButton.SetZIndex(zOrder + 1);
+    }
+
+    /// <summary>
     /// Updates notification and its button.
     /// </summary>
     public override void Update(System.Single deltaTime)
@@ -121,7 +143,7 @@ public sealed class ButtonNotification : Notification
     /// <summary>
     /// Renders notification base and action button.
     /// </summary>
-    public new void Draw(RenderTarget target)
+    public override void Draw(RenderTarget target)
     {
         if (!this.IsVisible)
         {
@@ -153,9 +175,7 @@ public sealed class ButtonNotification : Notification
         FloatRect messageBounds = MessageText.GetGlobalBounds();
 
         // Trung tâm theo chiều ngang notification, bên dưới message một đoạn.
-        System.Single notifWidth = Panel.Size.X;
-        System.Single btnWidth = DefaultButtonWidth;
-        System.Single x = Panel.Position.X + ((notifWidth - btnWidth) / 2f);
+        System.Single x = Panel.Position.X + ((Panel.Size.X - DefaultButtonWidth) / 2f);
         System.Single y = messageBounds.Top + messageBounds.Height + VerticalGapPx + ButtonExtraOffsetY;
 
         _actionButton.SetPosition(new Vector2f(x, y));

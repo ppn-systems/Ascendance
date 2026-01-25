@@ -235,6 +235,18 @@ public class TextInputField : RenderObject
         : this(panelTexture, new Thickness(32), sourceRect, font, fontSize, size, position)
     { }
 
+    /// <summary>
+    /// Creates a new <see cref="TextInputField"/>.
+    /// </summary>
+    /// <param name="panelTexture">9-slice texture.</param>
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
+    /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
+    /// <param name="position">Top-left position.</param>
+    public TextInputField(Texture panelTexture, Font font, System.UInt32 fontSize, Vector2f size, Vector2f position)
+        : this(panelTexture, new Thickness(32), default, font, fontSize, size, position)
+    { }
+
     #endregion Construction
 
     #region APIs

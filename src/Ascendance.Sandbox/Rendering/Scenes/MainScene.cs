@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Attributes;
+using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
-using Ascendance.Rendering.UI.Indicators;
+using Ascendance.Rendering.UI.Notifications;
 using SFML.Graphics;
 using SFML.System;
 
@@ -13,23 +14,26 @@ namespace Ascendance.Sandbox.Rendering.Scenes;
 [DynamicLoad]
 internal sealed class MainScene : BaseScene
 {
-    private readonly LoadingOverlay _overlay;
-
-    public MainScene()
-        : base(SceneConstants.Main)
+    public MainScene() : base(SceneConstants.Main)
     {
-        _overlay = new LoadingOverlay();
-        _overlay.Show();
     }
 
     protected override void LoadObjects()
     {
-        Texture texture = AssetManager.Instance.LoadTexture("res/texture/panels/000.png");
         Font font = AssetManager.Instance.LoadFont("res/fonts/1.ttf");
-        TextInputField textInputField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(100, 100));
+        Texture texture = AssetManager.Instance.LoadTexture("res/texture/panels/015");
+
         Button button = new("OK", texture, font);
+        PasswordField passwordField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(200, 200));
+        TextInputField textInputField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(100, 100));
+        ButtonNotification notification = new(font, texture, "askdmasdaklsndkl", Direction2D.Down);
+
         button.SetPosition(new(20, 20));
+        notification.SetZIndex(10);
+
         base.AddObject(button);
+        base.AddObject(notification);
+        base.AddObject(passwordField);
         base.AddObject(textInputField);
     }
 }
