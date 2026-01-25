@@ -10,7 +10,7 @@ using SFML.System;
 
 namespace Ascendance.Sandbox.Rendering.Scenes;
 
-[AutoLoad]
+[DynamicLoad]
 internal sealed class MainScene : BaseScene
 {
     private readonly LoadingOverlay _overlay;

@@ -22,7 +22,6 @@ public static class GraphicsEngine
 {
     #region Fields
 
-    private static readonly RenderWindow _window;
     private static readonly System.UInt32 _foregroundFps;
     private static readonly System.UInt32 _backgroundFps;
 
@@ -35,9 +34,14 @@ public static class GraphicsEngine
     #region Properties
 
     /// <summary>
-    /// Gets whether debug mode is enabled.
+    /// Window used for rendering.
     /// </summary>
-    public static System.Boolean IsDebugMode { get; private set; }
+    public static readonly RenderWindow RenderWindow;
+
+    /// <summary>
+    /// Gets application graphics configuration.
+    /// </summary>
+    public static GraphicsConfig GraphicsConfig { get; }
 
     /// <summary>
     /// Gets current window size.
@@ -45,9 +49,9 @@ public static class GraphicsEngine
     public static Vector2u ScreenSize { get; private set; }
 
     /// <summary>
-    /// Gets application graphics configuration.
+    /// Gets whether debug mode is enabled.
     /// </summary>
-    public static GraphicsConfig GraphicsConfig { get; }
+    public static System.Boolean IsDebugMode { get; private set; }
 
     /// <summary>
     /// Sets a user-defined per-frame update handler.
@@ -76,25 +80,25 @@ public static class GraphicsEngine
             StencilBits = 0
         };
 
-        _window = new RenderWindow(
+        RenderWindow = new RenderWindow(
             new VideoMode(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight),
             GraphicsConfig.Title, Styles.Titlebar | Styles.Close, ctx
         );
 
         // Window events
-        _window.Closed += (_, _) => _window.Close();
-        _window.LostFocus += (_, _) => HANDLE_FOCUS_CHANGED(false);
-        _window.GainedFocus += (_, _) => HANDLE_FOCUS_CHANGED(true);
-        _window.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
+        RenderWindow.Closed += (_, _) => RenderWindow.Close();
+        RenderWindow.LostFocus += (_, _) => HANDLE_FOCUS_CHANGED(false);
+        RenderWindow.GainedFocus += (_, _) => HANDLE_FOCUS_CHANGED(true);
+        RenderWindow.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
 
         // Prefer VSync if available
         if (GraphicsConfig.VSync)
         {
-            _window.SetVerticalSyncEnabled(true);
+            RenderWindow.SetVerticalSyncEnabled(true);
         }
         else
         {
-            _window.SetFramerateLimit(_foregroundFps);
+            RenderWindow.SetFramerateLimit(_foregroundFps);
         }
     }
 
@@ -110,7 +114,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Sets the icon for the game window.
     /// </summary>
-    public static void SetWindowIcon(Image image) => _window.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
+    public static void SetWindowIcon(Image image) => RenderWindow.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
 
     /// <summary>
     /// Starts the main game window loop.
@@ -125,9 +129,9 @@ public static class GraphicsEngine
 
         try
         {
-            while (_window.IsOpen)
+            while (RenderWindow.IsOpen)
             {
-                _window.DispatchEvents();
+                RenderWindow.DispatchEvents();
 
                 time.Update();
 
@@ -138,15 +142,15 @@ public static class GraphicsEngine
                     accumulator -= time.FixedDeltaTime;
                 }
 
-                _window.Clear();
-                GraphicsEngine.DRAW(_window);
-                _window.Display();
+                RenderWindow.Clear();
+                GraphicsEngine.DRAW(RenderWindow);
+                RenderWindow.Display();
 
                 if (!_isFocused)
                 {
                     if (!GraphicsConfig.VSync)
                     {
-                        _window.SetFramerateLimit(_backgroundFps);
+                        RenderWindow.SetFramerateLimit(_backgroundFps);
                     }
 
                     System.Threading.Thread.Sleep(2);
@@ -155,12 +159,12 @@ public static class GraphicsEngine
                 {
                     if (!GraphicsConfig.VSync)
                     {
-                        _window.SetFramerateLimit(_foregroundFps);
+                        RenderWindow.SetFramerateLimit(_foregroundFps);
                     }
                 }
             }
 
-            _window.Dispose();
+            RenderWindow.Dispose();
         }
         catch (System.Exception ex)
         {
@@ -168,7 +172,7 @@ public static class GraphicsEngine
         }
         finally
         {
-            _window.Dispose();
+            RenderWindow.Dispose();
             try { MusicManager.Dispose(); } catch { }
         }
     }
@@ -178,7 +182,7 @@ public static class GraphicsEngine
     /// </summary>
     public static void Shutdown()
     {
-        _window.Close();
+        RenderWindow.Close();
 
         try
         {
@@ -200,7 +204,7 @@ public static class GraphicsEngine
 
         InputTimeline.Instance.Update();
         KeyboardManager.Instance.Update();
-        MouseManager.Instance.Update(_window);
+        MouseManager.Instance.Update(RenderWindow);
 
         SceneManager.ProcessSceneChange();
         SceneManager.ProcessPendingDestroy();
@@ -238,7 +242,7 @@ public static class GraphicsEngine
 
         if (!GraphicsConfig.VSync)
         {
-            _window.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
+            RenderWindow.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
         }
     }
 

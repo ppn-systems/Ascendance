@@ -21,9 +21,9 @@ public sealed class SceneTransition : RenderObject, IUpdatable
 {
     #region Fields (configuration)
 
-    private readonly System.Single _durationSeconds;
-    private readonly System.String _nextSceneName;
     private readonly ITransitionDrawable _effect;
+    private readonly System.String _nextSceneName;
+    private readonly System.Single _durationSeconds;
 
     #endregion
 
@@ -45,31 +45,25 @@ public sealed class SceneTransition : RenderObject, IUpdatable
     /// <param name="color">Overlay color (default: black).</param>
     /// <exception cref="System.ArgumentNullException"><paramref name="nextScene"/> is null.</exception>
     /// <exception cref="System.ArgumentOutOfRangeException"><paramref name="duration"/> is not positive.</exception>
-    public SceneTransition(
-        System.String nextScene,
-        SceneTransitionEffect style = SceneTransitionEffect.Fade,
-        System.Single duration = 1.0f,
-        Color? color = null)
+    public SceneTransition(System.String nextScene, SceneTransitionEffect style = SceneTransitionEffect.Fade, System.Single duration = 1.0f, Color? color = null)
     {
         _nextSceneName = nextScene ?? throw new System.ArgumentNullException(nameof(nextScene));
         _durationSeconds = System.MathF.Max(0.1f, duration);
-        var overlay = color ?? Color.Black;
-
         _effect = style switch
         {
-            SceneTransitionEffect.Fade => new FadeOverlay(overlay),
-            SceneTransitionEffect.WipeHorizontal => new WipeOverlayHorizontal(overlay),
-            SceneTransitionEffect.WipeVertical => new WipeOverlayVertical(overlay),
-            SceneTransitionEffect.SlideCoverLeft => new SlideCoverOverlay(overlay, fromLeft: true),
-            SceneTransitionEffect.SlideCoverRight => new SlideCoverOverlay(overlay, fromLeft: false),
-            SceneTransitionEffect.ZoomIn => new ZoomOverlay(overlay, modeIn: true),
-            SceneTransitionEffect.ZoomOut => new ZoomOverlay(overlay, modeIn: false),
-            _ => new FadeOverlay(overlay)
+            SceneTransitionEffect.Fade => new FadeOverlay(color ?? Color.Black),
+            SceneTransitionEffect.WipeHorizontal => new WipeOverlayHorizontal(color ?? Color.Black),
+            SceneTransitionEffect.WipeVertical => new WipeOverlayVertical(color ?? Color.Black),
+            SceneTransitionEffect.SlideCoverLeft => new SlideCoverOverlay(color ?? Color.Black, fromLeft: true),
+            SceneTransitionEffect.SlideCoverRight => new SlideCoverOverlay(color ?? Color.Black, fromLeft: false),
+            SceneTransitionEffect.ZoomIn => new ZoomOverlay(color ?? Color.Black, modeIn: true),
+            SceneTransitionEffect.ZoomOut => new ZoomOverlay(color ?? Color.Black, modeIn: false),
+            _ => new FadeOverlay(color ?? Color.Black)
         };
 
         // Always render on top, persistent through scene change
-        SetZIndex(System.Int32.MaxValue);
-        IsPersistent = true;
+        this.IsPersistent = true;
+        base.SetZIndex(System.Int32.MaxValue);
     }
 
     #endregion
