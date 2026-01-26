@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Enums;
-using Ascendance.Rendering.UI.Controls;
+using Ascendance.Rendering.UI.Notifications;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.UI.Notifications;
+namespace Ascendance.Rendering.UI.Controls;
 
 /// <summary>
 /// Notification box with a single action button using reusable Button class.
