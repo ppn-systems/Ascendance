@@ -69,7 +69,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
     }
 
-
     public GraphicsEngine()
     {
         _isFocused = true;
@@ -119,12 +118,22 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// <summary>
     /// Sets the icon for the game window.
     /// </summary>
-    public void SetWindowIcon(Image image) => this.RenderWindow.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
+    public void SetIcon(Image image)
+    {
+        if (image == null || image.Pixels == null)
+        {
+            throw new System.ArgumentNullException(nameof(image));
+        }
+
+        this.RenderWindow.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
+    }
 
     /// <summary>
     /// Starts the main game window loop.
     /// </summary>
-    public void Run()
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1163:Unused parameter", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+    public void Launch(System.String[] strings = null)
     {
         System.Single accumulator = 0f;
         SceneManager.Instance.InitializeScenes();
@@ -143,7 +152,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
                 accumulator += time.Current.DeltaTime;
                 while (accumulator >= time.FixedDeltaTime)
                 {
-                    UPDATE_FRAME(time.FixedDeltaTime);
+                    this.UPDATE_FRAME(time.FixedDeltaTime);
                     accumulator -= time.FixedDeltaTime;
                 }
 

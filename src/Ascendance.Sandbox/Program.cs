@@ -11,8 +11,8 @@ public static class Program
     {
         Image icon = GetImageFromBase64(IconBase64);
 
-        GraphicsEngine.Instance.SetWindowIcon(icon);
-        GraphicsEngine.Instance.Run();
+        GraphicsEngine.Instance.SetIcon(icon);
+        GraphicsEngine.Instance.Launch();
 
         System.Console.WriteLine("Press Enter to exit...");
         System.Console.ReadLine();
