@@ -19,20 +19,16 @@ namespace Ascendance.Rendering.Scenes;
 /// </remarks>
 public sealed class SceneTransition : RenderObject, IUpdatable
 {
-    #region Fields (configuration)
+    #region Fields
 
     private readonly ITransitionDrawable _effect;
     private readonly System.String _nextSceneName;
     private readonly System.Single _durationSeconds;
 
-    #endregion
-
-    #region Runtime state
-
     private System.Single _elapsed;
     private System.Boolean _hasSwitched;
 
-    #endregion
+    #endregion Fields
 
     #region Construction
 
@@ -52,12 +48,12 @@ public sealed class SceneTransition : RenderObject, IUpdatable
         _effect = style switch
         {
             SceneTransitionEffect.Fade => new FadeOverlay(color ?? Color.Black),
-            SceneTransitionEffect.WipeHorizontal => new WipeOverlayHorizontal(color ?? Color.Black),
             SceneTransitionEffect.WipeVertical => new WipeOverlayVertical(color ?? Color.Black),
-            SceneTransitionEffect.SlideCoverLeft => new SlideCoverOverlay(color ?? Color.Black, fromLeft: true),
-            SceneTransitionEffect.SlideCoverRight => new SlideCoverOverlay(color ?? Color.Black, fromLeft: false),
             SceneTransitionEffect.ZoomIn => new ZoomOverlay(color ?? Color.Black, modeIn: true),
             SceneTransitionEffect.ZoomOut => new ZoomOverlay(color ?? Color.Black, modeIn: false),
+            SceneTransitionEffect.WipeHorizontal => new WipeOverlayHorizontal(color ?? Color.Black),
+            SceneTransitionEffect.SlideCoverLeft => new SlideCoverOverlay(color ?? Color.Black, fromLeft: true),
+            SceneTransitionEffect.SlideCoverRight => new SlideCoverOverlay(color ?? Color.Black, fromLeft: false),
             _ => new FadeOverlay(color ?? Color.Black)
         };
 
@@ -68,7 +64,7 @@ public sealed class SceneTransition : RenderObject, IUpdatable
 
     #endregion
 
-    #region Engine hooks
+    #region Virtual Methods
 
     /// <summary>
     /// Advances the transition state, switches the scene at midpoint, destroys itself on completion.
@@ -97,7 +93,7 @@ public sealed class SceneTransition : RenderObject, IUpdatable
 
         if (_elapsed >= _durationSeconds)
         {
-            Destroy();
+            base.Destroy();
         }
     }
 
@@ -106,5 +102,5 @@ public sealed class SceneTransition : RenderObject, IUpdatable
     /// </summary>
     protected override Drawable GetDrawable() => _effect.GetDrawable();
 
-    #endregion
+    #endregion Virtual Methods
 }

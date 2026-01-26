@@ -37,7 +37,7 @@ public sealed class SceneTransitionData<T> : SceneObject
     {
         _data = info;
         Name = name;
-        IsPersistent = true;
+        base.IsPersistent = true;
     }
 
     #endregion Constructor
@@ -57,14 +57,14 @@ public sealed class SceneTransitionData<T> : SceneObject
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected override void Initialize() => SceneManager.Instance.SceneChanged += OnSceneChange;
+    protected override void Initialize() => SceneManager.Instance.SceneChanged += this.OnSceneChange;
 
     /// <summary>
     /// Cleans up before the object is destroyed and unsubscribes from the SceneChanged event.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override void OnBeforeDestroy() => SceneManager.Instance.SceneChanged -= OnSceneChange;
+    public override void OnBeforeDestroy() => SceneManager.Instance.SceneChanged -= this.OnSceneChange;
 
     /// <summary>
     /// Updates the state of the SceneChangeInfo object and destroys it after a scene change.
@@ -77,7 +77,7 @@ public sealed class SceneTransitionData<T> : SceneObject
         // Destroy this instance on the first frame after a new scene has been loaded
         if (_hasSceneChanged)
         {
-            Destroy();
+            base.Destroy();
         }
     }
 
