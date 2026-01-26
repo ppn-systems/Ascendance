@@ -33,8 +33,8 @@ public class ButtonStateColors
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public ButtonStateColors(Color normal, Color hover, Color disabled)
     {
-        Hover = hover;
-        Normal = normal;
-        Disabled = disabled;
+        this.Hover = hover;
+        this.Normal = normal;
+        this.Disabled = disabled;
     }
 }

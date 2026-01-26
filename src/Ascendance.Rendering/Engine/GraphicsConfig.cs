@@ -10,6 +10,18 @@ namespace Ascendance.Rendering.Engine;
 /// </summary>
 public sealed class GraphicsConfig : ConfigurationLoader
 {
+    #region Constants
+
+    /// <summary>
+    /// Gets the base path for assets. Default value is the current domain's base directory.
+    /// </summary>
+    [ConfiguredIgnore]
+    public static System.String AssetRoot { get; } = System.AppDomain.CurrentDomain.BaseDirectory;
+
+    #endregion Constants
+
+    #region Properties
+
     /// <summary>
     /// Gets a value indicating whether VSync is enabled. Default value is false.
     /// </summary>
@@ -55,9 +67,5 @@ public sealed class GraphicsConfig : ConfigurationLoader
     /// </summary>
     public System.String SceneNamespace { get; init; } = "Scenes";
 
-    /// <summary>
-    /// Gets the base path for assets. Default value is the current domain's base directory.
-    /// </summary>
-    [ConfiguredIgnore]
-    public static System.String AssetRoot { get; } = System.AppDomain.CurrentDomain.BaseDirectory;
+    #endregion Properties
 }
