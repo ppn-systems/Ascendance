@@ -3,42 +3,42 @@
 namespace Ascendance.Rendering.Enums;
 
 /// <summary>
-/// Định nghĩa các hiệu ứng hình ảnh được sử dụng khi chuyển đổi giữa các cảnh.
+/// Defines visual effects used when transitioning between scenes.
 /// </summary>
 public enum SceneTransitionEffect : System.Byte
 {
     /// <summary>
-    /// Hiệu ứng mờ dần vào hoặc mờ dần ra.
+    /// Fade in or fade out effect.
     /// </summary>
-    Fade,
+    Fade = 0,
 
     /// <summary>
-    /// Hiệu ứng phủ màn hình theo chiều ngang từ trái sang phải, sau đó mở ra.
+    /// Horizontal wipe effect, covering and then revealing from left to right.
     /// </summary>
-    WipeHorizontal,
+    WipeHorizontal = 1,
 
     /// <summary>
-    /// Hiệu ứng phủ màn hình theo chiều dọc từ trên xuống dưới, sau đó mở ra.
+    /// Vertical wipe effect, covering and then revealing from top to bottom.
     /// </summary>
-    WipeVertical,
+    WipeVertical = 2,
 
     /// <summary>
-    /// Hiệu ứng tấm phủ trượt từ bên trái vào màn hình, sau đó trượt ra.
+    /// Slide-in cover effect from the left, then slides out.
     /// </summary>
-    SlideCoverLeft,
+    SlideCoverLeft = 3,
 
     /// <summary>
-    /// Hiệu ứng tấm phủ trượt từ bên phải vào màn hình, sau đó trượt ra.
+    /// Slide-in cover effect from the right, then slides out.
     /// </summary>
-    SlideCoverRight,
+    SlideCoverRight = 4,
 
     /// <summary>
-    /// Hiệu ứng phóng to khung hình từ kích thước nhỏ đến toàn màn hình, sau đó thu lại.
+    /// Zoom in effect from a smaller frame to fullscreen, then zooms out.
     /// </summary>
-    ZoomIn,
+    ZoomIn = 5,
 
     /// <summary>
-    /// Hiệu ứng thu nhỏ khung hình từ kích thước lớn về 0, sau đó phóng lại.
+    /// Zoom out effect from a larger frame to zero, then zooms in again.
     /// </summary>
-    ZoomOut
+    ZoomOut = 6
 }

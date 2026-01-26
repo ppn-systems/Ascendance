@@ -10,8 +10,8 @@ namespace Ascendance.Rendering.Animation;
 /// Provides a base class for scene objects that use a sprite and frame-based animation via an <see cref="Animator"/>.
 /// </summary>
 /// <remarks>
-/// (VN) Lớp nền cho mọi object dùng <see cref="Sprite"/> và có hoạt ảnh khung hình.
-/// Sử dụng <see cref="PlayAnimationFrames"/> hoặc <see cref="PlayAnimationFromGrid"/> để khởi tạo và chạy hoạt ảnh.
+/// Base class for objects that use a <see cref="Sprite"/> with frame-based animation.
+/// Use <see cref="PlayAnimationFrames"/> or <see cref="PlayAnimationFromGrid"/> to initialize and start animation.
 /// </remarks>
 public abstract class AnimatedSprite : SpriteObject, System.IDisposable
 {
@@ -62,7 +62,7 @@ public abstract class AnimatedSprite : SpriteObject, System.IDisposable
     /// <param name="texture">The sprite texture.</param>
     /// <param name="position">The initial position.</param>
     /// <param name="scale">The initial scale.</param>
-    /// <param name="rotation">The initial rotation (degrees).</param>
+    /// <param name="rotation">The initial rotation in degrees.</param>
     protected AnimatedSprite(Texture texture, Vector2f position, Vector2f scale, System.Single rotation)
         : base(texture, position, scale, rotation) => SpriteAnimator = new Animator(Sprite);
 
@@ -73,7 +73,7 @@ public abstract class AnimatedSprite : SpriteObject, System.IDisposable
     /// <param name="rect">The initial rectangle for the texture region.</param>
     /// <param name="position">The initial position.</param>
     /// <param name="scale">The initial scale.</param>
-    /// <param name="rotation">The initial rotation (degrees).</param>
+    /// <param name="rotation">The initial rotation in degrees.</param>
     protected AnimatedSprite(Texture texture, IntRect rect, Vector2f position, Vector2f scale, System.Single rotation)
         : base(texture, rect, position, scale, rotation) => SpriteAnimator = new Animator(Sprite);
 
@@ -84,9 +84,9 @@ public abstract class AnimatedSprite : SpriteObject, System.IDisposable
     /// <summary>
     /// Starts an animation using the given frames, frame time, and loop setting.
     /// </summary>
-    /// <param name="frames">The sequence of sprite-rect frames (draw order).</param>
+    /// <param name="frames">The sequence of sprite rectangle frames (draw order).</param>
     /// <param name="frameTime">Duration in seconds for each frame. Must be positive.</param>
-    /// <param name="loop">Whether the animation should loop (default: true).</param>
+    /// <param name="loop">Specifies if the animation should loop (default: true).</param>
     /// <exception cref="System.ArgumentException">
     /// Thrown if <paramref name="frames"/> is null or empty, or if <paramref name="frameTime"/> is not positive.
     /// </exception>
@@ -114,17 +114,17 @@ public abstract class AnimatedSprite : SpriteObject, System.IDisposable
     /// Builds animation frames from a uniform grid in the spritesheet and starts the animation.
     /// </summary>
     /// <remarks>
-    /// (VN) Dùng khi spritesheet chia đều thành các ô hình chữ nhật nhỏ.
+    /// Use when the spritesheet is divided into equally sized rectangular cells.
     /// </remarks>
     /// <param name="cellWidth">Width of each cell in pixels.</param>
     /// <param name="cellHeight">Height of each cell in pixels.</param>
     /// <param name="columns">Number of columns in the grid.</param>
     /// <param name="rows">Number of rows in the grid.</param>
     /// <param name="frameTime">Duration in seconds for each frame. Must be positive.</param>
-    /// <param name="loop">Whether the animation should loop (default: true).</param>
-    /// <param name="startCol">Column index to start from (default: 0).</param>
-    /// <param name="startRow">Row index to start from (default: 0).</param>
-    /// <param name="count">Optional. The number of frames to use. If not specified, uses the remainder of the grid.</param>
+    /// <param name="loop">Specifies if the animation should loop (default: true).</param>
+    /// <param name="startCol">Index of the column to start from (default: 0).</param>
+    /// <param name="startRow">Index of the row to start from (default: 0).</param>
+    /// <param name="count">Optional. Number of frames to use. If null, uses all frames from the starting cell.</param>
     public void PlayAnimationFromGrid(
         System.Int32 cellWidth, System.Int32 cellHeight,
         System.Int32 columns, System.Int32 rows,
@@ -175,13 +175,13 @@ public abstract class AnimatedSprite : SpriteObject, System.IDisposable
 
     /// <summary>
     /// Called when a looping animation wraps from the last frame to the first.
-    /// (VN) Ghi đè trong lớp con nếu có nhu cầu.
+    /// Override this method in a derived class to implement custom behavior on loop.
     /// </summary>
     protected virtual void OnAnimationLooped() { }
 
     /// <summary>
     /// Called when a non-looping animation reaches its end and stops.
-    /// (VN) Ghi đè trong lớp con nếu có nhu cầu.
+    /// Override this method in a derived class to implement custom behavior on completion.
     /// </summary>
     protected virtual void OnAnimationCompleted() { }
 

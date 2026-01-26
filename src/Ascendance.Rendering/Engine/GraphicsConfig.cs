@@ -1,7 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Nalix.Common.Core.Attributes;
-using Nalix.Common.Environment;
 using Nalix.Framework.Configuration.Binding;
 
 namespace Ascendance.Rendering.Engine;
@@ -12,7 +11,7 @@ namespace Ascendance.Rendering.Engine;
 public sealed class GraphicsConfig : ConfigurationLoader
 {
     /// <summary>
-    /// VSync enabled or disabled. Default value is false.
+    /// Gets a value indicating whether VSync is enabled. Default value is false.
     /// </summary>
     public System.Boolean VSync { get; init; } = false;
 
@@ -22,27 +21,27 @@ public sealed class GraphicsConfig : ConfigurationLoader
     public System.UInt32 FrameLimit { get; init; } = 60;
 
     /// <summary>
-    /// Music volume from 0 (mute) to 100
+    /// Gets the music volume, ranging from 0 (mute) to 100 (maximum). Default value is 50.
     /// </summary>
     public System.Single MusicVolume { get; init; } = 50;
 
     /// <summary>
-    /// Sound volume from 0 (mute) to 100
+    /// Gets the sound volume, ranging from 0 (mute) to 100 (maximum). Default value is 100.
     /// </summary>
     public System.Single SoundVolume { get; init; } = 100;
 
     /// <summary>
-    /// Gets the width of the screen. Default value is 1280.
+    /// Gets the width of the screen in pixels. Default value is 1280.
     /// </summary>
     public System.UInt32 ScreenWidth { get; init; } = 1280;
 
     /// <summary>
-    /// Gets the height of the screen. Default value is 720.
+    /// Gets the height of the screen in pixels. Default value is 720.
     /// </summary>
     public System.UInt32 ScreenHeight { get; init; } = 720;
 
     /// <summary>
-    /// Gets the title of the application. Default value is "Ascendance".
+    /// Gets the title of the application window. Default value is "Ascendance".
     /// </summary>
     public System.String Title { get; init; } = "Ascendance";
 
@@ -57,7 +56,7 @@ public sealed class GraphicsConfig : ConfigurationLoader
     public System.String SceneNamespace { get; init; } = "Scenes";
 
     /// <summary>
-    /// Gets the base path for assets. Default value is <see cref="Directories.BasePath"/>.
+    /// Gets the base path for assets. Default value is the current domain's base directory.
     /// </summary>
     [ConfiguredIgnore]
     public static System.String AssetRoot { get; } = System.AppDomain.CurrentDomain.BaseDirectory;

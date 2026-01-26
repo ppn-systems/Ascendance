@@ -5,17 +5,22 @@ using SFML.Graphics;
 namespace Ascendance.Rendering.Abstractions;
 
 /// <summary>
-/// Giao diện vẽ overlay cho từng hiệu ứng.
+/// Represents an abstraction for drawing overlays for each transition effect.
 /// </summary>
 internal interface ITransitionDrawable
 {
     /// <summary>
-    /// Cập nhật hình dạng theo tiến trình [0..1] và pha (closing=true: che kín, false: mở ra).
+    /// Updates the shape based on the progress value (range [0..1]) and phase.
     /// </summary>
+    /// <param name="progress01">A value between 0 and 1 indicating the transition progress.</param>
+    /// <param name="closing">If true, the overlay is closing (covering); if false, it is opening (revealing).</param>
     void Update(System.Single progress01, System.Boolean closing);
 
     /// <summary>
-    /// Trả về Drawable để RenderObject vẽ mỗi frame.
+    /// Gets the <see cref="Drawable"/> instance to be rendered each frame.
     /// </summary>
+    /// <returns>
+    /// A <see cref="Drawable"/> object representing the current overlay to render.
+    /// </returns>
     Drawable GetDrawable();
 }

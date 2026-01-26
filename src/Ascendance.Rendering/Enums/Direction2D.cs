@@ -7,8 +7,23 @@ namespace Ascendance.Rendering.Enums;
 /// </summary>
 public enum Direction2D : System.Byte
 {
+    /// <summary>
+    /// Represents the upward direction.
+    /// </summary>
     Up = 0,
+
+    /// <summary>
+    /// Represents the downward direction.
+    /// </summary>
     Down = 1,
+
+    /// <summary>
+    /// Represents the left direction.
+    /// </summary>
     Left = 2,
+
+    /// <summary>
+    /// Represents the right direction.
+    /// </summary>
     Right = 3
 }

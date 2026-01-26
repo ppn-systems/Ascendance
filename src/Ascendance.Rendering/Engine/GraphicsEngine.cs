@@ -74,6 +74,9 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GraphicsEngine"/> class, configures the main window and sets up event handlers.
+    /// </summary>
     public GraphicsEngine()
     {
         _isFocused = true;
@@ -123,6 +126,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// <summary>
     /// Sets the icon for the game window.
     /// </summary>
+    /// <param name="image">The icon image to use for the window.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="image"/> is null or has no pixel data.</exception>
     public void SetIcon(Image image)
     {
         if (image == null || image.Pixels == null)
@@ -136,6 +141,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// <summary>
     /// Starts the main game window loop.
     /// </summary>
+    /// <param name="strings">Optional command-line arguments (unused).</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1163:Unused parameter", Justification = "<Pending>")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
     public void Launch(System.String[] strings = null)
@@ -215,8 +221,9 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     #region Private Methods
 
     /// <summary>
-    /// Per-frame: updates input, scenes, and user code.
+    /// Per-frame method: updates input, scenes, and user code.
     /// </summary>
+    /// <param name="deltaTime">The time in seconds since the previous update.</param>
     private void UPDATE_FRAME(System.Single deltaTime)
     {
         this.FrameUpdate?.Invoke(deltaTime);
@@ -234,6 +241,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// <summary>
     /// Draws all visible scene objects, sorted by Z-index.
     /// </summary>
+    /// <param name="target">The render target to draw scene objects to.</param>
     private void UPDATE_DRAW(RenderTarget target)
     {
         if (_renderCacheDirty)
@@ -255,6 +263,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// <summary>
     /// Handles application focus changes (foreground/background).
     /// </summary>
+    /// <param name="focused">True if window is in the foreground; otherwise, false.</param>
     private void HANDLE_FOCUS_CHANGED(System.Boolean focused)
     {
         _isFocused = focused;

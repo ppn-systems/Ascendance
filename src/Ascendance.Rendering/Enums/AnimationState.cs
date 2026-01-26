@@ -3,12 +3,27 @@
 namespace Ascendance.Rendering.Enums;
 
 /// <summary>
-/// Trạng thái của Animator. (VN: Quản lý tình trạng hoạt ảnh)
+/// Represents the state of an Animator.
 /// </summary>
 public enum AnimationState : System.Byte
 {
-    Idle,
-    Playing,
-    Paused,
-    Stopped
+    /// <summary>
+    /// The animation is idle and not playing.
+    /// </summary>
+    Idle = 0,
+
+    /// <summary>
+    /// The animation is currently playing.
+    /// </summary>
+    Playing = 1,
+
+    /// <summary>
+    /// The animation is paused.
+    /// </summary>
+    Paused = 2,
+
+    /// <summary>
+    /// The animation is stopped.
+    /// </summary>
+    Stopped = 3
 }
