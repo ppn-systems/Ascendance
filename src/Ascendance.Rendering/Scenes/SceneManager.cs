@@ -3,6 +3,7 @@
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
+using Nalix.Framework.Injection.DI;
 using Nalix.Logging.Extensions;
 
 namespace Ascendance.Rendering.Scenes;
@@ -11,7 +12,7 @@ namespace Ascendance.Rendering.Scenes;
 /// The SceneManager class is responsible for managing scenes and objects within those scenes.
 /// It handles scene transitions, object spawning, and object destruction.
 /// </summary>
-public static class SceneManager
+public class SceneManager : SingletonBase<SceneManager>
 {
     #region Events
 
@@ -19,19 +20,20 @@ public static class SceneManager
     /// This event is invoked at the beginning of the next frame after all non-persisting objects have been queued to be destroyed
     /// and after the new objects have been queued to spawn, but before they are initialized.
     /// </summary>
-    public static event System.Action<System.String, System.String> SceneChanged;
+    public event System.Action<System.String, System.String> SceneChanged;
 
     #endregion Events
 
     #region Fields
 
-    private static BaseScene _currentScene;
-    private static System.String _nextScene = "";
+    private BaseScene _currentScene;
+    private System.String _nextScene = "";
 
-    private static readonly System.Collections.Generic.List<BaseScene> _loadedScenes = [];
-    private static readonly System.Collections.Generic.HashSet<SceneObject> _activeSceneObjects = [];
-    private static readonly System.Collections.Generic.HashSet<SceneObject> _pendingSpawnObjects = [];
-    private static readonly System.Collections.Generic.HashSet<SceneObject> _pendingDestroyObjects = [];
+    private readonly System.Collections.Generic.List<BaseScene> _loadedScenes = [];
+    private readonly System.Collections.Generic.HashSet<SceneObject> _activeSceneObjects = [];
+
+    internal readonly System.Collections.Generic.HashSet<SceneObject> PendingSpawnObjects = [];
+    internal readonly System.Collections.Generic.HashSet<SceneObject> PendingDestroyObjects = [];
 
     #endregion Fields
 
@@ -44,7 +46,7 @@ public static class SceneManager
     /// <returns>ScreenSize HashSet of all objects of the specified type.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static System.Collections.Generic.IReadOnlyCollection<T> GetAllObjectsOfType<T>() where T : SceneObject
+    public System.Collections.Generic.IReadOnlyCollection<T> GetAllObjectsOfType<T>() where T : SceneObject
         => System.Linq.Enumerable.ToList(System.Linq.Enumerable.OfType<T>(_activeSceneObjects));
 
     /// <summary>
@@ -53,7 +55,7 @@ public static class SceneManager
     /// <param name="name">The name of the scene to be loaded.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void RequestSceneChange(System.String name) => _nextScene = name;
+    public void RequestSceneChange(System.String name) => _nextScene = name;
 
     /// <summary>
     /// Queues a single object to be spawned in the scene.
@@ -61,13 +63,13 @@ public static class SceneManager
     /// <param name="o">The object to be spawned.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void EnqueueSpawn(SceneObject o)
+    public void EnqueueSpawn(SceneObject o)
     {
         if (o.IsInitialized)
         {
             throw new System.Exception($"Instance of SceneObject {nameof(o)} already exists in Scenes");
         }
-        if (!_pendingSpawnObjects.Add(o))
+        if (!PendingSpawnObjects.Add(o))
         {
             $"Instance of SceneObject {nameof(o)} is already queued to be spawned.".Warn();
         }
@@ -79,7 +81,7 @@ public static class SceneManager
     /// <param name="sceneObjects">The collection of objects to be spawned.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void EnqueueSpawn(System.Collections.Generic.IEnumerable<SceneObject> sceneObjects)
+    public void EnqueueSpawn(System.Collections.Generic.IEnumerable<SceneObject> sceneObjects)
     {
         foreach (SceneObject o in sceneObjects)
         {
@@ -93,13 +95,13 @@ public static class SceneManager
     /// <param name="o">The object to be destroyed.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void EnqueueDestroy(SceneObject o)
+    public void EnqueueDestroy(SceneObject o)
     {
-        if (!_activeSceneObjects.Contains(o) && !_pendingSpawnObjects.Contains(o))
+        if (!_activeSceneObjects.Contains(o) && !PendingSpawnObjects.Contains(o))
         {
             throw new System.Exception("Instance of SceneObject does not exist in the scene.");
         }
-        if (!_pendingSpawnObjects.Remove(o) && !_pendingDestroyObjects.Add(o))
+        if (!PendingSpawnObjects.Remove(o) && !PendingDestroyObjects.Add(o))
         {
             "Instance of SceneObject is already queued to be destroyed.".Warn();
         }
@@ -111,7 +113,7 @@ public static class SceneManager
     /// <param name="sceneObjects">The collection of objects to be destroyed.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static void EnqueueDestroy(System.Collections.Generic.IEnumerable<SceneObject> sceneObjects)
+    public void EnqueueDestroy(System.Collections.Generic.IEnumerable<SceneObject> sceneObjects)
     {
         foreach (SceneObject o in sceneObjects)
         {
@@ -126,7 +128,7 @@ public static class SceneManager
     /// <returns>The first object of the specified type, or null if none exist.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static T FindFirstObjectOfType<T>() where T : SceneObject
+    public T FindFirstObjectOfType<T>() where T : SceneObject
     {
         System.Collections.Generic.IReadOnlyCollection<T> objects = GetAllObjectsOfType<T>();
         return objects.Count != 0 ? System.Linq.Enumerable.First(objects) : null;
@@ -136,18 +138,12 @@ public static class SceneManager
 
     #region Internal Methods
 
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal static System.Boolean InSpawnQueue(this SceneObject o) => _pendingSpawnObjects.Contains(o);
 
-    [System.Runtime.CompilerServices.MethodImpl(
-    System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal static System.Boolean InDestroyQueue(this SceneObject o) => _pendingDestroyObjects.Contains(o);
 
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal static void ProcessSceneChange()
+    internal void ProcessSceneChange()
     {
         if (_nextScene == _currentScene?.Name) { _nextScene = ""; return; }
 
@@ -165,9 +161,9 @@ public static class SceneManager
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal static void ProcessPendingDestroy()
+    internal void ProcessPendingDestroy()
     {
-        foreach (SceneObject o in _pendingDestroyObjects)
+        foreach (SceneObject o in PendingDestroyObjects)
         {
             if (!_activeSceneObjects.Remove(o))
             {
@@ -176,14 +172,14 @@ public static class SceneManager
             }
             o.OnBeforeDestroy();
         }
-        _pendingDestroyObjects.Clear();
+        PendingDestroyObjects.Clear();
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal static void ProcessPendingSpawn()
+    internal void ProcessPendingSpawn()
     {
-        foreach (SceneObject q in _pendingSpawnObjects)
+        foreach (SceneObject q in PendingSpawnObjects)
         {
             if (!_activeSceneObjects.Add(q))
             {
@@ -191,7 +187,7 @@ public static class SceneManager
             }
         }
 
-        _pendingSpawnObjects.Clear();
+        PendingSpawnObjects.Clear();
 
         foreach (SceneObject o in _activeSceneObjects)
         {
@@ -204,7 +200,7 @@ public static class SceneManager
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal static void UpdateSceneObjects(System.Single deltaTime)
+    internal void UpdateSceneObjects(System.Single deltaTime)
     {
         foreach (SceneObject o in _activeSceneObjects)
         {
@@ -228,7 +224,7 @@ public static class SceneManager
         "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal static void InitializeScenes()
+    internal void InitializeScenes()
     {
         // Get the types from the entry assembly that match the scene namespace
         System.Collections.Generic.IEnumerable<System.Type> sceneTypes =
@@ -300,7 +296,7 @@ public static class SceneManager
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void CLEAR_SCENE()
+    private void CLEAR_SCENE()
     {
         foreach (SceneObject sceneObject in _activeSceneObjects)
         {
@@ -311,19 +307,19 @@ public static class SceneManager
         }
         _ = _activeSceneObjects.RemoveWhere(o => !o.IsPersistent);
 
-        foreach (SceneObject queued in _pendingSpawnObjects)
+        foreach (SceneObject queued in PendingSpawnObjects)
         {
             if (!queued.IsPersistent)
             {
                 queued.OnBeforeDestroy();
             }
         }
-        _ = _pendingSpawnObjects.RemoveWhere(o => !o.IsPersistent);
+        _ = PendingSpawnObjects.RemoveWhere(o => !o.IsPersistent);
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void LOAD_SCENE(System.String name)
+    private void LOAD_SCENE(System.String name)
     {
         BaseScene found = System.Linq.Enumerable.FirstOrDefault(_loadedScenes, scene => scene.Name == name);
         if (found == null)

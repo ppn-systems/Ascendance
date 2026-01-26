@@ -122,7 +122,7 @@ public static class GraphicsEngine
     public static void Run()
     {
         System.Single accumulator = 0f;
-        SceneManager.InitializeScenes();
+        SceneManager.Instance.InitializeScenes();
         TimeService time = InstanceManager.Instance.GetOrCreateInstance<TimeService>();
 
         System.Threading.Thread.Sleep(20);
@@ -206,10 +206,10 @@ public static class GraphicsEngine
         KeyboardManager.Instance.Update();
         MouseManager.Instance.Update(RenderWindow);
 
-        SceneManager.ProcessSceneChange();
-        SceneManager.ProcessPendingDestroy();
-        SceneManager.ProcessPendingSpawn();
-        SceneManager.UpdateSceneObjects(deltaTime);
+        SceneManager.Instance.ProcessSceneChange();
+        SceneManager.Instance.ProcessPendingDestroy();
+        SceneManager.Instance.ProcessPendingSpawn();
+        SceneManager.Instance.UpdateSceneObjects(deltaTime);
     }
 
     /// <summary>
@@ -219,7 +219,7 @@ public static class GraphicsEngine
     {
         if (_renderCacheDirty)
         {
-            _renderObjectCache = [.. SceneManager.GetAllObjectsOfType<RenderObject>()];
+            _renderObjectCache = [.. SceneManager.Instance.GetAllObjectsOfType<RenderObject>()];
             _renderObjectCache.Sort(RenderObject.CompareZIndex);
             _renderCacheDirty = false;
         }

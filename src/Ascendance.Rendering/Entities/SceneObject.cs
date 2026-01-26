@@ -1,5 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Shared.Abstractions;
 
@@ -95,36 +96,28 @@ public abstract class SceneObject : IUpdatable
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Pause() => IsPaused = true;
+    public void Pause() => this.IsPaused = true;
 
     /// <summary>
     /// Unpauses the object, allowing it to update again.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Resume() => IsPaused = false;
+    public void Resume() => this.IsPaused = false;
 
     /// <summary>
     /// Enables the object, activating its behavior.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Enable() => IsEnabled = true;
+    public void Enable() => this.IsEnabled = true;
 
     /// <summary>
     /// Disables the object, deactivating its behavior.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Disable() => IsEnabled = false;
-
-    /// <summary>
-    /// Checks if the object is queued to be destroyed.
-    /// </summary>
-    /// <returns>True if the object is queued for destruction; otherwise, false.</returns>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public System.Boolean IsQueuedForDestroy() => this.InDestroyQueue();
+    public void Disable() => this.IsEnabled = false;
 
     /// <summary>
     /// Checks if the object is queued to be spawned.
@@ -135,18 +128,26 @@ public abstract class SceneObject : IUpdatable
     public System.Boolean IsQueuedForSpawn() => this.InSpawnQueue();
 
     /// <summary>
+    /// Checks if the object is queued to be destroyed.
+    /// </summary>
+    /// <returns>True if the object is queued for destruction; otherwise, false.</returns>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public System.Boolean IsQueuedForDestroy() => this.InDestroyQueue();
+
+    /// <summary>
     /// Queues the object to be spawned in the scene.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Spawn() => SceneManager.EnqueueSpawn(this);
+    public void Spawn() => SceneManager.Instance.EnqueueSpawn(this);
 
     /// <summary>
     /// Queues the object to be destroyed in the scene.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Destroy() => SceneManager.EnqueueDestroy(this);
+    public void Destroy() => SceneManager.Instance.EnqueueDestroy(this);
 
     #endregion APIs
 
@@ -159,9 +160,10 @@ public abstract class SceneObject : IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void InternalInitialize()
     {
-        Initialize();
-        IsInitialized = true;
-        IsEnabled = true;
+        this.Initialize();
+
+        this.IsEnabled = true;
+        this.IsInitialized = true;
     }
 
     #endregion Internal Methods

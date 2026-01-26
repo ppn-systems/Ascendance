@@ -57,14 +57,14 @@ public sealed class SceneTransitionData<T> : SceneObject
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected override void Initialize() => SceneManager.SceneChanged += OnSceneChange;
+    protected override void Initialize() => SceneManager.Instance.SceneChanged += OnSceneChange;
 
     /// <summary>
     /// Cleans up before the object is destroyed and unsubscribes from the SceneChanged event.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override void OnBeforeDestroy() => SceneManager.SceneChanged -= OnSceneChange;
+    public override void OnBeforeDestroy() => SceneManager.Instance.SceneChanged -= OnSceneChange;
 
     /// <summary>
     /// Updates the state of the SceneChangeInfo object and destroys it after a scene change.
@@ -91,7 +91,7 @@ public sealed class SceneTransitionData<T> : SceneObject
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static T FindByName(System.String name, T defaultValue)
     {
-        SceneTransitionData<T> info = SceneManager.FindFirstObjectOfType<SceneTransitionData<T>>();
+        SceneTransitionData<T> info = SceneManager.Instance.FindFirstObjectOfType<SceneTransitionData<T>>();
         return info == null ? defaultValue : info.Name != name ? defaultValue : info.GetData();
     }
 
