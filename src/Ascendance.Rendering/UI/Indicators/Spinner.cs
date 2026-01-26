@@ -11,26 +11,15 @@ namespace Ascendance.Rendering.UI.Indicators;
 /// <summary>
 /// Procedural animated spinner used as a loading indicator.
 /// Can be shown independently or embedded as part of composite UI.
+/// Hiệu năng tối ưu: giảm new object mỗi frame, precompute các giá trị.
 /// </summary>
 public sealed class Spinner : RenderObject, IUpdatable
 {
     #region Constants
 
-    /// <summary>
-    /// Number of bar segments making up the spinner.
-    /// </summary>
     private const System.Int32 SegmentCount = 12;
-    /// <summary>
-    /// Spinner bar radius.
-    /// </summary>
     private const System.Single SpinnerRadius = 32f;
-    /// <summary>
-    /// Thickness of each spinner bar segment.
-    /// </summary>
     private const System.Single SegmentThickness = 7f;
-    /// <summary>
-    /// Conversion constant from degrees to radians.
-    /// </summary>
     private const System.Single DegreesToRadians = 0.017453292519943295f;
 
     #endregion Constants
@@ -39,10 +28,13 @@ public sealed class Spinner : RenderObject, IUpdatable
 
     private Vector2f _center;
     private System.Byte _alpha = 255;
-    private System.Single _baseScale = 1.0f;
     private System.Single _currentAngle = 0f;
-    private System.Single _oscillationAmplitude = 0.06f;
     private System.Single _rotationDegreesPerSecond = 150f;
+
+    // Precomputed values to avoid re-allocating every Draw
+    private readonly CircleShape[] _segmentShapes = new CircleShape[SegmentCount];
+    private readonly System.Single[] _segmentOffsets = new System.Single[SegmentCount];
+    private readonly System.Byte[] _segmentAlphaMultipliers = new System.Byte[SegmentCount];
 
     #endregion Fields
 
@@ -52,8 +44,11 @@ public sealed class Spinner : RenderObject, IUpdatable
     /// Constructs a new spinner instance at a given center.
     /// </summary>
     /// <param name="center">Center point for the spinner.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
-    public Spinner(Vector2f center) => _center = center;
+    public Spinner(Vector2f center)
+    {
+        _center = center;
+        this.PRECOMPUTE_SEGMENTS();
+    }
 
     #endregion Constructor
 
@@ -66,18 +61,6 @@ public sealed class Spinner : RenderObject, IUpdatable
     public Spinner SetAlpha(System.Byte alpha)
     {
         _alpha = alpha;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the spinner scale and its oscillation amplitude ("breathing" effect).
-    /// </summary>
-    /// <param name="scale">Base scale of the spinner.</param>
-    /// <param name="oscillation">Oscillation amplitude (default 0.06f).</param>
-    public Spinner SetBaseScale(System.Single scale, System.Single oscillation = 0.06f)
-    {
-        _baseScale = scale;
-        _oscillationAmplitude = oscillation;
         return this;
     }
 
@@ -115,35 +98,26 @@ public sealed class Spinner : RenderObject, IUpdatable
         }
     }
 
-    /// <summary>
-    /// Renders the spinner into the specified render target.
-    /// </summary>
-    /// <param name="target">Target for rendering (usually the current window or view).</param>
+    /// <inheritdoc />
     public override void Draw(RenderTarget target)
     {
-        const System.Single anglePerSegment = 360f / SegmentCount;
-
-        System.Single scale = _baseScale + (System.MathF.Sin(_currentAngle * DegreesToRadians) * _oscillationAmplitude);
 
         for (System.Int32 i = 0; i < SegmentCount; i++)
         {
-            System.Single progress = (System.Single)i / SegmentCount;
-            System.Byte segmentAlpha = (System.Byte)(_alpha * (0.2f + (0.8f * progress))); // trailing "tail" effect
-
-            System.Single segAngle = _currentAngle + (i * anglePerSegment);
+            System.Single segAngle = _currentAngle + _segmentOffsets[i];
             System.Single angleRad = segAngle * DegreesToRadians;
 
-            System.Single radius = SpinnerRadius * scale;
-            System.Single x = _center.X + (System.MathF.Cos(angleRad) * radius);
-            System.Single y = _center.Y + (System.MathF.Sin(angleRad) * radius);
+            System.Single x = _center.X + (System.MathF.Cos(angleRad) * SpinnerRadius);
+            System.Single y = _center.Y + (System.MathF.Sin(angleRad) * SpinnerRadius);
 
-            // Draw segment as a filled circle (dot style)
-            CircleShape segCircle = new(SegmentThickness * scale / 2f)
-            {
-                Position = new Vector2f(x, y),
-                Origin = new Vector2f(SegmentThickness * scale / 2f, SegmentThickness * scale / 2f),
-                FillColor = new Color(Themes.SpinnerColor.R, Themes.SpinnerColor.G, Themes.SpinnerColor.B, segmentAlpha)
-            };
+            CircleShape segCircle = _segmentShapes[i];
+
+            segCircle.Radius = SegmentThickness / 2f;
+            segCircle.Origin = new Vector2f(segCircle.Radius, segCircle.Radius);
+            segCircle.Position = new Vector2f(x, y);
+
+            System.Byte finalAlpha = (System.Byte)(_alpha * _segmentAlphaMultipliers[i] / 255);
+            segCircle.FillColor = new Color(Themes.SpinnerColor.R, Themes.SpinnerColor.G, Themes.SpinnerColor.B, finalAlpha);
 
             target.Draw(segCircle);
         }
@@ -154,4 +128,33 @@ public sealed class Spinner : RenderObject, IUpdatable
         throw new System.NotSupportedException("Spinner uses procedural geometry. Call Render() directly.");
 
     #endregion Main Loop
+
+    #region Private Methods
+
+    /// <summary>
+    /// Precomputes static values for segment angle and multipliers to optimize drawing.
+    /// </summary>
+    private void PRECOMPUTE_SEGMENTS()
+    {
+        const System.Single anglePerSegment = 360f / SegmentCount;
+
+        for (System.Int32 i = 0; i < SegmentCount; i++)
+        {
+            // Offset angle for this segment (degrees)
+            _segmentOffsets[i] = i * anglePerSegment;
+
+            // trailing tail alpha effect: 0.2f + 0.8f * progress => multiply by 255 (max alpha)
+            System.Single progress = (System.Single)i / SegmentCount;
+            System.Single alphaMultiplier = 0.2f + (0.8f * progress);
+            _segmentAlphaMultipliers[i] = (System.Byte)(alphaMultiplier * 255);
+
+            // Init CircleShape ONCE, just set position/color each draw
+            _segmentShapes[i] = new CircleShape(SegmentThickness / 2f)
+            {
+                Origin = new Vector2f(SegmentThickness / 2f, SegmentThickness / 2f)
+            };
+        }
+    }
+
+    #endregion Private Methods
 }

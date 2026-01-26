@@ -5,6 +5,7 @@ using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
+using Ascendance.Rendering.UI.Indicators;
 using Ascendance.Rendering.UI.Notifications;
 using SFML.Graphics;
 using SFML.System;
@@ -27,11 +28,13 @@ internal sealed class MainScene : BaseScene
         ButtonNotification notification = new(font, texture, "askdmasdaklsndkl", Direction2D.Down);
         PasswordField passwordField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(200, 200));
         TextInputField textInputField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(100, 100));
+        LoadingOverlay overlay = new();
 
         notification.SetZIndex(10);
         button.SetPosition(new(20, 20));
 
         base.AddObject(button);
+        base.AddObject(overlay);
         base.AddObject(notification);
         base.AddObject(passwordField);
         base.AddObject(textInputField);
