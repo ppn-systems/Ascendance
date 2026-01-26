@@ -38,7 +38,7 @@ public sealed class ButtonNotification : Notification
     /// <summary>
     /// Default button width.
     /// </summary>
-    private const System.Single DefaultButtonWidth = 150f;
+    private const System.Single DefaultButtonWidth = 180f;
 
     /// <summary>
     /// Default button height.
@@ -80,11 +80,8 @@ public sealed class ButtonNotification : Notification
     /// <param name="side">Side of the screen to display notification.</param>
     /// <param name="buttonText">Label of action button.</param>
     public ButtonNotification(
-        Font font,
-        Texture buttonTexture,
-        System.String initialMessage = "",
-        Direction2D side = Direction2D.Down,
-        System.String buttonText = "OK")
+        Font font, Texture buttonTexture, System.String initialMessage = "",
+        Direction2D side = Direction2D.Down, System.String buttonText = "OK")
         : base(font, buttonTexture, initialMessage, side)
     {
         // Tạo button, có thể chỉnh pad, màu tuỳ ý qua các hàm của Button.

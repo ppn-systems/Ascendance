@@ -24,12 +24,12 @@ internal sealed class MainScene : BaseScene
         Texture texture = AssetManager.Instance.LoadTexture("res/texture/transparent_border/015");
 
         Button button = new("OK", texture, font);
+        ButtonNotification notification = new(font, texture, "askdmasdaklsndkl", Direction2D.Down);
         PasswordField passwordField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(200, 200));
         TextInputField textInputField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(100, 100));
-        ButtonNotification notification = new(font, texture, "askdmasdaklsndkl", Direction2D.Down);
 
-        button.SetPosition(new(20, 20));
         notification.SetZIndex(10);
+        button.SetPosition(new(20, 20));
 
         base.AddObject(button);
         base.AddObject(notification);
