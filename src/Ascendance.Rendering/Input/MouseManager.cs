@@ -24,12 +24,19 @@ public class MouseManager : SingletonBase<MouseManager>
 
     #region Properties
 
+    /// <summary>
+    /// Gets a value indicating whether mouse input is currently enabled.
+    /// </summary>
     public System.Boolean IsInputEnabled => _inputEnabled;
 
     #endregion Properties
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MouseManager"/> class,
+    /// configuring button state and default input enabled state.
+    /// </summary>
     public MouseManager()
     {
         _inputEnabled = true;
@@ -43,6 +50,10 @@ public class MouseManager : SingletonBase<MouseManager>
 
     #region Input Control
 
+    /// <summary>
+    /// Updates mouse button state and position based on the current frame.
+    /// </summary>
+    /// <param name="window">The render window reference (for relative mouse position).</param>
     public void Update(RenderWindow window)
     {
         if (!_inputEnabled)
@@ -69,14 +80,14 @@ public class MouseManager : SingletonBase<MouseManager>
     }
 
     /// <summary>
-    /// Enables all input globally.
+    /// Enables mouse input globally.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void EnableInput() => _inputEnabled = true;
 
     /// <summary>
-    /// Disables all input globally.
+    /// Disables mouse input globally.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -89,7 +100,7 @@ public class MouseManager : SingletonBase<MouseManager>
     /// <summary>
     /// Gets all currently pressed mouse buttons.
     /// </summary>
-    /// <returns>An enumerable containing the pressed mouse buttons.</returns>
+    /// <returns>An enumerable containing the mouse buttons that are currently pressed.</returns>
     public System.Collections.Generic.IEnumerable<Mouse.Button> GetPressedMouseButtons()
     {
         for (System.Int32 i = 0; i < MouseButtonState.Length; i++)
@@ -102,15 +113,15 @@ public class MouseManager : SingletonBase<MouseManager>
     }
 
     /// <summary>
-    /// Gets the current position of the mouse.
+    /// Gets the current position of the mouse, in window coordinates.
     /// </summary>
-    /// <returns>ScreenSize tuple containing the X and Y position of the mouse.</returns>
+    /// <returns>A <see cref="Vector2i"/> containing the X and Y position of the mouse.</returns>
     public Vector2i GetMousePosition() => _mousePosition;
 
     /// <summary>
-    /// Gets the current position of the mouse.
+    /// Gets the current position of the mouse as a floating point tuple.
     /// </summary>
-    /// <returns>ScreenSize tuple containing the X and Y position of the mouse.</returns>
+    /// <returns>A tuple containing the X and Y position of the mouse as floats.</returns>
     public (System.Single X, System.Single Y) GetMousePositionF() => (_mousePosition.X, _mousePosition.Y);
 
     #endregion Getter Methods
@@ -131,8 +142,7 @@ public class MouseManager : SingletonBase<MouseManager>
     /// </summary>
     /// <param name="button">The mouse button to check.</param>
     /// <returns>
-    /// True if the button is down now but was not down in the previous frame;
-    /// otherwise, false.
+    /// True if the button is down now but was not down in the previous frame; otherwise, false.
     /// </returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -143,8 +153,7 @@ public class MouseManager : SingletonBase<MouseManager>
     /// </summary>
     /// <param name="button">The mouse button to check.</param>
     /// <returns>
-    /// True if the button was down in the previous frame but is not down now;
-    /// otherwise, false.
+    /// True if the button was down in the previous frame but is not down now; otherwise, false.
     /// </returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -154,6 +163,12 @@ public class MouseManager : SingletonBase<MouseManager>
 
     #region Internal Methods
 
+    /// <summary>
+    /// Creates a snapshot array of the current mouse button state.
+    /// </summary>
+    /// <returns>
+    /// A boolean array representing the current button state.
+    /// </returns>
     internal System.Boolean[] CreateMouseButtonSnapshot()
     {
         System.Boolean[] arr = new System.Boolean[MouseButtonState.Length];
@@ -161,6 +176,12 @@ public class MouseManager : SingletonBase<MouseManager>
         return arr;
     }
 
+    /// <summary>
+    /// Restores the mouse button and position state from a snapshot.
+    /// </summary>
+    /// <param name="btnState">Boolean array representing mouse button states.</param>
+    /// <param name="mousePos">The position to restore for the mouse.</param>
+    /// <exception cref="System.ArgumentException">Thrown if the button state array length is invalid.</exception>
     internal void RestoreMouseState(System.Boolean[] btnState, Vector2i mousePos)
     {
         if (btnState.Length != MouseButtonState.Length)

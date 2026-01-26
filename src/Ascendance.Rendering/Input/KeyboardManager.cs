@@ -22,12 +22,19 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
 
     #region Properties
 
+    /// <summary>
+    /// Gets a value indicating whether input is currently enabled.
+    /// </summary>
     public System.Boolean IsInputEnabled => _inputEnabled;
 
     #endregion Properties
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeyboardManager"/> class,
+    /// configuring all internal key state arrays.
+    /// </summary>
     public KeyboardManager()
     {
         _inputEnabled = true;
@@ -42,19 +49,22 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     #region Input Control
 
     /// <summary>
-    /// Enables all input globally.
+    /// Enables all keyboard input globally.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void EnableInput() => _inputEnabled = true;
 
     /// <summary>
-    /// Disables all input globally.
+    /// Disables all keyboard input globally.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void DisableInput() => _inputEnabled = false;
 
+    /// <summary>
+    /// Updates the internal keyboard state for all keys.
+    /// </summary>
     public void Update()
     {
         if (!_inputEnabled)
@@ -89,7 +99,9 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     /// <summary>
     /// Gets all currently pressed keys.
     /// </summary>
-    /// <returns>An enumerable containing the pressed keyboard keys.</returns>
+    /// <returns>
+    /// An enumerable containing the keys that are currently pressed.
+    /// </returns>
     public System.Collections.Generic.IEnumerable<Keyboard.Key> GetPressedKeys()
     {
         for (System.Int32 i = 0; i < KeyState.Length; i++)
@@ -108,7 +120,7 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     /// <summary>
     /// Checks if a key is currently being pressed.
     /// </summary>
-    /// <param name="key">The key to check.</param>
+    /// <param name="key">The keyboard key to check.</param>
     /// <returns>True if the key is currently down; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -117,25 +129,25 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     /// <summary>
     /// Checks if a key is currently not being pressed.
     /// </summary>
-    /// <param name="key">The key to check.</param>
+    /// <param name="key">The keyboard key to check.</param>
     /// <returns>True if the key is currently up; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public System.Boolean IsKeyUp(Keyboard.Key key) => !KeyState[(System.Int32)key];
 
     /// <summary>
-    /// Checks if a key was pressed for the first time this frame.
+    /// Checks if a key was pressed for the first time in the current frame.
     /// </summary>
-    /// <param name="key">The key to check.</param>
+    /// <param name="key">The keyboard key to check.</param>
     /// <returns>True if the key was pressed this frame; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public System.Boolean IsKeyPressed(Keyboard.Key key) => KeyState[(System.Int32)key] && !PreviousKeyState[(System.Int32)key];
 
     /// <summary>
-    /// Checks if a key was released for the first time this frame.
+    /// Checks if a key was released for the first time in the current frame.
     /// </summary>
-    /// <param name="key">The key to check.</param>
+    /// <param name="key">The keyboard key to check.</param>
     /// <returns>True if the key was released this frame; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -145,7 +157,13 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
 
     #region Internal Methods
 
-    public System.Boolean[] CreateKeyboardStateSnapshot()
+    /// <summary>
+    /// Creates a snapshot of the current keyboard state.
+    /// </summary>
+    /// <returns>
+    /// A boolean array representing which keys are down.
+    /// </returns>
+    internal System.Boolean[] CreateKeyboardStateSnapshot()
     {
         System.Boolean[] arr = new System.Boolean[KeyState.Length];
         KeyState.CopyTo(arr, 0);
@@ -153,7 +171,16 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
         return arr;
     }
 
-    public void RestoreKeyboardState(System.Boolean[] snapshot)
+    /// <summary>
+    /// Restores the keyboard state from a previously saved snapshot.
+    /// </summary>
+    /// <param name="snapshot">
+    /// A boolean array containing key states to restore.
+    /// </param>
+    /// <exception cref="System.ArgumentException">
+    /// Thrown if the provided array length does not match the internal state length.
+    /// </exception>
+    internal void RestoreKeyboardState(System.Boolean[] snapshot)
     {
         if (snapshot.Length != KeyState.Length)
         {

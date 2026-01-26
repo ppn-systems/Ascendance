@@ -3,7 +3,7 @@
 using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
-using Ascendance.Rendering.Scenes.Effects;
+using Ascendance.Rendering.Internal.Effects;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 
@@ -11,11 +11,10 @@ namespace Ascendance.Rendering.Scenes;
 
 /// <summary>
 /// Runs a two-phase scene transition via a full-screen overlay: <b>closing</b> (cover) → <b>switch scene</b> → <b>opening</b> (reveal).
-/// (VN) Hiệu ứng chuyển cảnh 2 pha (đóng → đổi cảnh → mở) thông qua một lớp overlay hiệu ứng.
 /// </summary>
 /// <remarks>
-/// Instance này tồn tại xuyên cảnh và tự hủy khi hoàn tất.
-/// Dùng hiệu ứng vẽ được chọn qua <see cref="ITransitionDrawable"/> strategy.
+/// This instance exists across scenes and automatically destroys itself when complete.
+/// The desired effect is rendered using the selected <see cref="ITransitionDrawable"/> strategy.
 /// </remarks>
 public sealed class SceneTransition : RenderObject, IUpdatable
 {
@@ -33,11 +32,11 @@ public sealed class SceneTransition : RenderObject, IUpdatable
     #region Construction
 
     /// <summary>
-    /// Initializes a new <see cref="SceneTransition"/>.
+    /// Initializes a new instance of the <see cref="SceneTransition"/> class.
     /// </summary>
-    /// <param name="nextScene">Target scene name to switch to at transition midpoint.</param>
+    /// <param name="nextScene">The target scene name to switch to at transition midpoint.</param>
     /// <param name="style">Overlay transition visual style.</param>
-    /// <param name="duration">Total transition duration in seconds (min 0.1s).</param>
+    /// <param name="duration">Total transition duration in seconds (minimum 0.1s).</param>
     /// <param name="color">Overlay color (default: black).</param>
     /// <exception cref="System.ArgumentNullException"><paramref name="nextScene"/> is null.</exception>
     /// <exception cref="System.ArgumentOutOfRangeException"><paramref name="duration"/> is not positive.</exception>
@@ -67,9 +66,9 @@ public sealed class SceneTransition : RenderObject, IUpdatable
     #region Virtual Methods
 
     /// <summary>
-    /// Advances the transition state, switches the scene at midpoint, destroys itself on completion.
+    /// Advances the transition state, switches the scene at the midpoint, and destroys itself on completion.
     /// </summary>
-    /// <param name="deltaTime">Elapsed time (seconds) since last frame.</param>
+    /// <param name="deltaTime">Elapsed time, in seconds, since the last frame.</param>
     public override void Update(System.Single deltaTime)
     {
         _elapsed += deltaTime;
@@ -98,8 +97,11 @@ public sealed class SceneTransition : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Gets the current overlay drawable.
+    /// Gets the current overlay drawable for rendering.
     /// </summary>
+    /// <returns>
+    /// The <see cref="Drawable"/> containing the visual effect.
+    /// </returns>
     protected override Drawable GetDrawable() => _effect.GetDrawable();
 
     #endregion Virtual Methods
