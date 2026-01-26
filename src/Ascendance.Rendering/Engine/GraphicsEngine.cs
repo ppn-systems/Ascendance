@@ -35,11 +35,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     #region Properties
 
     /// <summary>
-    /// Window used for rendering.
-    /// </summary>
-    public readonly RenderWindow RenderWindow;
-
-    /// <summary>
     /// Gets application graphics configuration.
     /// </summary>
     public static GraphicsConfig GraphicsConfig { get; }
@@ -50,6 +45,11 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     public static Vector2u ScreenSize { get; private set; }
 
     /// <summary>
+    /// Window used for rendering.
+    /// </summary>
+    public readonly RenderWindow RenderWindow;
+
+    /// <summary>
     /// Gets whether debug mode is enabled.
     /// </summary>
     public System.Boolean IsDebugMode { get; private set; }
@@ -58,6 +58,11 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// Sets a user-defined per-frame update handler.
     /// </summary>
     public System.Action<System.Single> FrameUpdate { get; set; }
+
+    /// <summary>
+    /// Window running state.
+    /// </summary>
+    public System.Boolean IsRunning => this.RenderWindow.IsOpen;
 
     #endregion Properties
 

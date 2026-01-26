@@ -3,7 +3,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Scenes.Effects;
+namespace Ascendance.Rendering.Internal.Effects;
 
 /// <summary>
 /// Overlay effect: a solid cover slides inwards (closing) and slides out (opening) from a screen edge.

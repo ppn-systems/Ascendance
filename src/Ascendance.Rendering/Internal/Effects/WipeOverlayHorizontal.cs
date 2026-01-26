@@ -3,7 +3,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Scenes.Effects;
+namespace Ascendance.Rendering.Internal.Effects;
 
 /// <summary>
 /// Horizontal wipe overlay: covers the screen from left to right, then uncovers in reverse.

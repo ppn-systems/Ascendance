@@ -3,7 +3,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.Scenes.Effects;
+namespace Ascendance.Rendering.Internal.Effects;
 
 /// <summary>
 /// Vertical wipe overlay: covers the screen from top to bottom, then uncovers in reverse.
