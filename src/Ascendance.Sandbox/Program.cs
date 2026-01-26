@@ -10,8 +10,9 @@ public static class Program
     public static void Main()
     {
         Image icon = GetImageFromBase64(IconBase64);
-        GraphicsEngine.SetWindowIcon(icon);
-        GraphicsEngine.Run();
+
+        GraphicsEngine.Instance.SetWindowIcon(icon);
+        GraphicsEngine.Instance.Run();
 
         System.Console.WriteLine("Press Enter to exit...");
         System.Console.ReadLine();

@@ -8,6 +8,7 @@ using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.Time;
 using Nalix.Framework.Configuration;
 using Nalix.Framework.Injection;
+using Nalix.Framework.Injection.DI;
 using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
@@ -18,16 +19,16 @@ namespace Ascendance.Rendering.Engine;
 /// <summary>
 /// Central static class for managing the main game window, rendering loop, and core events.
 /// </summary>
-public static class GraphicsEngine
+public class GraphicsEngine : SingletonBase<GraphicsEngine>
 {
     #region Fields
 
-    private static readonly System.UInt32 _foregroundFps;
-    private static readonly System.UInt32 _backgroundFps;
+    private readonly System.UInt32 _foregroundFps;
+    private readonly System.UInt32 _backgroundFps;
 
-    private static System.Boolean _isFocused;
-    private static System.Boolean _renderCacheDirty;
-    private static System.Collections.Generic.List<RenderObject> _renderObjectCache;
+    private System.Boolean _isFocused;
+    private System.Boolean _renderCacheDirty;
+    private System.Collections.Generic.List<RenderObject> _renderObjectCache;
 
     #endregion Fields
 
@@ -36,7 +37,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Window used for rendering.
     /// </summary>
-    public static readonly RenderWindow RenderWindow;
+    public readonly RenderWindow RenderWindow;
 
     /// <summary>
     /// Gets application graphics configuration.
@@ -51,12 +52,12 @@ public static class GraphicsEngine
     /// <summary>
     /// Gets whether debug mode is enabled.
     /// </summary>
-    public static System.Boolean IsDebugMode { get; private set; }
+    public System.Boolean IsDebugMode { get; private set; }
 
     /// <summary>
     /// Sets a user-defined per-frame update handler.
     /// </summary>
-    public static System.Action<System.Single> FrameUpdate { get; set; }
+    public System.Action<System.Single> FrameUpdate { get; set; }
 
     #endregion Properties
 
@@ -66,7 +67,11 @@ public static class GraphicsEngine
     {
         GraphicsConfig = ConfigurationManager.Instance.Get<GraphicsConfig>();
         ScreenSize = new Vector2u(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight);
+    }
 
+
+    public GraphicsEngine()
+    {
         _isFocused = true;
         _backgroundFps = 15;
         _renderObjectCache = [];
@@ -80,25 +85,25 @@ public static class GraphicsEngine
             StencilBits = 0
         };
 
-        RenderWindow = new RenderWindow(
+        this.RenderWindow = new RenderWindow(
             new VideoMode(GraphicsConfig.ScreenWidth, GraphicsConfig.ScreenHeight),
             GraphicsConfig.Title, Styles.Titlebar | Styles.Close, ctx
         );
 
         // Window events
-        RenderWindow.Closed += (_, _) => RenderWindow.Close();
-        RenderWindow.LostFocus += (_, _) => HANDLE_FOCUS_CHANGED(false);
-        RenderWindow.GainedFocus += (_, _) => HANDLE_FOCUS_CHANGED(true);
-        RenderWindow.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
+        this.RenderWindow.Closed += (_, _) => this.RenderWindow.Close();
+        this.RenderWindow.LostFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(false);
+        this.RenderWindow.GainedFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(true);
+        this.RenderWindow.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
 
         // Prefer VSync if available
         if (GraphicsConfig.VSync)
         {
-            RenderWindow.SetVerticalSyncEnabled(true);
+            this.RenderWindow.SetVerticalSyncEnabled(true);
         }
         else
         {
-            RenderWindow.SetFramerateLimit(_foregroundFps);
+            this.RenderWindow.SetFramerateLimit(_foregroundFps);
         }
     }
 
@@ -109,17 +114,17 @@ public static class GraphicsEngine
     /// <summary>
     /// Enables or disables debug mode.
     /// </summary>
-    public static void DebugMode() => IsDebugMode = !IsDebugMode;
+    public void DebugMode() => this.IsDebugMode = !this.IsDebugMode;
 
     /// <summary>
     /// Sets the icon for the game window.
     /// </summary>
-    public static void SetWindowIcon(Image image) => RenderWindow.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
+    public void SetWindowIcon(Image image) => this.RenderWindow.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
 
     /// <summary>
     /// Starts the main game window loop.
     /// </summary>
-    public static void Run()
+    public void Run()
     {
         System.Single accumulator = 0f;
         SceneManager.Instance.InitializeScenes();
@@ -129,9 +134,9 @@ public static class GraphicsEngine
 
         try
         {
-            while (RenderWindow.IsOpen)
+            while (this.RenderWindow.IsOpen)
             {
-                RenderWindow.DispatchEvents();
+                this.RenderWindow.DispatchEvents();
 
                 time.Update();
 
@@ -142,15 +147,15 @@ public static class GraphicsEngine
                     accumulator -= time.FixedDeltaTime;
                 }
 
-                RenderWindow.Clear();
-                GraphicsEngine.DRAW(RenderWindow);
-                RenderWindow.Display();
+                this.RenderWindow.Clear();
+                this.UPDATE_DRAW(this.RenderWindow);
+                this.RenderWindow.Display();
 
                 if (!_isFocused)
                 {
                     if (!GraphicsConfig.VSync)
                     {
-                        RenderWindow.SetFramerateLimit(_backgroundFps);
+                        this.RenderWindow.SetFramerateLimit(_backgroundFps);
                     }
 
                     System.Threading.Thread.Sleep(2);
@@ -159,12 +164,12 @@ public static class GraphicsEngine
                 {
                     if (!GraphicsConfig.VSync)
                     {
-                        RenderWindow.SetFramerateLimit(_foregroundFps);
+                        this.RenderWindow.SetFramerateLimit(_foregroundFps);
                     }
                 }
             }
 
-            RenderWindow.Dispose();
+            this.RenderWindow.Dispose();
         }
         catch (System.Exception ex)
         {
@@ -172,7 +177,7 @@ public static class GraphicsEngine
         }
         finally
         {
-            RenderWindow.Dispose();
+            this.RenderWindow.Dispose();
             try { MusicManager.Dispose(); } catch { }
         }
     }
@@ -180,7 +185,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Closes the game window and disposes of systems.
     /// </summary>
-    public static void Shutdown()
+    public void Shutdown()
     {
         RenderWindow.Close();
 
@@ -198,9 +203,9 @@ public static class GraphicsEngine
     /// <summary>
     /// Per-frame: updates input, scenes, and user code.
     /// </summary>
-    private static void UPDATE_FRAME(System.Single deltaTime)
+    private void UPDATE_FRAME(System.Single deltaTime)
     {
-        FrameUpdate?.Invoke(deltaTime);
+        this.FrameUpdate?.Invoke(deltaTime);
 
         InputTimeline.Instance.Update();
         KeyboardManager.Instance.Update();
@@ -215,7 +220,7 @@ public static class GraphicsEngine
     /// <summary>
     /// Draws all visible scene objects, sorted by Z-index.
     /// </summary>
-    private static void DRAW(RenderTarget target)
+    private void UPDATE_DRAW(RenderTarget target)
     {
         if (_renderCacheDirty)
         {
@@ -236,13 +241,13 @@ public static class GraphicsEngine
     /// <summary>
     /// Handles application focus changes (foreground/background).
     /// </summary>
-    private static void HANDLE_FOCUS_CHANGED(System.Boolean focused)
+    private void HANDLE_FOCUS_CHANGED(System.Boolean focused)
     {
         _isFocused = focused;
 
         if (!GraphicsConfig.VSync)
         {
-            RenderWindow.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
+            this.RenderWindow.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
         }
     }
 

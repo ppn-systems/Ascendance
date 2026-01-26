@@ -13,17 +13,7 @@ namespace Ascendance.Rendering.UI.Notifications;
 /// </summary>
 public sealed class NotificationButton : Notification
 {
-    #region Fields
-
-    /// <summary>
-    /// The action button (reused from UI.Controls.Button).
-    /// </summary>
-    private readonly Button _actionButton;
-
-    /// <summary>
-    /// Button extra vertical offset after layout.
-    /// </summary>
-    private System.Single _buttonExtraOffsetY = 35;
+    #region Constants
 
     /// <summary>
     /// Vertical gap (in pixels) between message text and the button.
@@ -44,6 +34,20 @@ public sealed class NotificationButton : Notification
     /// Default button height.
     /// </summary>
     private const System.Single DefaultButtonHeight = 32f;
+
+    #endregion Constants
+
+    #region Fields
+
+    /// <summary>
+    /// The action button (reused from UI.Controls.Button).
+    /// </summary>
+    private readonly Button _actionButton;
+
+    /// <summary>
+    /// Button extra vertical offset after layout.
+    /// </summary>
+    private System.Single _buttonExtraOffsetY = 35;
 
     #endregion Fields
 
