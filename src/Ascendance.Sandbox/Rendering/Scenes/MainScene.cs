@@ -5,6 +5,7 @@ using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
+using Ascendance.Rendering.UI.Notifications;
 using SFML.Graphics;
 using SFML.System;
 
@@ -23,7 +24,7 @@ internal sealed class MainScene : BaseScene
         Texture texture = AssetManager.Instance.LoadTexture("res/texture/transparent_border/015");
 
         Button button = new("OK", texture, font);
-        ButtonNotification notification = new(font, texture, "askdmasdaklsndkl", Direction2D.Down);
+        NotificationButton notification = new(font, texture, "askdmasdaklsndkl", Direction2D.Down);
         PasswordField passwordField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(200, 200));
         TextInputField textInputField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(100, 100));
 

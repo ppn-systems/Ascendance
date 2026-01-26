@@ -6,7 +6,7 @@ using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.UI.Notifications;
+namespace Ascendance.Rendering.UI.Banners;
 
 /// <summary>
 /// Represents a continuously scrolling banner that moves from right to left across the screen.

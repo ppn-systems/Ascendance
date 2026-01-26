@@ -1,17 +1,17 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Enums;
-using Ascendance.Rendering.UI.Notifications;
+using Ascendance.Rendering.UI.Controls;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.UI.Controls;
+namespace Ascendance.Rendering.UI.Notifications;
 
 /// <summary>
 /// Notification box with a single action button using reusable Button class.
 /// Supports click visual effects and automatically closes when the button is clicked.
 /// </summary>
-public sealed class ButtonNotification : Notification
+public sealed class NotificationButton : Notification
 {
     #region Fields
 
@@ -79,7 +79,7 @@ public sealed class ButtonNotification : Notification
     /// <param name="initialMessage">Initial notification message.</param>
     /// <param name="side">Side of the screen to display notification.</param>
     /// <param name="buttonText">Label of action button.</param>
-    public ButtonNotification(
+    public NotificationButton(
         Font font, Texture buttonTexture, System.String initialMessage = "",
         Direction2D side = Direction2D.Down, System.String buttonText = "OK")
         : base(font, buttonTexture, initialMessage, side)

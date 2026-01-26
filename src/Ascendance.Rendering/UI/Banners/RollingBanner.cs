@@ -5,7 +5,7 @@ using Ascendance.Rendering.Entities;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.UI.Notifications;
+namespace Ascendance.Rendering.UI.Banners;
 
 /// <summary>
 /// A continuously scrolling banner displaying a sequence of messages from right to left.
