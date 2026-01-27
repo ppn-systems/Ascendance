@@ -142,7 +142,10 @@ public class SceneManager : SingletonBase<SceneManager>
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessSceneChange()
     {
-        if (_nextScene == _currentScene?.Name) { _nextScene = ""; return; }
+        if (_nextScene == _currentScene?.Name)
+        {
+            _nextScene = ""; return;
+        }
 
         if (_nextScene?.Length == 0)
         {
@@ -160,7 +163,7 @@ public class SceneManager : SingletonBase<SceneManager>
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessPendingDestroy()
     {
-        foreach (SceneObject o in PendingDestroyObjects)
+        foreach (SceneObject o in this.PendingDestroyObjects)
         {
             if (!_activeSceneObjects.Remove(o))
             {
@@ -169,14 +172,15 @@ public class SceneManager : SingletonBase<SceneManager>
             }
             o.OnBeforeDestroy();
         }
-        PendingDestroyObjects.Clear();
+
+        this.PendingDestroyObjects.Clear();
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessPendingSpawn()
     {
-        foreach (SceneObject q in PendingSpawnObjects)
+        foreach (SceneObject q in this.PendingSpawnObjects)
         {
             if (!_activeSceneObjects.Add(q))
             {
@@ -184,7 +188,7 @@ public class SceneManager : SingletonBase<SceneManager>
             }
         }
 
-        PendingSpawnObjects.Clear();
+        this.PendingSpawnObjects.Clear();
 
         foreach (SceneObject o in _activeSceneObjects)
         {
@@ -284,7 +288,7 @@ public class SceneManager : SingletonBase<SceneManager>
         }
 
         // Switch to the main scene defined in the config
-        RequestSceneChange(GraphicsEngine.GraphicsConfig.MainScene);
+        this.RequestSceneChange(GraphicsEngine.GraphicsConfig.MainScene);
     }
 
     #endregion Internal Methods
@@ -304,14 +308,14 @@ public class SceneManager : SingletonBase<SceneManager>
         }
         _ = _activeSceneObjects.RemoveWhere(o => !o.IsPersistent);
 
-        foreach (SceneObject queued in PendingSpawnObjects)
+        foreach (SceneObject queued in this.PendingSpawnObjects)
         {
             if (!queued.IsPersistent)
             {
                 queued.OnBeforeDestroy();
             }
         }
-        _ = PendingSpawnObjects.RemoveWhere(o => !o.IsPersistent);
+        _ = this.PendingSpawnObjects.RemoveWhere(o => !o.IsPersistent);
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
@@ -327,7 +331,7 @@ public class SceneManager : SingletonBase<SceneManager>
 
         _currentScene = found;
         _currentScene.InitializeScene();
-        EnqueueSpawn(_currentScene.GetObjects());
+        this.EnqueueSpawn(_currentScene.GetObjects());
     }
 
     #endregion Private Methods
