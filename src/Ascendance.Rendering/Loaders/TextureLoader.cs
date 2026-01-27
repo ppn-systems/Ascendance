@@ -43,8 +43,7 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
     /// <returns>The managed Texture</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override Texture Load(System.String name, System.Byte[] rawData = null)
-        => Load(name, Repeat, Smoothing, rawData);
+    public override Texture Load(System.String name, System.Byte[] rawData = null) => this.Load(name, Repeat, Smoothing, rawData);
 
     /// <summary>Loads or retrieves an already loaded instance of a Texture from a File or Raw Data Source</summary>
     /// <param name="name">Name of the Texture</param>

@@ -138,9 +138,6 @@ public class SceneManager : SingletonBase<SceneManager>
 
     #region Internal Methods
 
-
-
-
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessSceneChange()

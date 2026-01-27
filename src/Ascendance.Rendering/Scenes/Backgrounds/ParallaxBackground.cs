@@ -14,7 +14,7 @@ public class ParallaxBackground(Vector2u viewport) : IUpdatable
     #region Fields
 
     private readonly Vector2u _viewport = viewport;
-    private readonly System.Collections.Generic.List<Layer> _backgroundLayers = [];
+    private readonly System.Collections.Generic.List<Layer> _layers = [];
 
     #endregion Fields
 
@@ -46,7 +46,7 @@ public class ParallaxBackground(Vector2u viewport) : IUpdatable
             throw new System.ArgumentException("Texture must have nonzero size.", nameof(texture));
         }
 
-        _backgroundLayers.Add(new Layer(_viewport, texture, speed, autoScale));
+        _layers.Add(new Layer(_viewport, texture, speed, autoScale));
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class ParallaxBackground(Vector2u viewport) : IUpdatable
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void ClearBackgroundLayers() => _backgroundLayers.Clear();
+    public void ClearBackgroundLayers() => _layers.Clear();
 
     /// <summary>
     /// Updates the parallax scrolling based on elapsed time.
@@ -63,7 +63,7 @@ public class ParallaxBackground(Vector2u viewport) : IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void Update(System.Single deltaTime)
     {
-        foreach (Layer layer in _backgroundLayers)
+        foreach (Layer layer in _layers)
         {
             layer.Offset += layer.Speed * deltaTime;
 
@@ -87,7 +87,7 @@ public class ParallaxBackground(Vector2u viewport) : IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void Draw(RenderTarget target)
     {
-        foreach (Layer layer in _backgroundLayers)
+        foreach (Layer layer in _layers)
         {
             target.Draw(layer.Sprite);
         }
