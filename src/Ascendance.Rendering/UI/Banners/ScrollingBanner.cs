@@ -88,6 +88,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     {
         _text.DisplayedString = message;
         _textWidthPx = _text.GetGlobalBounds().Width;
+
         this.RESET_TEXT_POSITION();
     }
 
@@ -97,7 +98,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// <param name="target">The render target.</param>
     public void Render(RenderTarget target)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }
@@ -113,7 +114,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// <inheritdoc />
     public override void Update(System.Single deltaTime)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }

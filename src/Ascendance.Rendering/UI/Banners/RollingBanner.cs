@@ -73,9 +73,9 @@ public class RollingBanner : RenderObject
         this.SetZIndex(zIndex);
         this.Show();
 
-        this._font = font;
-        this._speedPxPerSec = speedPxPerSec;
-        this._background = CREATE_BACKGROUND();
+        _font = font;
+        _speedPxPerSec = speedPxPerSec;
+        _background = CREATE_BACKGROUND();
 
         this.INITIALIZE_TEXTS(messages);
     }
@@ -90,7 +90,7 @@ public class RollingBanner : RenderObject
     /// <param name="messages">The new list of messages to display.</param>
     public void SetMessages(System.Collections.Generic.List<System.String> messages)
     {
-        this._texts.Clear();
+        _texts.Clear();
         this.INITIALIZE_TEXTS(messages);
     }
 
@@ -101,24 +101,21 @@ public class RollingBanner : RenderObject
     /// <inheritdoc/>
     public override void Update(System.Single deltaTime)
     {
-        if (!this.IsVisible || this._texts.Count == 0)
+        if (!this.IsVisible || _texts.Count == 0)
         {
             return;
         }
 
         this.SCROLL_TEXTS(deltaTime);
 
-        Text first = this._texts[0];
+        Text first = _texts[0];
         if (first.Position.X + first.GetGlobalBounds().Width < 0)
         {
-            Text last = this._texts[^1];
-            first.Position = new Vector2f(
-                last.Position.X + last.GetGlobalBounds().Width + TextGapPx,
-                first.Position.Y
-            );
+            Text last = _texts[^1];
+            first.Position = new Vector2f(last.Position.X + last.GetGlobalBounds().Width + TextGapPx, first.Position.Y);
 
-            this._texts.RemoveAt(0);
-            this._texts.Add(first);
+            _texts.RemoveAt(0);
+            _texts.Add(first);
         }
     }
 
@@ -133,8 +130,8 @@ public class RollingBanner : RenderObject
             return;
         }
 
-        target.Draw(this._background);
-        foreach (var text in this._texts)
+        target.Draw(_background);
+        foreach (Text text in _texts)
         {
             target.Draw(text);
         }
@@ -175,8 +172,8 @@ public class RollingBanner : RenderObject
         System.Single startX = GraphicsEngine.ScreenSize.X;
         foreach (System.String msg in messages)
         {
-            var text = CREATE_TEXT(msg, this._font, startX);
-            this._texts.Add(text);
+            Text text = CREATE_TEXT(msg, _font, startX);
+            _texts.Add(text);
 
             startX += text.GetGlobalBounds().Width + TextGapPx;
         }
@@ -204,10 +201,10 @@ public class RollingBanner : RenderObject
     /// <param name="deltaTime">Elapsed time in seconds.</param>
     private void SCROLL_TEXTS(System.Single deltaTime)
     {
-        System.Single displacement = this._speedPxPerSec * deltaTime;
-        for (System.Int32 i = 0; i < this._texts.Count; i++)
+        System.Single displacement = _speedPxPerSec * deltaTime;
+        for (System.Int32 i = 0; i < _texts.Count; i++)
         {
-            this._texts[i].Position += ScrollDirection * displacement;
+            _texts[i].Position += ScrollDirection * displacement;
         }
     }
 
