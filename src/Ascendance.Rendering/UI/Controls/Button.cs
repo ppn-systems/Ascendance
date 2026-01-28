@@ -252,7 +252,7 @@ public class Button : RenderObject, IUpdatable
             return;
         }
 
-        var mousePos = MouseManager.Instance.GetMousePosition();
+        Vector2i mousePos = MouseManager.Instance.GetMousePosition();
         System.Boolean isOver = _totalBounds.Contains(mousePos.X, mousePos.Y);
         System.Boolean isDown = Mouse.IsButtonPressed(Mouse.Button.Left);
 
@@ -308,7 +308,7 @@ public class Button : RenderObject, IUpdatable
     /// </summary>
     public override void Draw(RenderTarget target)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }

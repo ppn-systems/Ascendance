@@ -91,14 +91,14 @@ public sealed class PasswordField : TextInputField
     protected override System.String GetRenderText()
     {
         // Nếu đang “show”, hiển thị text thường
-        if (IsPasswordVisible)
+        if (this.IsPasswordVisible)
         {
-            return Text;
+            return base.Text;
         }
 
         // Khi ẩn, trả về chuỗi mask có độ dài bằng số ký tự thực
-        System.Int32 len = Text?.Length ?? 0;
-        return len == 0 ? System.String.Empty : new System.String(MaskCharacter, len);
+        System.Int32 len = base.Text?.Length ?? 0;
+        return len == 0 ? System.String.Empty : new System.String(this.MaskCharacter, len);
     }
 
     #endregion APIs

@@ -258,10 +258,10 @@ public class TextInputField : RenderObject
         if (MouseManager.Instance.IsMouseButtonPressed(Mouse.Button.Left))
         {
             Vector2i mp = MouseManager.Instance.GetMousePosition();
-            Focused = _hitBox.Contains(mp.X, mp.Y);
+            this.Focused = _hitBox.Contains(mp.X, mp.Y);
         }
 
-        if (Focused)
+        if (this.Focused)
         {
             // Caret blink
             _caretTimer += dt;
@@ -282,7 +282,7 @@ public class TextInputField : RenderObject
     /// <inheritdoc/>
     public override void Draw(RenderTarget target)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }
@@ -317,9 +317,9 @@ public class TextInputField : RenderObject
 
     /// <summary>
     /// Returns what should be displayed: placeholder, masked password, or raw text.
-    /// (VN) Chuỗi hiển thị: placeholder (nếu rỗng & không focus), password (•••), hoặc text thường.
     /// </summary>
-    protected virtual System.String GetRenderText() => _buffer.Length == 0 && !Focused && !System.String.IsNullOrEmpty(Placeholder) ? Placeholder : _buffer.ToString();
+    protected virtual System.String GetRenderText()
+        => _buffer.Length == 0 && !this.Focused && !System.String.IsNullOrEmpty(this.Placeholder) ? this.Placeholder : _buffer.ToString();
 
     #endregion APIs
 
@@ -327,7 +327,6 @@ public class TextInputField : RenderObject
 
     /// <summary>
     /// Handles key presses and key repeats for Backspace/Delete.
-    /// (VN) Xử lý gõ phím & giữ phím để repeat.
     /// </summary>
     private void HANDLE_KEY_INPUT(System.Single dt)
     {
@@ -401,17 +400,16 @@ public class TextInputField : RenderObject
 
     /// <summary>
     /// Updates caret position/size immediately to the end of visible text.
-    /// (VN) Cập nhật vị trí/size caret ngay lập tức về cuối chuỗi hiển thị.
     /// </summary>
     private void UPDATE_CARET_IMMEDIATE()
     {
         // bounds.Left may be non-zero due to glyph bearings
-        var b = _text.GetLocalBounds();
+        FloatRect b = _text.GetLocalBounds();
         System.Single caretX = _text.Position.X + b.Left + b.Width + 1f;
         System.Single caretY = _text.Position.Y + 2f;
 
-        _caret.Size = new Vector2f(_caretWidth, _fontSize);
         _caret.Position = new Vector2f(caretX, caretY);
+        _caret.Size = new Vector2f(_caretWidth, _fontSize);
     }
 
     /// <summary>
@@ -468,13 +466,13 @@ public class TextInputField : RenderObject
     /// </summary>
     private void APPEND_CHAR(System.Char c)
     {
-        if (MaxLength.HasValue && _buffer.Length >= MaxLength.Value)
+        if (this.MaxLength.HasValue && _buffer.Length >= this.MaxLength.Value)
         {
             return;
         }
 
         _ = _buffer.Append(c);
-        TextChanged?.Invoke(_buffer.ToString());
+        this.TextChanged?.Invoke(_buffer.ToString());
     }
 
     /// <summary>Remove one char at end, if any; raises <see cref="TextChanged"/>.</summary>
@@ -486,13 +484,13 @@ public class TextInputField : RenderObject
         }
 
         _ = _buffer.Remove(_buffer.Length - 1, 1);
-        TextChanged?.Invoke(_buffer.ToString());
+        this.TextChanged?.Invoke(_buffer.ToString());
     }
 
     /// <summary>Clamp current text to <see cref="MaxLength"/> if needed.</summary>
     private void CLAMP_TO_MAX_LENGTH()
     {
-        if (MaxLength.HasValue && _buffer.Length > MaxLength.Value)
+        if (this.MaxLength.HasValue && _buffer.Length > this.MaxLength.Value)
         {
             _buffer.Length = MaxLength.Value;
         }
@@ -501,8 +499,8 @@ public class TextInputField : RenderObject
     /// <summary>Recompute hit-box based on panel position &amp; size.</summary>
     private void UPDATE_HIT_BOX()
     {
-        var s = _panel.Size;
-        var p = _panel.Position;
+        Vector2f s = _panel.Size;
+        Vector2f p = _panel.Position;
         _hitBox = new FloatRect(p.X, p.Y, s.X, s.Y);
     }
 
@@ -529,9 +527,9 @@ public class TextInputField : RenderObject
     /// <summary>Reset scrolling window and caret visibility after large layout changes.</summary>
     private void RESET_SCROLL_AND_CARET()
     {
+        _caretTimer = 0f;
         _scrollStart = 0;
         _caretVisible = true;
-        _caretTimer = 0f;
         this.UPDATE_VISIBLE_TEXT();
         this.UPDATE_CARET_IMMEDIATE();
     }
