@@ -100,16 +100,16 @@ public class Notification : RenderObject
     {
         COMPUTE_LAYOUT(side, out System.Single panelY, out System.Single panelWidth, out System.Single panelX);
 
-        Panel = this.CREATE_PANEL(frameTexture, panelX, panelY, panelWidth);
+        this.Panel = this.CREATE_PANEL(frameTexture, panelX, panelY, panelWidth);
 
         System.Single innerWidth = COMPUTE_INNER_WIDTH(panelWidth);
-        MessageText = PREPARE_WRAPPED_TEXT(font, initialMessage, (System.UInt32)TextCharSizePx, innerWidth);
+        this.MessageText = PREPARE_WRAPPED_TEXT(font, initialMessage, (System.UInt32)TextCharSizePx, innerWidth);
 
-        System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(MessageText);
+        System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(this.MessageText);
         System.Single panelHeight = COMPUTE_TARGET_HEIGHT(textHeight);
 
-        Panel.SetSize(new Vector2f(panelWidth, panelHeight));
-        this.POSITION_TEXT_INSIDE_PANEL(Panel, textHeight, out _textAnchor);
+        this.Panel.SetSize(new Vector2f(panelWidth, panelHeight));
+        this.POSITION_TEXT_INSIDE_PANEL(this.Panel, textHeight, out _textAnchor);
 
         base.Show();
     }
@@ -124,12 +124,12 @@ public class Notification : RenderObject
     /// <param name="newMessage">New message to display.</param>
     public virtual void UpdateMessage(System.String newMessage)
     {
-        MessageText.DisplayedString = WrapText(MessageText.Font, newMessage, MessageText.CharacterSize, COMPUTE_INNER_WIDTH(Panel.Size.X));
+        this.MessageText.DisplayedString = WRAP_TEXT(this.MessageText.Font, newMessage, this.MessageText.CharacterSize, COMPUTE_INNER_WIDTH(this.Panel.Size.X));
 
         // Re-center origin but preserve anchor position
-        FloatRect bounds = MessageText.GetLocalBounds();
-        MessageText.Position = _textAnchor;
-        MessageText.Origin = new Vector2f(bounds.Left + (bounds.Width / 2f), bounds.Top + (bounds.Height / 2f));
+        FloatRect bounds = this.MessageText.GetLocalBounds();
+        this.MessageText.Position = _textAnchor;
+        this.MessageText.Origin = new Vector2f(bounds.Left + (bounds.Width / 2f), bounds.Top + (bounds.Height / 2f));
     }
 
     #endregion Public API
@@ -139,7 +139,7 @@ public class Notification : RenderObject
     /// <inheritdoc />
     public override void Update(System.Single deltaTime)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }
@@ -153,7 +153,7 @@ public class Notification : RenderObject
     /// <param name="target">Render target.</param>
     public override void Draw(RenderTarget target)
     {
-        if (!IsVisible)
+        if (!this.IsVisible)
         {
             return;
         }
@@ -170,7 +170,7 @@ public class Notification : RenderObject
 
     #endregion Overrides
 
-    #region Layout Construction
+    #region Private Methods
 
     /// <summary>
     /// Calculates panel position and size depending on screen side.
@@ -229,7 +229,7 @@ public class Notification : RenderObject
     /// <param name="innerWidth">Max width for wrapping.</param>
     /// <returns>Configured Text object.</returns>
     private static Text PREPARE_WRAPPED_TEXT(Font font, System.String message, System.UInt32 charSize, System.Single innerWidth)
-        => new(WrapText(font, message, charSize, innerWidth), font, charSize) { FillColor = Color.Black };
+        => new(WRAP_TEXT(font, message, charSize, innerWidth), font, charSize) { FillColor = Color.Black };
 
     /// <summary>
     /// Re-centers origin of Text and returns measured height.
@@ -271,10 +271,6 @@ public class Notification : RenderObject
         anchorOut = MessageText.Position;
     }
 
-    #endregion Layout Construction
-
-    #region Helpers
-
     /// <summary>
     /// Performs word wrapping on the specified text, splitting into multiple lines so each fits in <paramref name="maxWidth"/>.
     /// Uses a single <see cref="Text"/> instance for measuring, avoiding performance overhead.
@@ -284,7 +280,7 @@ public class Notification : RenderObject
     /// <param name="characterSize">Font character size.</param>
     /// <param name="maxWidth">Maximum allowed line width.</param>
     /// <returns>Word-wrapped text.</returns>
-    protected static System.String WrapText(Font font, System.String text, System.UInt32 characterSize, System.Single maxWidth)
+    private static System.String WRAP_TEXT(Font font, System.String text, System.UInt32 characterSize, System.Single maxWidth)
     {
         if (System.String.IsNullOrEmpty(text))
         {
@@ -325,22 +321,5 @@ public class Notification : RenderObject
         return result;
     }
 
-    /// <summary>
-    /// Linearly interpolates between two colors using interpolation parameter <paramref name="t"/>.
-    /// </summary>
-    /// <param name="a">Start color.</param>
-    /// <param name="b">End color.</param>
-    /// <param name="t">Interpolation coefficient [0..1].</param>
-    /// <returns>Interpolated color value.</returns>
-    protected static Color Lerp(Color a, Color b, System.Single t)
-    {
-        System.Byte LerpComponent(System.Byte start, System.Byte end) => (System.Byte)(start + ((end - start) * t));
-        return new Color(
-            LerpComponent(a.R, b.R),
-            LerpComponent(a.G, b.G),
-            LerpComponent(a.B, b.B),
-            LerpComponent(a.A, b.A));
-    }
-
-    #endregion Helpers
+    #endregion Private Methods
 }

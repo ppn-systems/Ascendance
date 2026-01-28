@@ -94,7 +94,7 @@ public sealed class NotificationButton : Notification
             .SetSize(DefaultButtonWidth, DefaultButtonHeight);
 
         // Đăng ký sự kiện click để đóng notification và gọi OnClicked.
-        _actionButton.RegisterClickHandler(ON_BUTTON_PRESSED);
+        _actionButton.RegisterClickHandler(this.ON_BUTTON_PRESSED);
 
         // Lần đầu layout nút.
         this.UPDATE_BUTTON_LAYOUT();
@@ -187,7 +187,7 @@ public sealed class NotificationButton : Notification
     /// </summary>
     private void ON_BUTTON_PRESSED()
     {
-        OnClicked?.Invoke();
+        this.OnClicked?.Invoke();
         base.Hide();
     }
 
