@@ -75,12 +75,26 @@ public abstract class SceneObject : IUpdatable
     #endregion Virtual Methods
 
     /// <summary>
+    /// Clears all tags from the object.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void ClearTags() => _tags.Clear();
+
+    /// <summary>
     /// Adds a tag to the object.
     /// </summary>
     /// <param name="tag">The tag to add.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void AddTag(System.String tag) => _tags.Add(tag);
+
+    /// <summary>
+    /// Removes a tag from the object.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void RemoveTag(System.String tag) => _tags.Remove(tag);
 
     /// <summary>
     /// Checks if the object has a specific tag.

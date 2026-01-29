@@ -16,7 +16,7 @@ public abstract class SpriteObject : RenderObject
     /// <summary>
     /// The Sprite associated with this object.
     /// </summary>
-    public Sprite Sprite;
+    protected Sprite Sprite;
 
     /// <summary>
     /// Gets the global bounds of the Sprite.

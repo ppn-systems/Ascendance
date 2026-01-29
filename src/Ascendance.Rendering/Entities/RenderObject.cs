@@ -20,6 +20,11 @@ public abstract class RenderObject : SceneObject, IRenderable
     #region Properties
 
     /// <summary>
+    /// Indicates the Z-Index of the object for rendering order.
+    /// </summary>
+    public System.Int32 ZIndex => _zIndex;
+
+    /// <summary>
     /// Gets or sets whether the object is visible.
     /// </summary>
     public System.Boolean IsVisible { get; private set; } = true;
