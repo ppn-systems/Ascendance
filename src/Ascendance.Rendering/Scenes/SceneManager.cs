@@ -20,7 +20,7 @@ public class SceneManager : SingletonBase<SceneManager>
     /// This event is invoked at the beginning of the next frame after all non-persisting objects have been queued to be destroyed
     /// and after the new objects have been queued to spawn, but before they are initialized.
     /// </summary>
-    public event System.Action<System.String, System.String> SceneChanged;
+    public event System.EventHandler<SceneChangedEventArgs> SceneChanged;
 
     #endregion Events
 
@@ -155,7 +155,11 @@ public class SceneManager : SingletonBase<SceneManager>
         CLEAR_SCENE();
         System.String lastScene = _currentScene?.Name ?? "";
         LOAD_SCENE(_nextScene);
-        SceneChanged?.Invoke(lastScene, _nextScene);
+
+        SceneChanged?.Invoke(
+            this,
+            new SceneChangedEventArgs(lastScene, _nextScene)
+        );
         _nextScene = "";
     }
 
@@ -203,13 +207,13 @@ public class SceneManager : SingletonBase<SceneManager>
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void UpdateSceneObjects(System.Single deltaTime)
     {
-        foreach (SceneObject o in _activeSceneObjects)
+        System.Threading.Tasks.Parallel.ForEach(_activeSceneObjects, o =>
         {
             if (o.IsEnabled)
             {
                 o.Update(deltaTime);
             }
-        }
+        });
     }
 
     /// <summary>
