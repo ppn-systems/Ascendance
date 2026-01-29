@@ -40,16 +40,6 @@ public class SceneManager : SingletonBase<SceneManager>
     #region APIs
 
     /// <summary>
-    /// Retrieves all objects in the scene of a specific type.
-    /// </summary>
-    /// <typeparam name="T">The type of objects to retrieve.</typeparam>
-    /// <returns>ScreenSize HashSet of all objects of the specified type.</returns>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public System.Collections.Generic.IReadOnlyCollection<T> GetAllObjectsOfType<T>() where T : SceneObject
-        => System.Linq.Enumerable.ToList(System.Linq.Enumerable.OfType<T>(_activeSceneObjects));
-
-    /// <summary>
     /// Queues a scene to be loaded on the next frame.
     /// </summary>
     /// <param name="name">The name of the scene to be loaded.</param>
@@ -120,6 +110,16 @@ public class SceneManager : SingletonBase<SceneManager>
             EnqueueDestroy(o);
         }
     }
+
+    /// <summary>
+    /// Retrieves all objects in the scene of a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of objects to retrieve.</typeparam>
+    /// <returns>ScreenSize HashSet of all objects of the specified type.</returns>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public System.Collections.Generic.IReadOnlyCollection<T> GetAllObjectsOfType<T>() where T : SceneObject
+        => System.Linq.Enumerable.ToList(System.Linq.Enumerable.OfType<T>(_activeSceneObjects));
 
     /// <summary>
     /// Finds the first object of a specific type in the scene.

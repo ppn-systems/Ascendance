@@ -3,7 +3,6 @@
 using Ascendance.Rendering.Enums;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
-using System.Collections.Generic;
 
 namespace Ascendance.Rendering.Animation;
 
@@ -16,11 +15,12 @@ public sealed class Animator : IUpdatable, System.IDisposable
     #region Fields
 
     private readonly Sprite _sprite;
-    private readonly List<IntRect> _frames = [];
+    private readonly System.Collections.Generic.List<IntRect> _frames = [];
+
     private System.Int32 _index;
-    private System.Single _frameTime = 0.1f;
-    private System.Single _accumulator;
     private System.Boolean _reverse;
+    private System.Single _frameTime;
+    private System.Single _accumulator;
 
     #endregion Fields
 
@@ -107,6 +107,8 @@ public sealed class Animator : IUpdatable, System.IDisposable
     public Animator(Sprite sprite, System.Single frameTime = 0.1f)
     {
         _sprite = sprite ?? throw new System.ArgumentNullException(nameof(sprite));
+
+        _frameTime = 0.1f;
         this.FrameTime = frameTime;
     }
 
@@ -118,7 +120,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
     /// Replaces all frames of the animation and resets to the first frame.
     /// </summary>
     /// <param name="frames">Read-only list of frame rectangles.</param>
-    public void SetFrames(IReadOnlyList<IntRect> frames)
+    public void SetFrames(System.Collections.Generic.IReadOnlyList<IntRect> frames)
     {
         _frames.Clear();
         if (frames is not null)
@@ -140,7 +142,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
     /// Adds multiple frames to the end of the frame list.
     /// </summary>
     /// <param name="frames">Enumerable collection of frame rectangles to add.</param>
-    public void AddFrames(IEnumerable<IntRect> frames)
+    public void AddFrames(System.Collections.Generic.IEnumerable<IntRect> frames)
     {
         if (frames != null)
         {
@@ -278,7 +280,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
     /// Gets a read-only copy of the frame list.
     /// </summary>
     /// <returns>A read-only list of frame rectangles.</returns>
-    public IReadOnlyList<IntRect> GetFramesReadonly() => _frames.AsReadOnly();
+    public System.Collections.Generic.IReadOnlyList<IntRect> GetFramesReadonly() => _frames.AsReadOnly();
 
     /// <summary>
     /// Builds a grid of frames (for standard spritesheets) and sets them as the current animation frame set.
@@ -296,7 +298,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
         System.Int32 startCol = 0, System.Int32 startRow = 0,
         System.Int32? count = null)
     {
-        List<IntRect> list = [];
+        System.Collections.Generic.List<IntRect> list = [];
         System.Int32 total = columns * rows;
         System.Int32 start = (startRow * columns) + startCol;
         System.Int32 take = count ?? (total - start);

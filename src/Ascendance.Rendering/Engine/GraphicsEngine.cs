@@ -87,9 +87,9 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
 
         ContextSettings ctx = new()
         {
-            AntialiasingLevel = 0,
             DepthBits = 0,
-            StencilBits = 0
+            StencilBits = 0,
+            AntialiasingLevel = 0
         };
 
         this.RenderWindow = new RenderWindow(
@@ -198,7 +198,11 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         finally
         {
             this.RenderWindow.Dispose();
-            try { MusicManager.Dispose(); } catch { }
+            try
+            {
+                MusicManager.Dispose();
+            }
+            catch { /* intentionally ignore */ }
         }
     }
 
