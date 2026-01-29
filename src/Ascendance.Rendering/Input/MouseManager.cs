@@ -15,21 +15,11 @@ public class MouseManager : SingletonBase<MouseManager>
     #region Fields
 
     private Vector2i _mousePosition;
-    private System.Boolean _inputEnabled;
     private readonly Mouse.Button[] AllButtons;
     private readonly System.Boolean[] MouseButtonState;
     private readonly System.Boolean[] PreviousMouseButtonState;
 
     #endregion Fields
-
-    #region Properties
-
-    /// <summary>
-    /// Gets a value indicating whether mouse input is currently enabled.
-    /// </summary>
-    public System.Boolean IsInputEnabled => _inputEnabled;
-
-    #endregion Properties
 
     #region Constructor
 
@@ -39,8 +29,6 @@ public class MouseManager : SingletonBase<MouseManager>
     /// </summary>
     public MouseManager()
     {
-        _inputEnabled = true;
-
         AllButtons = System.Enum.GetValues<Mouse.Button>();
         MouseButtonState = new System.Boolean[(System.Int32)Mouse.Button.ButtonCount];
         PreviousMouseButtonState = new System.Boolean[(System.Int32)Mouse.Button.ButtonCount];
@@ -56,13 +44,6 @@ public class MouseManager : SingletonBase<MouseManager>
     /// <param name="window">The render window reference (for relative mouse position).</param>
     public void Update(RenderWindow window)
     {
-        if (!_inputEnabled)
-        {
-            System.Array.Fill(MouseButtonState, false);
-            _mousePosition = new Vector2i(0, 0);
-            return;
-        }
-
         for (System.Int32 i = 0; i < AllButtons.Length; i++)
         {
             System.Int32 idx = (System.Int32)AllButtons[i];
@@ -78,20 +59,6 @@ public class MouseManager : SingletonBase<MouseManager>
 
         _mousePosition = Mouse.GetPosition(window);
     }
-
-    /// <summary>
-    /// Enables mouse input globally.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void EnableInput() => _inputEnabled = true;
-
-    /// <summary>
-    /// Disables mouse input globally.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void DisableInput() => _inputEnabled = false;
 
     #endregion Input Control
 

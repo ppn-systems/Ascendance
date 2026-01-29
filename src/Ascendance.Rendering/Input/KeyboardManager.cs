@@ -13,21 +13,11 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
 {
     #region Fields
 
-    private System.Boolean _inputEnabled;
     private readonly Keyboard.Key[] AllKeys;
     private readonly System.Boolean[] KeyState;
     private readonly System.Boolean[] PreviousKeyState;
 
     #endregion Fields
-
-    #region Properties
-
-    /// <summary>
-    /// Gets a value indicating whether input is currently enabled.
-    /// </summary>
-    public System.Boolean IsInputEnabled => _inputEnabled;
-
-    #endregion Properties
 
     #region Constructor
 
@@ -37,8 +27,6 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     /// </summary>
     public KeyboardManager()
     {
-        _inputEnabled = true;
-
         AllKeys = System.Enum.GetValues<Keyboard.Key>();
         KeyState = new System.Boolean[(System.Int32)Keyboard.Key.KeyCount];
         PreviousKeyState = new System.Boolean[(System.Int32)Keyboard.Key.KeyCount];
@@ -49,30 +37,10 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     #region Input Control
 
     /// <summary>
-    /// Enables all keyboard input globally.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void EnableInput() => _inputEnabled = true;
-
-    /// <summary>
-    /// Disables all keyboard input globally.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void DisableInput() => _inputEnabled = false;
-
-    /// <summary>
     /// Updates the internal keyboard state for all keys.
     /// </summary>
     public void Update()
     {
-        if (!_inputEnabled)
-        {
-            System.Array.Fill(KeyState, false);
-            return;
-        }
-
         for (System.Int32 i = 0; i < AllKeys.Length; i++)
         {
             System.Int32 idx = (System.Int32)AllKeys[i];
