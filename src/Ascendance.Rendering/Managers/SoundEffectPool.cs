@@ -68,13 +68,14 @@ public class SoundEffectPool : System.IDisposable
     /// <returns>The sound instance or null when too many instances of the same sound are already active</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.MaybeNull]
     public Sound GetAvailableInstance()
     {
         System.ObjectDisposedException.ThrowIf(Disposed, Name);
 
         for (System.Int32 i = 0; i < _soundInstances.Length; i++)
         {
-            var sound = _soundInstances[i];
+            Sound sound = _soundInstances[i];
             if (sound == null)
             {
                 _soundInstances[i] = sound = new Sound(_buffer);
@@ -87,6 +88,7 @@ public class SoundEffectPool : System.IDisposable
 
             return sound;
         }
+
         return null; // when all sounds are busy none shall be added
     }
 

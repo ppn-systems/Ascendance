@@ -16,6 +16,8 @@ namespace Ascendance.Rendering.Loaders;
 public sealed class TextureLoader(System.String assetRoot = "", System.Boolean repeat = false, System.Boolean smoothing = false)
     : AssetLoader<Texture>(SupportedFormats, assetRoot)
 {
+    #region Properties
+
     /// <summary>
     /// List of supported file endings for this TextureLoader
     /// </summary>
@@ -34,6 +36,10 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
     /// Determines if a smoothing should be applied onto newly loaded Textures.
     /// </summary>
     public System.Boolean Smoothing { get; set; } = smoothing;
+
+    #endregion Properties
+
+    #region APIs
 
     /// <summary>
     /// Loads or retrieves an already loaded instance of a Texture from a File or Raw Data Source
@@ -85,4 +91,6 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
         Texture texture = new(fs); // Pass the FileStream to the constructor
         return texture;
     }
+
+    #endregion APIs
 }

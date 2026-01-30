@@ -13,6 +13,8 @@ namespace Ascendance.Rendering.Loaders;
 /// <param name="rootFolder">Optional root path of the managed asset folder</param>
 public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoader<SoundBuffer>(SupportedFormats, rootFolder)
 {
+    #region Properties
+
     /// <summary>
     /// List of supported file endings for this SfxLoader
     /// </summary>
@@ -23,6 +25,10 @@ public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoad
             ".mat4", ".mat5", ".pvf", ".htk", ".sds", ".avr",
             ".sd2", ".caf", ".wve", ".mpc2k", ".rf64"
     ];
+
+    #endregion Properties
+
+    #region APIs
 
     /// <summary>
     /// Loads or retrieves an already loaded instance of a Sound from a Stream Source
@@ -71,4 +77,6 @@ public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoad
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     protected override SoundBuffer CreateInstanceFromPath(System.String path)
         => System.String.IsNullOrWhiteSpace(path) ? throw new System.ArgumentException("Path is null or empty.", nameof(path)) : new SoundBuffer(path);
+
+    #endregion APIs
 }

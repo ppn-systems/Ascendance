@@ -250,7 +250,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     {
         if (_renderCacheDirty)
         {
-            _renderObjectCache = [.. SceneManager.Instance.GetAllObjectsOfType<RenderObject>()];
+            _renderObjectCache = [.. SceneManager.Instance.GetActiveObjects<RenderObject>()];
             _renderObjectCache.Sort(RenderObject.CompareZIndex);
             _renderCacheDirty = false;
         }

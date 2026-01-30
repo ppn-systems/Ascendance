@@ -13,10 +13,16 @@ namespace Ascendance.Rendering.Loaders;
 /// <param name="rootFolder">Optional root path of the managed asset folder</param>
 public sealed class FontLoader(System.String rootFolder = "") : AssetLoader<Font>(SupportedExtensions, rootFolder)
 {
+    #region Properties
+
     /// <summary>
     /// List of supported file endings for this FontLoader
     /// </summary>
     public static readonly System.Collections.Generic.IEnumerable<System.String> SupportedExtensions = [".ttf", ".cff", ".fnt", ".ttf", ".otf", ".eot"];
+
+    #endregion Properties
+
+    #region APIs
 
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
@@ -37,4 +43,6 @@ public sealed class FontLoader(System.String rootFolder = "") : AssetLoader<Font
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     protected override Font CreateInstanceFromPath(System.String path)
         => System.String.IsNullOrWhiteSpace(path) ? throw new System.ArgumentException("Path is null or empty.", nameof(path)) : new Font(path);
+
+    #endregion APIs
 }

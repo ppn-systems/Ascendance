@@ -91,7 +91,7 @@ public sealed class SceneTransitionData<T> : SceneObject
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static T FindByName(System.String name, T defaultValue)
     {
-        SceneTransitionData<T> info = SceneManager.Instance.FindFirstObjectOfType<SceneTransitionData<T>>();
+        SceneTransitionData<T> info = SceneManager.Instance.GetFirstActive<SceneTransitionData<T>>();
         return info == null ? defaultValue : info.Name != name ? defaultValue : info.GetData();
     }
 

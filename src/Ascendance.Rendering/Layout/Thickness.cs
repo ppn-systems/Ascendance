@@ -8,6 +8,8 @@ namespace Ascendance.Rendering.Layout;
 /// </summary>
 public readonly struct Thickness(System.Int32 left, System.Int32 top, System.Int32 right, System.Int32 bottom)
 {
+    #region Properties
+
     /// <summary>
     /// Gets the thickness of the left side.
     /// </summary>
@@ -28,6 +30,10 @@ public readonly struct Thickness(System.Int32 left, System.Int32 top, System.Int
     /// </summary>
     public System.Int32 Bottom { get; } = bottom;
 
+    #endregion Properties
+
+    #region Constructor
+
     /// <summary>
     /// Initializes a new <see cref="Thickness"/> with the same value for all sides.
     /// </summary>
@@ -39,4 +45,6 @@ public readonly struct Thickness(System.Int32 left, System.Int32 top, System.Int
                System.Math.Max(0, uniform), System.Math.Max(0, uniform))
     {
     }
+
+    #endregion Constructor
 }

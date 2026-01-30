@@ -45,7 +45,7 @@ public class SceneManager : SingletonBase<SceneManager>
     /// <param name="name">The name of the scene to be loaded.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void RequestSceneChange(System.String name) => _nextScene = name;
+    public void ScheduleSceneChange(System.String name) => _nextScene = name;
 
     /// <summary>
     /// Queues a single object to be spawned in the scene.
@@ -118,7 +118,7 @@ public class SceneManager : SingletonBase<SceneManager>
     /// <returns>ScreenSize HashSet of all objects of the specified type.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public System.Collections.Generic.IReadOnlyCollection<T> GetAllObjectsOfType<T>() where T : SceneObject
+    public System.Collections.Generic.IReadOnlyCollection<T> GetActiveObjects<T>() where T : SceneObject
         => System.Linq.Enumerable.ToList(System.Linq.Enumerable.OfType<T>(_activeSceneObjects));
 
     /// <summary>
@@ -128,11 +128,53 @@ public class SceneManager : SingletonBase<SceneManager>
     /// <returns>The first object of the specified type, or null if none exist.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public T FindFirstObjectOfType<T>() where T : SceneObject
+    [return: System.Diagnostics.CodeAnalysis.MaybeNull]
+    public T GetFirstActive<T>() where T : SceneObject
     {
-        System.Collections.Generic.IReadOnlyCollection<T> objects = GetAllObjectsOfType<T>();
+        System.Collections.Generic.IReadOnlyCollection<T> objects = GetActiveObjects<T>();
         return objects.Count != 0 ? System.Linq.Enumerable.First(objects) : null;
     }
+
+    /// <summary>
+    /// Determines whether an active object of the specified type exists.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
+    public System.Boolean HasActiveObject<T>() where T : SceneObject
+    {
+        foreach (SceneObject o in _activeSceneObjects)
+        {
+            if (o is T)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the name of the currently active scene.
+    /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
+    public System.String GetActiveSceneName() => _currentScene?.Name ?? System.String.Empty;
+
+    /// <summary>
+    /// Determines whether the specified object is currently active in the scene.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
+    public System.Boolean IsObjectActive(SceneObject o) => _activeSceneObjects.Contains(o);
+
+    /// <summary>
+    /// Determines whether the specified object is queued for spawn or destroy.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
+    public System.Boolean IsObjectQueued(SceneObject o) => PendingSpawnObjects.Contains(o) || PendingDestroyObjects.Contains(o);
 
     #endregion APIs
 
@@ -165,23 +207,6 @@ public class SceneManager : SingletonBase<SceneManager>
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal void ProcessPendingDestroy()
-    {
-        foreach (SceneObject o in this.PendingDestroyObjects)
-        {
-            if (!_activeSceneObjects.Remove(o))
-            {
-                "Instance of SceneObject to be destroyed does not exist in scene".Warn();
-                continue;
-            }
-            o.OnBeforeDestroy();
-        }
-
-        this.PendingDestroyObjects.Clear();
-    }
-
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessPendingSpawn()
     {
         foreach (SceneObject q in this.PendingSpawnObjects)
@@ -201,6 +226,23 @@ public class SceneManager : SingletonBase<SceneManager>
                 o.InternalInitialize();
             }
         }
+    }
+
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    internal void ProcessPendingDestroy()
+    {
+        foreach (SceneObject o in this.PendingDestroyObjects)
+        {
+            if (!_activeSceneObjects.Remove(o))
+            {
+                "Instance of SceneObject to be destroyed does not exist in scene".Warn();
+                continue;
+            }
+            o.OnBeforeDestroy();
+        }
+
+        this.PendingDestroyObjects.Clear();
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
@@ -292,7 +334,7 @@ public class SceneManager : SingletonBase<SceneManager>
         }
 
         // Switch to the main scene defined in the config
-        this.RequestSceneChange(GraphicsEngine.GraphicsConfig.MainScene);
+        this.ScheduleSceneChange(GraphicsEngine.GraphicsConfig.MainScene);
     }
 
     #endregion Internal Methods

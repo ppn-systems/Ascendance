@@ -87,7 +87,7 @@ public sealed class SceneTransition : RenderObject, IUpdatable
         if (!_hasSwitched && _elapsed >= half)
         {
             _hasSwitched = true;
-            SceneManager.Instance.RequestSceneChange(_nextSceneName);
+            SceneManager.Instance.ScheduleSceneChange(_nextSceneName);
         }
 
         if (_elapsed >= _durationSeconds)

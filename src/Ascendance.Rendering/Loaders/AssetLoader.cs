@@ -78,6 +78,7 @@ public abstract class AssetLoader<[
     /// <returns></returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.MaybeNull]
     public virtual T Load(System.String name, System.Byte[] rawData = null)
     {
         System.ObjectDisposedException.ThrowIf(Disposed, nameof(AssetLoader<>));
@@ -128,6 +129,7 @@ public abstract class AssetLoader<[
     /// <returns></returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public virtual System.String[] LoadAllAssetsInDirectory(System.Boolean logErrors = false)
     {
         System.Collections.Generic.List<System.String> assetNames = [];

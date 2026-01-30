@@ -149,15 +149,16 @@ public class SoundEffectManager(SoundEffectLoader loader, System.Func<System.Int
 
         if (_soundLibrary.TryGetValue(name, out SoundEffectPool SoundManager))
         {
-            var sound = SoundManager.GetAvailableInstance();
+            Sound sound = SoundManager.GetAvailableInstance();
             if (sound != null)
             {
                 sound.Volume = _getCurrentVolume.Invoke();
                 sound.RelativeToListener = !spatial;
+
                 if (spatial)
                 {
-                    sound.MinDistance = VolumeDropoffStartDistance;
                     sound.Attenuation = VolumeDropoffFactor;
+                    sound.MinDistance = VolumeDropoffStartDistance;
                 }
             }
             return sound;
