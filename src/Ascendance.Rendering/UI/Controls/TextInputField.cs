@@ -23,7 +23,7 @@ namespace Ascendance.Rendering.UI.Controls;
 /// - Rendering order: panel → text → caret (if focused &amp; visible).<br/>
 /// </para>
 /// </remarks>
-public class TextInputField : RenderObject
+public class TextInputField : RenderObject, IFocusable
 {
     #region Constants
 
@@ -43,20 +43,17 @@ public class TextInputField : RenderObject
     private readonly RectangleShape _caret;
     private readonly NineSlicePanel _panel;
     private readonly System.UInt32 _fontSize;
+    private readonly KeyRepeatController _deleteRepeat;
+    private readonly KeyRepeatController _backspaceRepeat;
     private readonly System.Text.StringBuilder _buffer = new();
 
     private Vector2f _padding;
     private FloatRect _hitBox;          // cached for mouse hit-test
-    private System.Boolean _focused;
+    private System.Int32 _caretIndex;
     private System.Int32 _scrollStart; // start index of visible window (inclusive)
     private System.Single _caretTimer;
     private System.Single _caretWidth;
-    private System.Single _repeatTimer;
-    private System.Boolean _prevDelete;
     private System.Boolean _caretVisible;
-    private System.Boolean _repeatDelete;
-    private System.Boolean _prevBackspace;
-    private System.Boolean _repeatBackspace;
 
     #endregion Fields
 
@@ -96,6 +93,7 @@ public class TextInputField : RenderObject
         set
         {
             _ = _buffer.Clear().Append(value ?? System.String.Empty);
+            _caretIndex = _buffer.Length;
             this.CLAMP_TO_MAX_LENGTH();
             this.RESET_SCROLL_AND_CARET();
             this.TextChanged?.Invoke(_buffer.ToString());
@@ -105,16 +103,7 @@ public class TextInputField : RenderObject
     /// <summary>
     /// Gets or sets whether the field is focused.
     /// </summary>
-    public System.Boolean Focused
-    {
-        get => _focused;
-        set
-        {
-            _focused = value;
-            _caretVisible = value;
-            _caretTimer = 0f;
-        }
-    }
+    public System.Boolean Focused { get; private set; }
 
     /// <summary>
     /// Text position is derived from panel position + padding.
@@ -191,6 +180,8 @@ public class TextInputField : RenderObject
     {
         _caretWidth = 1f;
         _fontSize = fontSize;
+        _deleteRepeat = new();
+        _backspaceRepeat = new();
         _padding = new(DefaultPaddingX, DefaultPaddingY);
         _panel = new NineSlicePanel(panelTexture, border, sourceRect);
         _ = _panel.SetPosition(position).SetSize(ENSURE_MIN_SIZE(size, border));
@@ -254,27 +245,34 @@ public class TextInputField : RenderObject
     /// <inheritdoc/>
     public override void Update(System.Single dt)
     {
-        // (VN) Click chuột để focus/unfocus
         if (MouseManager.Instance.IsMouseButtonPressed(Mouse.Button.Left))
         {
             Vector2i mp = MouseManager.Instance.GetMousePosition();
-            this.Focused = _hitBox.Contains(mp.X, mp.Y);
+
+            if (_hitBox.Contains(mp.X, mp.Y))
+            {
+                FocusManager.Instance.RequestFocus(this);
+            }
+            else
+            {
+                FocusManager.Instance.ClearFocus(this);
+            }
         }
 
         if (this.Focused)
         {
             // Caret blink
             _caretTimer += dt;
+
             if (_caretTimer >= CaretBlinkPeriod)
             {
-                _caretVisible = !_caretVisible;
                 _caretTimer = 0f;
+                _caretVisible = !_caretVisible;
             }
 
             this.HANDLE_KEY_INPUT(dt);
         }
 
-        // Cập nhật phần text hiển thị (scroll cửa sổ nhìn)
         this.UPDATE_VISIBLE_TEXT();
         this.UPDATE_CARET_IMMEDIATE();
     }
@@ -321,6 +319,21 @@ public class TextInputField : RenderObject
     protected virtual System.String GetRenderText()
         => _buffer.Length == 0 && !this.Focused && !System.String.IsNullOrEmpty(this.Placeholder) ? this.Placeholder : _buffer.ToString();
 
+    /// <inheritdoc/>
+    void IFocusable.OnFocusGained()
+    {
+        this.Focused = true;
+        _caretVisible = true;
+        _caretTimer = 0f;
+    }
+
+    /// <inheritdoc/>
+    void IFocusable.OnFocusLost()
+    {
+        this.Focused = false;
+        _caretVisible = false;
+    }
+
     #endregion APIs
 
     #region Private Methods
@@ -341,61 +354,36 @@ public class TextInputField : RenderObject
         // Letters A..Z
         if (_buffer.Length < (MaxLength ?? System.Int32.MaxValue) && KeyboardCharMapper.Instance.TryMapKeyToChar(out System.Char ch, shift))
         {
-            if (ValidationRule?.IsValid(_buffer.ToString() + ch) == false)
+            System.String preview = _buffer.ToString();
+            preview = preview.Insert(_caretIndex, ch.ToString());
+
+            if (this.ValidationRule?.IsValid(preview) == false)
             {
                 return;
             }
 
-            APPEND_CHAR(ch);
+            this.APPEND_CHAR(ch);
         }
 
         // Backspace/Delete: edge + repeat
-        System.Boolean bsDown = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Backspace);
-        if (bsDown && !_prevBackspace)
+        if (_backspaceRepeat.Update(
+                KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Backspace),
+                dt,
+                KeyRepeatFirstDelay,
+                KeyRepeatNextDelay))
         {
-            this.REMOVE_LAST_CHAR();
-            _repeatBackspace = true;
-            _repeatTimer = KeyRepeatFirstDelay;
-        }
-        if (_repeatBackspace && bsDown)
-        {
-            _repeatTimer -= dt;
-            if (_repeatTimer <= 0f)
-            {
-                this.REMOVE_LAST_CHAR();
-                _repeatTimer = KeyRepeatNextDelay;
-            }
-        }
-        if (!bsDown)
-        {
-            _repeatBackspace = false;
+            this.BACKSPACE();
         }
 
-        _prevBackspace = bsDown;
-
-        System.Boolean delDown = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Delete);
-        if (delDown && !_prevDelete)
+        // Delete key (same as Backspace here)
+        if (_deleteRepeat.Update(
+                KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Delete),
+                dt,
+                KeyRepeatFirstDelay,
+                KeyRepeatNextDelay))
         {
-            // caret is always at the end => treat Delete same as Backspace
-            this.REMOVE_LAST_CHAR();
-            _repeatDelete = true;
-            _repeatTimer = KeyRepeatFirstDelay;
+            this.DELETE();
         }
-        if (_repeatDelete && delDown)
-        {
-            _repeatTimer -= dt;
-            if (_repeatTimer <= 0f)
-            {
-                this.REMOVE_LAST_CHAR();
-                _repeatTimer = KeyRepeatNextDelay;
-            }
-        }
-        if (!delDown)
-        {
-            _repeatDelete = false;
-        }
-
-        _prevDelete = delDown;
     }
 
     /// <summary>
@@ -403,13 +391,12 @@ public class TextInputField : RenderObject
     /// </summary>
     private void UPDATE_CARET_IMMEDIATE()
     {
-        // bounds.Left may be non-zero due to glyph bearings
-        FloatRect b = _text.GetLocalBounds();
-        System.Single caretX = _text.Position.X + b.Left + b.Width + 1f;
-        System.Single caretY = _text.Position.Y + 2f;
+        System.String visible = _text.DisplayedString;
+        System.Int32 visibleCaret = System.Math.Clamp(_caretIndex - _scrollStart, 0, visible.Length);
+        Vector2f caretPos = _measure.FindCharacterPos((System.UInt32)visibleCaret);
 
-        _caret.Position = new Vector2f(caretX, caretY);
         _caret.Size = new Vector2f(_caretWidth, _fontSize);
+        _caret.Position = new Vector2f(_text.Position.X + caretPos.X - _measure.Position.X, _text.Position.Y + 2f);
     }
 
     /// <summary>
@@ -471,19 +458,35 @@ public class TextInputField : RenderObject
             return;
         }
 
-        _ = _buffer.Append(c);
+        _buffer.Insert(_caretIndex, c);
+        _caretIndex++;
+
         this.TextChanged?.Invoke(_buffer.ToString());
     }
 
-    /// <summary>Remove one char at end, if any; raises <see cref="TextChanged"/>.</summary>
-    private void REMOVE_LAST_CHAR()
+    /// <summary>Remove char before caret position, if any; raises <see cref="TextChanged"/>.</summary>
+    private void BACKSPACE()
     {
-        if (_buffer.Length == 0)
+        if (_caretIndex <= 0)
         {
             return;
         }
 
-        _ = _buffer.Remove(_buffer.Length - 1, 1);
+        _buffer.Remove(_caretIndex - 1, 1);
+        _caretIndex--;
+
+        this.TextChanged?.Invoke(_buffer.ToString());
+    }
+
+    /// <summary>Delete char at caret position, if any; raises <see cref="TextChanged"/>.</summary>
+    private void DELETE()
+    {
+        if (_caretIndex >= _buffer.Length)
+        {
+            return;
+        }
+
+        _buffer.Remove(_caretIndex, 1);
         this.TextChanged?.Invoke(_buffer.ToString());
     }
 
@@ -535,4 +538,53 @@ public class TextInputField : RenderObject
     }
 
     #endregion Private Methods
+
+    #region Class
+
+    /// <summary>
+    /// Controls key repeat timing for keyboard input, supporting initial and repeated activation intervals.
+    /// </summary>
+    private sealed class KeyRepeatController
+    {
+        private System.Single _timer;
+        private System.Boolean _repeating;
+
+        /// <summary>
+        /// Updates the state of the key repeat controller.
+        /// </summary>
+        /// <param name="isKeyDown">Indicates whether the key is currently pressed down.</param>
+        /// <param name="dt">Elapsed time since the last update, in seconds.</param>
+        /// <param name="firstDelay">Delay before the first repeat fires, in seconds.</param>
+        /// <param name="repeatDelay">Delay between subsequent repeats, in seconds.</param>
+        /// <returns>
+        /// <c>true</c> if the key should be considered activated (either initially or as a repeat); otherwise, <c>false</c>.
+        /// </returns>
+        public System.Boolean Update(System.Boolean isKeyDown, System.Single dt, System.Single firstDelay, System.Single repeatDelay)
+        {
+            if (!isKeyDown)
+            {
+                _repeating = false;
+                _timer = 0f;
+                return false;
+            }
+
+            if (!_repeating)
+            {
+                _repeating = true;
+                _timer = firstDelay;
+                return true; // First key press
+            }
+
+            _timer -= dt;
+            if (_timer <= 0f)
+            {
+                _timer = repeatDelay;
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    #endregion Class
 }

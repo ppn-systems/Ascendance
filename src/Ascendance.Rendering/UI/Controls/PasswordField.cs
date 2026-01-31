@@ -53,8 +53,16 @@ public sealed class PasswordField : TextInputField
     #region Constructor
 
     /// <summary>
-    /// Creates a new password field.
+    /// Initializes a new instance of the <see cref="PasswordField"/> class
+    /// with explicit border thickness.
     /// </summary>
+    /// <param name="panelTexture">9-slice texture.</param>
+    /// <param name="border">Panel border thickness.</param>
+    /// <param name="sourceRect">Rectangle region from the texture.</param>
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
+    /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
+    /// <param name="position">Top-left position.</param>
     public PasswordField(
         Texture panelTexture,
         Thickness border,
@@ -66,8 +74,15 @@ public sealed class PasswordField : TextInputField
         : base(panelTexture, border, sourceRect, font, fontSize, size, position) => base.ValidationRule = new PasswordValidationRule();
 
     /// <summary>
-    /// Creates a new password field.
+    /// Initializes a new instance of the <see cref="PasswordField"/> class
+    /// with default border thickness.
     /// </summary>
+    /// <param name="panelTexture">9-slice texture.</param>
+    /// <param name="sourceRect">Rectangle region from the texture.</param>
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
+    /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
+    /// <param name="position">Top-left position.</param>
     public PasswordField(
         Texture panelTexture,
         IntRect sourceRect,
@@ -79,7 +94,8 @@ public sealed class PasswordField : TextInputField
     { }
 
     /// <summary>
-    /// Creates a new password field.
+    /// Initializes a new instance of the <see cref="PasswordField"/> class
+    /// with the default border thickness and default source rectangle.
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="font">SFML font to render text.</param>
