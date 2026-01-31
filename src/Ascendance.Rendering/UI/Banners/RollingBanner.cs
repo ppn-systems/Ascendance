@@ -21,29 +21,29 @@ public class RollingBanner : RenderObject
     #region Constants
 
     /// <summary>
+    /// Banner height in pixels.
+    /// </summary>
+    private const System.Single BannerHeight = 32f;
+
+    /// <summary>
     /// Horizontal gap (in pixels) between adjacent messages.
     /// </summary>
-    private const System.Single TextGapPx = 50f;
+    private const System.Single MessageSpacing = 50f;
 
     /// <summary>
     /// Default font size in pixels.
     /// </summary>
-    private const System.UInt32 FontSizePx = 18u;
+    private const System.UInt32 DefaultFontSize = 18u;
 
     /// <summary>
     /// Vertical offset (in pixels) for the text inside the banner.
     /// </summary>
-    private const System.Single TextOffsetYPx = 4f;
-
-    /// <summary>
-    /// Banner height in pixels.
-    /// </summary>
-    private const System.Single BannerHeightPx = 32f;
+    private const System.Single TextVerticalOffset = 4f;
 
     /// <summary>
     /// Vector representing leftward scroll.
     /// </summary>
-    private static readonly Vector2f ScrollDirection = new(-1f, 0f);
+    private static readonly Vector2f ScrollLeftDirection = new(-1f, 0f);
 
     #endregion Constants
 
@@ -126,7 +126,7 @@ public class RollingBanner : RenderObject
         if (first.Position.X + first.GetGlobalBounds().Width < 0)
         {
             Text last = _texts[^1];
-            first.Position = new Vector2f(last.Position.X + last.GetGlobalBounds().Width + TextGapPx, first.Position.Y);
+            first.Position = new Vector2f(last.Position.X + last.GetGlobalBounds().Width + MessageSpacing, first.Position.Y);
 
             _texts.RemoveAt(0);
             _texts.Add(first);
@@ -174,8 +174,8 @@ public class RollingBanner : RenderObject
         return new RectangleShape
         {
             FillColor = Themes.BannerBackgroundColor,
-            Size = new Vector2f(GraphicsEngine.ScreenSize.X, BannerHeightPx),
-            Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - BannerHeightPx),
+            Size = new Vector2f(GraphicsEngine.ScreenSize.X, BannerHeight),
+            Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - BannerHeight),
         };
     }
 
@@ -191,7 +191,7 @@ public class RollingBanner : RenderObject
             Text text = CREATE_TEXT(msg, _font, startX);
             _texts.Add(text);
 
-            startX += text.GetGlobalBounds().Width + TextGapPx;
+            startX += text.GetGlobalBounds().Width + MessageSpacing;
         }
     }
 
@@ -204,10 +204,10 @@ public class RollingBanner : RenderObject
     /// <returns>A configured <see cref="Text"/> object.</returns>
     private static Text CREATE_TEXT(System.String message, Font font, System.Single startX)
     {
-        return new Text(message, font, FontSizePx)
+        return new Text(message, font, DefaultFontSize)
         {
             FillColor = Themes.PrimaryTextColor,
-            Position = new Vector2f(startX, GraphicsEngine.ScreenSize.Y - BannerHeightPx + TextOffsetYPx)
+            Position = new Vector2f(startX, GraphicsEngine.ScreenSize.Y - BannerHeight + TextVerticalOffset)
         };
     }
 
@@ -220,7 +220,7 @@ public class RollingBanner : RenderObject
         System.Single displacement = _speedPxPerSec * deltaTime;
         for (System.Int32 i = 0; i < _texts.Count; i++)
         {
-            _texts[i].Position += ScrollDirection * displacement;
+            _texts[i].Position += ScrollLeftDirection * displacement;
         }
     }
 

@@ -22,24 +22,24 @@ public class ScrollingBanner : RenderObject, IUpdatable
     #region Constants
 
     /// <summary>
+    /// Height of the banner (in pixels).
+    /// </summary>
+    private const System.Single BannerHeight = 32f;
+
+    /// <summary>
     /// Font size (in pixels).
     /// </summary>
-    private const System.UInt32 FontSizePx = 18u;
+    private const System.UInt32 DefaultFontSize = 18u;
 
     /// <summary>
     /// Vertical offset (in pixels) for text inside the banner.
     /// </summary>
-    private const System.Single TextOffsetYPx = 4f;
-
-    /// <summary>
-    /// Height of the banner (in pixels).
-    /// </summary>
-    private const System.Single BannerHeightPx = 32f;
+    private const System.Single TextVerticalOffset = 4f;
 
     /// <summary>
     /// The direction vector for scrolling (leftwards).
     /// </summary>
-    private static readonly Vector2f ScrollDirection = new(-1f, 0f);
+    private static readonly Vector2f ScrollLeftDirection = new(-1f, 0f);
 
     #endregion Constants
 
@@ -152,8 +152,8 @@ public class ScrollingBanner : RenderObject, IUpdatable
         return new RectangleShape
         {
             FillColor = Themes.BannerBackgroundColor,
-            Size = new Vector2f(GraphicsEngine.ScreenSize.X, BannerHeightPx),
-            Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - BannerHeightPx),
+            Size = new Vector2f(GraphicsEngine.ScreenSize.X, BannerHeight),
+            Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - BannerHeight),
         };
     }
 
@@ -165,7 +165,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// <returns>A new <see cref="Text"/> instance.</returns>
     private static Text CREATE_TEXT(System.String message, Font font)
     {
-        return new Text(message, font, FontSizePx)
+        return new Text(message, font, DefaultFontSize)
         {
             FillColor = Themes.PrimaryTextColor,
         };
@@ -174,13 +174,13 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// <summary>
     /// Resets the text position to start scrolling in from the right edge.
     /// </summary>
-    private void RESET_TEXT_POSITION() => _text.Position = new Vector2f(GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y - BannerHeightPx + TextOffsetYPx);
+    private void RESET_TEXT_POSITION() => _text.Position = new Vector2f(GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y - BannerHeight + TextVerticalOffset);
 
     /// <summary>
     /// Moves the text leftwards according to current speed and elapsed time.
     /// </summary>
     /// <param name="deltaTime">Elapsed time (in seconds) since last update.</param>
-    private void MOVE_TEXT(System.Single deltaTime) => _text.Position += ScrollDirection * (_speedPxPerSec * deltaTime);
+    private void MOVE_TEXT(System.Single deltaTime) => _text.Position += ScrollLeftDirection * (_speedPxPerSec * deltaTime);
 
     #endregion Private Helpers
 }
