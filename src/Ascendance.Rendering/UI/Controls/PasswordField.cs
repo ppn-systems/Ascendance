@@ -8,24 +8,44 @@ using SFML.System;
 namespace Ascendance.Rendering.UI.Controls;
 
 /// <summary>
-/// Single-line password input built on top of <see cref="TextInputField"/>.
+/// Represents a single-line password input control built on top of
+/// <see cref="TextInputField"/>.
 /// </summary>
 /// <remarks>
-/// - Masks user input with <see cref="MaskCharacter"/> by default.<br/>
-/// - Set <see cref="IsPasswordVisible"/> = <c>true</c> to reveal raw text (useful for an "eye" toggle).<br/>
+/// <list type="bullet">
+///   <item>
+///     <description>
+///     User input is masked using <see cref="MaskCharacter"/> by default.
+///     </description>
+///   </item>
+///   <item>
+///     <description>
+///     Set <see cref="IsPasswordVisible"/> to <c>true</c> to reveal the raw text
+///     (e.g., for a "show password" toggle).
+///     </description>
+///   </item>
+/// </list>
 /// </remarks>
 public sealed class PasswordField : TextInputField
 {
     #region Properties
 
     /// <summary>
-    /// Whether to reveal the raw text (i.e., “show password”). Default: <c>false</c>.
+    /// Gets or sets whether the raw password text is visible.
     /// </summary>
+    /// <remarks>
+    /// When set to <c>false</c>, the displayed text is masked using
+    /// <see cref="MaskCharacter"/>.
+    /// </remarks>
     public System.Boolean IsPasswordVisible { get; set; } = false;
 
     /// <summary>
-    /// Mask character used when <see cref="IsPasswordVisible"/> is <c>false</c>. Default: • (U+2022).
+    /// Gets or sets the character used to mask the password when
+    /// <see cref="IsPasswordVisible"/> is <c>false</c>.
     /// </summary>
+    /// <remarks>
+    /// Default value is the bullet character (•, U+2022).
+    /// </remarks>
     public System.Char MaskCharacter { get; set; } = '\u2022';
 
     #endregion Properties
