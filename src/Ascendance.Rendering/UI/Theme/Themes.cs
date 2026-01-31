@@ -12,8 +12,7 @@ public static class Themes
     /// <summary>
     /// Default panel color theme for buttons (Normal, Hover, Disabled).
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>")]
-    public static ButtonStateColors PanelTheme = new(
+    public static readonly ButtonStateColors PanelTheme = new(
         new Color(30, 30, 30),
         new Color(60, 60, 60),
         new Color(40, 40, 40, 180)
@@ -22,8 +21,7 @@ public static class Themes
     /// <summary>
     /// Default text color theme for buttons (Normal, Hover, Disabled).
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>")]
-    public static ButtonStateColors TextTheme = new(
+    public static readonly ButtonStateColors TextTheme = new(
         new Color(200, 200, 200),
         new Color(255, 255, 255),
         new Color(160, 160, 160, 200)
@@ -32,6 +30,15 @@ public static class Themes
     /// <summary>
     /// Default spinner color.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>")]
-    public static Color SpinnerColor = new(255, 255, 255);
+    public static readonly Color SpinnerForegroundColor = new(255, 255, 255);
+
+    /// <summary>
+    /// Default banner background color (black, alpha 100).
+    /// </summary>
+    public static readonly Color BannerBackgroundColor = new(0, 0, 0, 100);
+
+    /// <summary>
+    /// Default text color (white, opaque).
+    /// </summary>
+    public static readonly Color PrimaryTextColor = new(255, 255, 255);
 }

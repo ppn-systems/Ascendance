@@ -2,6 +2,7 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.UI.Theme;
 using SFML.Graphics;
 using SFML.System;
 
@@ -16,16 +17,6 @@ public class RollingBanner : RenderObject
     #region Constants
 
     /// <summary>
-    /// Vertical offset (in pixels) for the text inside the banner.
-    /// </summary>
-    private const System.Single TextOffsetYPx = 4f;
-
-    /// <summary>
-    /// Banner height in pixels.
-    /// </summary>
-    private const System.Single BannerHeightPx = 32f;
-
-    /// <summary>
     /// Horizontal gap (in pixels) between adjacent messages.
     /// </summary>
     private const System.Single TextGapPx = 50f;
@@ -36,14 +27,14 @@ public class RollingBanner : RenderObject
     private const System.UInt32 FontSizePx = 18u;
 
     /// <summary>
-    /// Default text color (white, opaque).
+    /// Vertical offset (in pixels) for the text inside the banner.
     /// </summary>
-    private static readonly Color DefaultTextColor = new(255, 255, 255);
+    private const System.Single TextOffsetYPx = 4f;
 
     /// <summary>
-    /// Default banner background color (black, alpha 100).
+    /// Banner height in pixels.
     /// </summary>
-    private static readonly Color BackgroundColor = new(0, 0, 0, 100);
+    private const System.Single BannerHeightPx = 32f;
 
     /// <summary>
     /// Vector representing leftward scroll.
@@ -157,7 +148,7 @@ public class RollingBanner : RenderObject
     {
         return new RectangleShape
         {
-            FillColor = BackgroundColor,
+            FillColor = Themes.BannerBackgroundColor,
             Size = new Vector2f(GraphicsEngine.ScreenSize.X, BannerHeightPx),
             Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - BannerHeightPx),
         };
@@ -190,7 +181,7 @@ public class RollingBanner : RenderObject
     {
         return new Text(message, font, FontSizePx)
         {
-            FillColor = DefaultTextColor,
+            FillColor = Themes.PrimaryTextColor,
             Position = new Vector2f(startX, GraphicsEngine.ScreenSize.Y - BannerHeightPx + TextOffsetYPx)
         };
     }

@@ -31,8 +31,8 @@ public class TextInputField : RenderObject
     private const System.Single DefaultPaddingY = 6f;
 
     private const System.Single CaretBlinkPeriod = 0.5f; // (VN) Chu kỳ nháy caret
-    private const System.Single KeyRepeatFirstDelay = 0.35f;
     private const System.Single KeyRepeatNextDelay = 0.05f;
+    private const System.Single KeyRepeatFirstDelay = 0.35f;
 
     #endregion Constants
 

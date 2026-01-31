@@ -117,7 +117,7 @@ public sealed class Spinner : RenderObject, IUpdatable
             segCircle.Position = new Vector2f(x, y);
 
             System.Byte finalAlpha = (System.Byte)(_alpha * _segmentAlphaMultipliers[i] / 255);
-            segCircle.FillColor = new Color(Themes.SpinnerColor.R, Themes.SpinnerColor.G, Themes.SpinnerColor.B, finalAlpha);
+            segCircle.FillColor = new Color(Themes.SpinnerForegroundColor.R, Themes.SpinnerForegroundColor.G, Themes.SpinnerForegroundColor.B, finalAlpha);
 
             target.Draw(segCircle);
         }

@@ -2,6 +2,7 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.UI.Theme;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
@@ -17,6 +18,11 @@ public class ScrollingBanner : RenderObject, IUpdatable
     #region Constants
 
     /// <summary>
+    /// Font size (in pixels).
+    /// </summary>
+    private const System.UInt32 FontSizePx = 18u;
+
+    /// <summary>
     /// Vertical offset (in pixels) for text inside the banner.
     /// </summary>
     private const System.Single TextOffsetYPx = 4f;
@@ -25,21 +31,6 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// Height of the banner (in pixels).
     /// </summary>
     private const System.Single BannerHeightPx = 32f;
-
-    /// <summary>
-    /// Font size (in pixels).
-    /// </summary>
-    private const System.UInt32 FontSizePx = 18u;
-
-    /// <summary>
-    /// Default text color (white).
-    /// </summary>
-    private static readonly Color DefaultTextColor = new(255, 255, 255);
-
-    /// <summary>
-    /// Default background color (semi-transparent black).
-    /// </summary>
-    private static readonly Color DefaultBackgroundColor = new(0, 0, 0, 100);
 
     /// <summary>
     /// The direction vector for scrolling (leftwards).
@@ -146,7 +137,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     {
         return new RectangleShape
         {
-            FillColor = DefaultBackgroundColor,
+            FillColor = Themes.BannerBackgroundColor,
             Size = new Vector2f(GraphicsEngine.ScreenSize.X, BannerHeightPx),
             Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - BannerHeightPx),
         };
@@ -162,7 +153,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
     {
         return new Text(message, font, FontSizePx)
         {
-            FillColor = DefaultTextColor,
+            FillColor = Themes.PrimaryTextColor,
         };
     }
 
