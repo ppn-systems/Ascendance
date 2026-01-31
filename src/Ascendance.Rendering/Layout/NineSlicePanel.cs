@@ -179,7 +179,7 @@ public sealed class NineSlicePanel : RenderObject
     /// <param name="target">The render target (e.g. window, texture) to draw to.</param>
     public override void Draw(RenderTarget target)
     {
-        COMPUTE_RECTS();
+        this.COMPUTE_RECTS();
 
         for (System.Int32 i = 0; i < 9; i++)
         {
