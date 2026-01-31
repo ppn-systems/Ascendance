@@ -36,12 +36,7 @@ internal sealed class FadeOverlay : ScreenOverlayBase
     {
         // Clamp progress to [0,1] để tránh giá trị alpha bất hợp lệ
         t = System.Single.Clamp(t, 0f, 1f);
-
-        System.Byte a =
-            closing
-                ? (System.Byte)System.Math.Round(255f * t)
-                : (System.Byte)System.Math.Round(255f * (1f - t));
-
+        System.Byte a = closing ? (System.Byte)System.Math.Round(255f * t) : (System.Byte)System.Math.Round(255f * (1f - t));
         _rect.FillColor = new Color(BaseColor.R, BaseColor.G, BaseColor.B, a);
     }
 

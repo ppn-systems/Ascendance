@@ -41,13 +41,11 @@ internal sealed class SlideCoverOverlay : ScreenOverlayBase
         // Clamp progress
         t = System.Single.Clamp(t, 0f, 1f);
 
-        System.Single travel = Size.X;
+        System.Single travel = base.Size.X;
         System.Single slideT = closing ? t : 1f - t;
 
         // Compute the X position so the cover moves across the whole screen horizontally
-        System.Single x = _fromLeft
-            ? -travel + (travel * slideT)
-            : Size.X - (travel * slideT);
+        System.Single x = _fromLeft ? -travel + (travel * slideT) : Size.X - (travel * slideT);
 
         _rect.Position = new Vector2f(x, 0f);
     }

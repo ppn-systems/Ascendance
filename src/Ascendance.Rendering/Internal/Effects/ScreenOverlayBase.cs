@@ -35,8 +35,8 @@ internal abstract class ScreenOverlayBase : ITransitionDrawable
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     protected ScreenOverlayBase(Color color)
     {
-        Size = OverlaySize;
-        BaseColor = color;
+        this.Size = OverlaySize;
+        this.BaseColor = color;
     }
 
     /// <summary>

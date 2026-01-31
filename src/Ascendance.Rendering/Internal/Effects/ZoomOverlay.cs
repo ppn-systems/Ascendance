@@ -25,8 +25,8 @@ internal sealed class ZoomOverlay : ScreenOverlayBase
         _modeIn = modeIn;
         _rect = new RectangleShape(Size)
         {
-            Origin = Size / 2f,
-            Position = Size / 2f,
+            Origin = base.Size / 2f,
+            Position = base.Size / 2f,
             FillColor = new Color(color.R, color.G, color.B, 255)
         };
     }
