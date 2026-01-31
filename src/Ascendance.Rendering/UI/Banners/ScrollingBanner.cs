@@ -10,9 +10,13 @@ using SFML.System;
 namespace Ascendance.Rendering.UI.Banners;
 
 /// <summary>
-/// Represents a continuously scrolling banner that moves from right to left across the screen.
-/// When the message has fully moved off the left edge, it will reset and start scrolling again from the right.
+/// Represents a horizontally scrolling banner that displays a single message
+/// moving from right to left across the screen.
 /// </summary>
+/// <remarks>
+/// Once the message has completely exited the left edge of the screen,
+/// it is repositioned to the right edge and continues scrolling indefinitely.
+/// </remarks>
 public class ScrollingBanner : RenderObject, IUpdatable
 {
     #region Constants
@@ -52,11 +56,17 @@ public class ScrollingBanner : RenderObject, IUpdatable
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ScrollingBanner"/> class with the specified message and scrolling speed.
+    /// Initializes a new instance of the <see cref="ScrollingBanner"/> class.
     /// </summary>
-    /// <param name="message">The message to display in the banner.</param>
-    /// <param name="font">The font to use for the message text.</param>
-    /// <param name="speedPxPerSec">Scrolling speed in pixels per second. Default is 100.</param>
+    /// <param name="message">
+    /// The message to display in the banner.
+    /// </param>
+    /// <param name="font">
+    /// The font used to render the banner text.
+    /// </param>
+    /// <param name="speedPxPerSec">
+    /// The horizontal scrolling speed in pixels per second.
+    /// </param>
     public ScrollingBanner(System.String message, Font font, System.Single speedPxPerSec = 100f)
     {
         _speedPxPerSec = speedPxPerSec;
@@ -103,6 +113,10 @@ public class ScrollingBanner : RenderObject, IUpdatable
     #region Overrides
 
     /// <inheritdoc />
+    /// <remarks>
+    /// When the text has fully moved off the left edge of the screen,
+    /// it is repositioned to the right edge to continue scrolling.
+    /// </remarks>
     public override void Update(System.Single deltaTime)
     {
         if (!this.IsVisible)

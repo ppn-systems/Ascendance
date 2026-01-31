@@ -9,9 +9,13 @@ using SFML.System;
 namespace Ascendance.Rendering.UI.Banners;
 
 /// <summary>
-/// A continuously scrolling banner displaying a sequence of messages from right to left.
-/// Supports displaying multiple messages in succession, cycling them when they scroll past the left edge.
+/// Represents a horizontally scrolling banner that continuously displays
+/// a sequence of messages from right to left.
 /// </summary>
+/// <remarks>
+/// Messages are rendered sequentially and recycled once they move past
+/// the left edge of the screen, creating a seamless rolling effect.
+/// </remarks>
 public class RollingBanner : RenderObject
 {
     #region Constants
@@ -57,8 +61,18 @@ public class RollingBanner : RenderObject
     /// <summary>
     /// Initializes a new instance of the <see cref="RollingBanner"/> class.
     /// </summary>
-    /// <param name="messages">The collection of messages to display.</param>
-    /// <param name="speedPxPerSec">The scroll speed in pixels per second. Default is 100.</param>
+    /// <param name="messages">
+    /// The initial collection of messages to display in the banner.
+    /// </param>
+    /// <param name="zIndex">
+    /// The rendering order used to layer the banner relative to other UI elements.
+    /// </param>
+    /// <param name="font">
+    /// The font used to render banner text.
+    /// </param>
+    /// <param name="speedPxPerSec">
+    /// The horizontal scrolling speed in pixels per second.
+    /// </param>
     public RollingBanner(System.Collections.Generic.List<System.String> messages, System.Int32 zIndex, Font font, System.Single speedPxPerSec = 100f)
     {
         this.SetZIndex(zIndex);
@@ -89,7 +103,16 @@ public class RollingBanner : RenderObject
 
     #region Overrides
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Updates the banner animation and scrolls messages based on elapsed time.
+    /// </summary>
+    /// <param name="deltaTime">
+    /// The elapsed time, in seconds, since the previous frame.
+    /// </param>
+    /// <remarks>
+    /// When a message scrolls completely past the left edge of the screen,
+    /// it is repositioned to the end of the message sequence.
+    /// </remarks>
     public override void Update(System.Single deltaTime)
     {
         if (!this.IsVisible || _texts.Count == 0)
@@ -111,9 +134,11 @@ public class RollingBanner : RenderObject
     }
 
     /// <summary>
-    /// Renders the banner on the specified render target.
+    /// Renders the banner background and scrolling text to the specified render target.
     /// </summary>
-    /// <param name="target">The render target for drawing.</param>
+    /// <param name="target">
+    /// The render target on which the banner will be drawn.
+    /// </param>
     public void Render(RenderTarget target)
     {
         if (!this.IsVisible)
