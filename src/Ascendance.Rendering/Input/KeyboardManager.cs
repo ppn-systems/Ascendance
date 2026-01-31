@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Internal.Input;
 using Nalix.Framework.Injection.DI;
 using SFML.Window;
 
@@ -51,6 +52,11 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
 
             PreviousKeyState[idx] = KeyState[idx];
             KeyState[idx] = Keyboard.IsKeyPressed(AllKeys[i]);
+        }
+
+        if (InputTimeline.Instance.IsRecording)
+        {
+            KeyState.Clone();
         }
     }
 

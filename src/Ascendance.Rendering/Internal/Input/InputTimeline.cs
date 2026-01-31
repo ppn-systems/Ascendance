@@ -47,9 +47,9 @@ internal class InputTimeline : SingletonBase<InputTimeline>
         {
             return new InputFrame
             {
+                MousePosition = MousePosition,
                 KeyState = (System.Boolean[])KeyState?.Clone(),
-                MouseButtonState = (System.Boolean[])MouseButtonState?.Clone(),
-                MousePosition = MousePosition
+                MouseButtonState = (System.Boolean[])MouseButtonState?.Clone()
             };
         }
     }
