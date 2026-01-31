@@ -9,6 +9,8 @@ namespace Ascendance.Rendering.UI.Theme;
 /// </summary>
 public class ButtonStateColors
 {
+    #region Properties
+
     /// <summary>
     /// Gets or sets the color used for the normal (default) state.
     /// </summary>
@@ -24,6 +26,10 @@ public class ButtonStateColors
     /// </summary>
     public Color Disabled { get; set; }
 
+    #endregion Properties
+
+    #region Constructors
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ButtonStateColors"/> class with custom colors for each state.
     /// </summary>
@@ -37,4 +43,6 @@ public class ButtonStateColors
         this.Normal = normal;
         this.Disabled = disabled;
     }
+
+    #endregion Constructors
 }

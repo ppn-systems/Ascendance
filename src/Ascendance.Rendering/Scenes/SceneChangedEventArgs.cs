@@ -10,6 +10,8 @@ namespace Ascendance.Rendering.Scenes;
 /// </remarks>
 public sealed class SceneChangedEventArgs : System.EventArgs
 {
+    #region Properties
+
     /// <summary>
     /// Gets the name of the previous scene before the change occurred.
     /// </summary>
@@ -19,6 +21,10 @@ public sealed class SceneChangedEventArgs : System.EventArgs
     /// Gets the name of the newly activated scene.
     /// </summary>
     public System.String CurrentScene { get; }
+
+    #endregion Properties
+
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SceneChangedEventArgs"/> class.
@@ -32,7 +38,9 @@ public sealed class SceneChangedEventArgs : System.EventArgs
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public SceneChangedEventArgs(System.String previous, System.String current)
     {
-        PreviousScene = previous;
-        CurrentScene = current;
+        this.CurrentScene = current;
+        this.PreviousScene = previous;
     }
+
+    #endregion Constructors
 }
