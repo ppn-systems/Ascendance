@@ -57,14 +57,14 @@ public sealed class SceneTransitionData<T> : SceneObject
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    protected override void Initialize() => SceneManager.Instance.SceneChanged += this.OnSceneChange;
+    protected override void Initialize() => SceneManager.Instance.SceneChanged += this.OnSceneChanged;
 
     /// <summary>
     /// Cleans up before the object is destroyed and unsubscribes from the SceneChanged event.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override void OnBeforeDestroy() => SceneManager.Instance.SceneChanged -= this.OnSceneChange;
+    public override void OnBeforeDestroy() => SceneManager.Instance.SceneChanged -= this.OnSceneChanged;
 
     /// <summary>
     /// Updates the state of the SceneChangeInfo object and destroys it after a scene change.
@@ -100,13 +100,13 @@ public sealed class SceneTransitionData<T> : SceneObject
     #region Private Methods
 
     /// <summary>
-    /// Handles the scene change event by setting the <see cref="_hasSceneChanged"/> flag.
+    /// Handles the scene changed event and marks that a scene transition has occurred.
     /// </summary>
-    /// <param name="lastScene">The name of the last scene.</param>
-    /// <param name="nextScene">The name of the next scene.</param>
+    /// <param name="sender">The scene manager that raised the event.</param>
+    /// <param name="e">Event data containing information about the scene change.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private void OnSceneChange(System.String lastScene, System.String nextScene) => _hasSceneChanged = true;
+    private void OnSceneChanged(System.Object sender, SceneChangedEventArgs e) => _hasSceneChanged = true;
 
     #endregion Private Methods
 }
