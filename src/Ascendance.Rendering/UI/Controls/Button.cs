@@ -151,54 +151,6 @@ public class Button : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Sets button panel colors (normal/hover/disabled).
-    /// </summary>
-    public Button SetColors(Color? panelNormal = null, Color? panelHover = null, Color? panelDisabled = null)
-    {
-        if (panelNormal.HasValue)
-        {
-            Themes.PanelTheme.Disabled = panelNormal.Value;
-        }
-
-        if (panelHover.HasValue)
-        {
-            Themes.PanelTheme.Disabled = panelHover.Value;
-        }
-
-        if (panelDisabled.HasValue)
-        {
-            Themes.PanelTheme.Disabled = panelDisabled.Value;
-        }
-
-        this.APPLY_TINT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets text color theme (normal/hover/disabled).
-    /// </summary>
-    public Button SetTextColors(Color? textNormal = null, Color? textHover = null, Color? textDisabled = null)
-    {
-        if (textNormal.HasValue)
-        {
-            Themes.TextTheme.Normal = textNormal.Value;
-        }
-
-        if (textHover.HasValue)
-        {
-            Themes.TextTheme.Hover = textHover.Value;
-        }
-
-        if (textDisabled.HasValue)
-        {
-            Themes.TextTheme.Disabled = textDisabled.Value;
-        }
-
-        this.APPLY_TINT();
-        return this;
-    }
-
-    /// <summary>
     /// Enables or disables the button interactively and visually.
     /// </summary>
     public Button SetEnabled(System.Boolean enabled)
