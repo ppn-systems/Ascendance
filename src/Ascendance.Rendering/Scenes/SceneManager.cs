@@ -198,10 +198,7 @@ public class SceneManager : SingletonBase<SceneManager>
         System.String lastScene = _currentScene?.Name ?? "";
         LOAD_SCENE(_nextScene);
 
-        SceneChanged?.Invoke(
-            this,
-            new SceneChangedEventArgs(lastScene, _nextScene)
-        );
+        SceneChanged?.Invoke(this, new SceneChangedEventArgs(lastScene, _nextScene));
         _nextScene = "";
     }
 
