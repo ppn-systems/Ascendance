@@ -11,8 +11,11 @@ namespace Ascendance.Rendering.UI.Indicators;
 /// <summary>
 /// Procedural animated spinner used as a loading indicator.
 /// Can be shown independently or embedded as part of composite UI.
-/// Hiệu năng tối ưu: giảm new object mỗi frame, precompute các giá trị.
 /// </summary>
+/// <remarks>
+/// This spinner is designed for efficient rendering by precomputing segment shapes and alpha multipliers
+/// to avoid unnecessary allocations during each frame.
+/// </remarks>
 public sealed class Spinner : RenderObject, IUpdatable
 {
     #region Constants
@@ -41,9 +44,9 @@ public sealed class Spinner : RenderObject, IUpdatable
     #region Constructor
 
     /// <summary>
-    /// Constructs a new spinner instance at a given center.
+    /// Initializes a new instance of the <see cref="Spinner"/> class at a specific center point.
     /// </summary>
-    /// <param name="center">Center point for the spinner.</param>
+    /// <param name="center">The center point for the spinner.</param>
     public Spinner(Vector2f center)
     {
         _center = center;
@@ -55,9 +58,10 @@ public sealed class Spinner : RenderObject, IUpdatable
     #region API
 
     /// <summary>
-    /// Sets the alpha (opacity) for the whole spinner.
+    /// Sets the alpha (opacity) for the entire spinner.
     /// </summary>
-    /// <param name="alpha">Alpha value (0-255).</param>
+    /// <param name="alpha">The alpha value (0-255).</param>
+    /// <returns>The <see cref="Spinner"/> instance, for chaining.</returns>
     public Spinner SetAlpha(System.Byte alpha)
     {
         _alpha = alpha;
@@ -65,9 +69,10 @@ public sealed class Spinner : RenderObject, IUpdatable
     }
 
     /// <summary>
-    /// Sets the spinner's rotation speed (degrees per second).
+    /// Sets the spinner's rotation speed in degrees per second.
     /// </summary>
-    /// <param name="degreesPerSecond">Rotation speed.</param>
+    /// <param name="degreesPerSecond">The rotation speed in degrees per second.</param>
+    /// <returns>The <see cref="Spinner"/> instance, for chaining.</returns>
     public Spinner SetRotationSpeed(System.Single degreesPerSecond)
     {
         _rotationDegreesPerSecond = degreesPerSecond;
@@ -77,7 +82,8 @@ public sealed class Spinner : RenderObject, IUpdatable
     /// <summary>
     /// Updates the center location of the spinner.
     /// </summary>
-    /// <param name="newCenter">New center point.</param>
+    /// <param name="newCenter">The new center point for the spinner.</param>
+    /// <returns>The <see cref="Spinner"/> instance, for chaining.</returns>
     public Spinner SetCenter(Vector2f newCenter)
     {
         _center = newCenter;
