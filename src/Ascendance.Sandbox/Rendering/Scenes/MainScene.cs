@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Attributes;
+using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
 using Ascendance.Rendering.UI.Notifications;
+using Nalix.Framework.Configuration;
 using SFML.Graphics;
 using SFML.System;
 
@@ -14,7 +16,7 @@ namespace Ascendance.Sandbox.Rendering.Scenes;
 [DynamicLoad]
 internal sealed class MainScene : BaseScene
 {
-    public MainScene() : base(SceneConstants.Main)
+    public MainScene() : base(ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene)
     {
     }
 

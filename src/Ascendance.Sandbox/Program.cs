@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Engine;
+using Ascendance.Rendering.Input;
+using Nalix.Common.Diagnostics;
+using Nalix.Logging.Extensions;
 using SFML.Graphics;
 
 namespace Ascendance.Sandbox;
@@ -9,8 +12,18 @@ public static class Program
 {
     public static void Main()
     {
+        // Setup logging
+        NLogixFx.MinimumLevel = LogLevel.Debug;
+
+        if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
+        {
+            Kernel32.Hide();
+        }
+
+        // Create and set application icon
         Image icon = GetImageFromBase64(IconBase64);
 
+        GraphicsEngine.Instance.FrameUpdate += OnFrameUpdate;
         GraphicsEngine.Instance.SetIcon(icon);
         GraphicsEngine.Instance.Launch();
 
@@ -18,11 +31,32 @@ public static class Program
         System.Console.ReadLine();
     }
 
-    internal static Image GetImageFromBase64(System.String base64)
+    private static Image GetImageFromBase64(System.String base64)
     {
         System.Byte[] bytes = System.Convert.FromBase64String(base64);
         using System.IO.MemoryStream ms = new(bytes);
         return new Image(ms);
+    }
+
+    private static void OnFrameUpdate(System.Single deltaTime)
+    {
+        if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.F12))
+        {
+            GraphicsEngine.Instance.DebugMode();
+            if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
+            {
+                Kernel32.Hide();
+            }
+            else if (System.OperatingSystem.IsWindows())
+            {
+                Kernel32.Show();
+            }
+        }
+
+        if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.Escape))
+        {
+            GraphicsEngine.Instance.Shutdown();
+        }
     }
 
     #region Base64
