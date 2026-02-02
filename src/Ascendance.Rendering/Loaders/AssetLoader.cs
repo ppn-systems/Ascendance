@@ -15,6 +15,8 @@ public abstract class AssetLoader<[
 {
     #region Fields
 
+    private volatile System.Boolean _disposed;
+
     /// <summary>
     /// List of supported file endings for this AssetLoader
     /// </summary>
@@ -42,7 +44,8 @@ public abstract class AssetLoader<[
     /// <summary>
     /// Indicates whether the asset loader has been disposed.
     /// </summary>
-    public System.Boolean Disposed { get; private set; }
+    public System.Boolean Disposed => _disposed;
+
 
     /// <summary>
     /// List of supported file endings for this AssetLoader
@@ -57,14 +60,9 @@ public abstract class AssetLoader<[
         System.Collections.Generic.IEnumerable<System.String> supportedFileEndings,
         System.String assetRoot = "")
     {
-        RootFolder = assetRoot;
+        this.RootFolder = assetRoot;
         _fileExtensions = [.. System.Linq.Enumerable.Distinct(System.Linq.Enumerable.Concat([System.String.Empty], supportedFileEndings))];
     }
-
-    /// <summary>
-    /// Finalizer for the AssetLoader class. Calls Dispose(false) to release unmanaged resources.
-    /// </summary>
-    ~AssetLoader() => Dispose(false);
 
     #endregion Constructor
 
@@ -206,12 +204,12 @@ public abstract class AssetLoader<[
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     protected virtual void Dispose(System.Boolean disposing)
     {
-        if (Disposed)
+        if (_disposed)
         {
             return;
         }
 
-        Disposed = true;
+        _disposed = true;
 
         foreach (var kvp in _assets)
         {

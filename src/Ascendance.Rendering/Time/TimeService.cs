@@ -13,6 +13,7 @@ namespace Ascendance.Rendering.Time;
 /// total elapsed time, and fixed-step timing used by deterministic systems
 /// such as physics or simulations.
 /// </remarks>
+[System.Diagnostics.DebuggerDisplay("TotalTime={_totalTime}, FixedΔ={FixedDeltaTime}")]
 public sealed class TimeService
 {
     #region Fields

@@ -9,6 +9,7 @@ namespace Ascendance.Rendering.Time;
 /// This type is typically provided by the engine during an update cycle
 /// and should be treated as read-only by consuming systems.
 /// </remarks>
+[System.Diagnostics.DebuggerDisplay("Δ={DeltaTime}, t={TotalTime}, fixedΔ={FixedDeltaTime}")]
 public sealed class TimeFrame
 {
     /// <summary>
