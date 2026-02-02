@@ -10,6 +10,8 @@ namespace Ascendance.Rendering.Entities;
 /// Represents a base class for all scene objects in the game.
 /// This class provides lifecycle management, tagging, and utility methods for objects within a scene.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay(
+    "SceneObject | Enabled={IsEnabled}, Paused={IsPaused}, Initialized={IsInitialized}, Persistent={IsPersistent}")]
 public abstract class SceneObject : IUpdatable
 {
     #region Fields

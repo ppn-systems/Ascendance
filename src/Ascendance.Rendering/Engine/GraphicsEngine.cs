@@ -19,6 +19,7 @@ namespace Ascendance.Rendering.Engine;
 /// <summary>
 /// Central static class for managing the main game window, rendering loop, and core events.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("IsRunning={IsRunning}, DebugMode={IsDebugMode}, WindowTitle={RenderWindow?.Title}")]
 public class GraphicsEngine : SingletonBase<GraphicsEngine>
 {
     #region Constants

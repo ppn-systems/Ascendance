@@ -8,6 +8,7 @@ namespace Ascendance.Rendering.Engine;
 /// <summary>
 /// Represents the configuration for the graphics assembly in the Nalix framework.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("Screen={ScreenWidth}x{ScreenHeight}, VSync={VSync}, Volume={MusicVolume}/{SoundVolume}")]
 public sealed class GraphicsConfig : ConfigurationLoader
 {
     #region Constants

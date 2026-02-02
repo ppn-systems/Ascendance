@@ -9,6 +9,7 @@ namespace Ascendance.Rendering.Entities;
 /// Represents an abstract base class for objects that render a Sprite.
 /// Provides constructors for configuring the appearance and transformation of the Sprite.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("SpriteObject | Position={Sprite.Position}, Scale={Sprite.Scale}, Rotation={Sprite.Rotation}")]
 public abstract class SpriteObject : RenderObject
 {
     #region Properties

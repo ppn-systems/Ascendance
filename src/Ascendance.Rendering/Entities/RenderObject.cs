@@ -9,6 +9,8 @@ namespace Ascendance.Rendering.Entities;
 /// Represents an abstract base class for objects that can be rendered on a target.
 /// Manages visibility, Z-Index ordering, and provides a method for rendering.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay(
+    "RenderObject | Z={_zIndex}, Visible={IsVisible}, Enabled={IsEnabled}")]
 public abstract class RenderObject : SceneObject, IRenderable
 {
     #region Fields
