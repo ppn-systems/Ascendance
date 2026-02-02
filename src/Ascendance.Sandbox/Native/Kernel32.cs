@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Sandbox;
+namespace Ascendance.Sandbox.Native;
 
 /// <summary>
 /// Provides native helpers for controlling the Windows console window.
