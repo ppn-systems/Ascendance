@@ -140,10 +140,12 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     {
         if (image == null || image.Pixels == null)
         {
+            NLogixFx.Error(message: "SetIcon called with null or image.Pixels is null", source: "GraphicsEngine");
             throw new System.ArgumentNullException(nameof(image));
         }
 
         this.RenderWindow.SetIcon(image.Size.X, image.Size.Y, image.Pixels);
+        NLogixFx.Debug(message: $"Window icon set (size: {image.Size.X}x{image.Size.Y})", source: "GraphicsEngine");
     }
 
     /// <summary>
@@ -162,6 +164,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
 
         try
         {
+            NLogixFx.Info(message: "Game loop started.", source: "GraphicsEngine");
             while (this.RenderWindow.IsOpen)
             {
                 this.RenderWindow.DispatchEvents();
@@ -198,6 +201,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
             }
 
             this.RenderWindow.Dispose();
+            NLogixFx.Info(message: "Game window closed, exiting main loop.", source: "GraphicsEngine");
         }
         catch (System.Exception ex)
         {
@@ -206,11 +210,16 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         finally
         {
             this.RenderWindow.Dispose();
+            NLogixFx.Debug(message: "Window disposed in finally block.", source: "GraphicsEngine");
+
             try
             {
                 MusicManager.Dispose();
             }
-            catch { /* intentionally ignore */ }
+            catch (System.Exception ex)
+            {
+                NLogixFx.Warn(message: $"Exception when disposing MusicManager: {ex?.Message}", source: "GraphicsEngine");
+            }
         }
     }
 
@@ -220,12 +229,16 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     public void Shutdown()
     {
         RenderWindow.Close();
+        NLogixFx.Info(message: "Shutdown called: RenderWindow.Close() invoked.", source: "GraphicsEngine");
 
         try
         {
             MusicManager.Dispose();
         }
-        catch { /* intentionally ignore */ }
+        catch (System.Exception ex)
+        {
+            NLogixFx.Warn(message: $"Exception when disposing MusicManager during shutdown: {ex?.Message}", source: "GraphicsEngine");
+        }
     }
 
     #endregion Methods
@@ -263,6 +276,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
 
             _renderCacheDirty = false;
             _renderObjectCache = cache;
+
+            NLogixFx.Debug(message: $"Render cache rebuilt ({cache.Count} objects).", source: "GraphicsEngine");
         }
 
         foreach (RenderObject obj in _renderObjectCache)
@@ -286,6 +301,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         {
             this.RenderWindow.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
         }
+
+        NLogixFx.Info(message: $"Window focus changed: {(focused ? "Gained" : "Lost")}", source: "GraphicsEngine");
     }
 
     #endregion Private Methods
