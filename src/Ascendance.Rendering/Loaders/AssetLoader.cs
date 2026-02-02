@@ -218,6 +218,7 @@ public abstract class AssetLoader<[
             try
             {
                 kvp.Value.Dispose();
+                $"[AssetLoader<{typeof(T).Name}>] Disposed asset '{kvp.Key}' successfully.".Debug();
             }
             catch (System.Exception e)
             {
@@ -226,6 +227,7 @@ public abstract class AssetLoader<[
         }
 
         _assets.Clear();
+        $"[AssetLoader<{typeof(T).Name}>] AssetLoader disposed. All assets released.".Info();
     }
 
     /// <summary>

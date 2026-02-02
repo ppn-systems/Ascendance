@@ -1,5 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Nalix.Logging.Extensions;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Loaders;
@@ -31,10 +32,13 @@ public sealed class FontLoader(System.String rootFolder = "") : AssetLoader<Font
     {
         if (bytes == null || bytes.Length == 0)
         {
+            NLogixFx.Error(message: "FontLoader.Load: Raw data is null or empty.", source: "FontLoader");
             throw new System.ArgumentException("Raw data is null or empty.", nameof(bytes));
         }
 
         using System.IO.MemoryStream ms = new(bytes, writable: false);
+        NLogixFx.Debug(message: $"FontLoader.Load: Loaded font from raw data, size={bytes.Length} bytes.", source: "FontLoader");
+
         return new Font(ms);
     }
 

@@ -1,5 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Nalix.Logging.Extensions;
 using SFML.Audio;
 
 namespace Ascendance.Rendering.Loaders;
@@ -50,11 +51,14 @@ public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoad
 
         if (stream?.CanRead != true)
         {
+            NLogixFx.Error(message: "SoundEffectLoader.Load: Stream is null or not readable.", source: "SoundEffectLoader");
             throw new System.ArgumentNullException(nameof(stream));
         }
 
         System.Byte[] data = new System.Byte[stream.Length];
         stream.ReadExactly(data);
+        NLogixFx.Debug(message: $"SoundEffectLoader.Load: Loaded sound '{name}' from stream ({data.Length} bytes).", source: "SoundEffectLoader");
+
         return Load(name, data);
     }
 
@@ -65,10 +69,13 @@ public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoad
     {
         if (bytes == null || bytes.Length == 0)
         {
+            NLogixFx.Error(message: "SoundEffectLoader.Load: Raw data is null or empty.", source: "SoundEffectLoader");
             throw new System.ArgumentException("Raw data is null or empty.", nameof(bytes));
         }
 
         using System.IO.MemoryStream memoryStream = new(bytes, writable: false);
+        NLogixFx.Debug(message: $"SoundEffectLoader.Load: Loaded sound from raw data ({bytes.Length} bytes).", source: "SoundEffectLoader");
+
         return new SoundBuffer(memoryStream);
     }
 

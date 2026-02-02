@@ -1,5 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Nalix.Logging.Extensions;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Loaders;
@@ -68,6 +69,7 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
         {
             tex.Repeated = repeat ?? Repeat;
             tex.Smooth = smoothing ?? Smoothing;
+
         }
         return tex;
     }
@@ -77,8 +79,16 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     protected override Texture Load(System.Byte[] bytes)
     {
+        if (bytes == null || bytes.Length == 0)
+        {
+            NLogixFx.Error(message: "TextureLoader.Load: Raw data is null or empty.", source: "TextureLoader");
+            throw new System.ArgumentException("Raw data is null or empty.", nameof(bytes));
+        }
+
         using System.IO.MemoryStream ms = new(bytes);
         Texture texture = new(ms); // Pass the MemoryStream to the constructor
+        NLogixFx.Debug(message: $"TextureLoader.Load: Loaded texture from raw data ({bytes.Length} bytes).", source: "TextureLoader");
+
         return texture;
     }
 
@@ -87,8 +97,15 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     protected override Texture CreateInstanceFromPath(System.String path)
     {
+        if (System.String.IsNullOrWhiteSpace(path))
+        {
+            NLogixFx.Error(message: "TextureLoader.CreateInstanceFromPath: Path is null or empty.", source: "TextureLoader");
+            throw new System.ArgumentException("Path is null or empty.", nameof(path));
+        }
         using System.IO.FileStream fs = System.IO.File.OpenRead(path);
-        Texture texture = new(fs); // Pass the FileStream to the constructor
+        Texture texture = new(fs);
+        NLogixFx.Debug(message: $"TextureLoader.CreateInstanceFromPath: Loaded texture from path: {path}", source: "TextureLoader");
+
         return texture;
     }
 
