@@ -11,6 +11,8 @@ namespace Ascendance.Rendering.Input;
 /// <summary>
 /// Manages mouse state and input.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay(
+    "MouseManager | Pos=({_mousePosition.X},{_mousePosition.Y}), ButtonsDown={GetPressedButtonCount()}")]
 public class MouseManager : SingletonBase<MouseManager>
 {
     #region Fields
@@ -64,21 +66,6 @@ public class MouseManager : SingletonBase<MouseManager>
     #endregion Input Control
 
     #region Getter Methods
-
-    /// <summary>
-    /// Gets all currently pressed mouse buttons.
-    /// </summary>
-    /// <returns>An enumerable containing the mouse buttons that are currently pressed.</returns>
-    public System.Collections.Generic.IEnumerable<Mouse.Button> GetPressedMouseButtons()
-    {
-        for (System.Int32 i = 0; i < MouseButtonState.Length; i++)
-        {
-            if (MouseButtonState[i])
-            {
-                yield return (Mouse.Button)i;
-            }
-        }
-    }
 
     /// <summary>
     /// Gets the current position of the mouse, in window coordinates.

@@ -10,6 +10,8 @@ namespace Ascendance.Rendering.Input;
 /// <summary>
 /// Manages keyboard state and input.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay(
+    "KeyboardManager | PressedKeys={GetPressedKeyCount()}, Recording={InputTimeline.Instance.IsRecording}")]
 public class KeyboardManager : SingletonBase<KeyboardManager>
 {
     #region Fields
@@ -62,27 +64,6 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     }
 
     #endregion Input Control
-
-    #region Getters
-
-    /// <summary>
-    /// Gets all currently pressed keys.
-    /// </summary>
-    /// <returns>
-    /// An enumerable containing the keys that are currently pressed.
-    /// </returns>
-    public System.Collections.Generic.IEnumerable<Keyboard.Key> GetPressedKeys()
-    {
-        for (System.Int32 i = 0; i < KeyState.Length; i++)
-        {
-            if (KeyState[i])
-            {
-                yield return (Keyboard.Key)i;
-            }
-        }
-    }
-
-    #endregion Getters
 
     #region Keyboard
 
