@@ -54,9 +54,9 @@ public sealed class GraphicsConfig : ConfigurationLoader
     public System.UInt32 ScreenHeight { get; init; } = 720;
 
     /// <summary>
-    /// Gets the title of the application window. Default value is "Ascendance".
+    /// Gets the title of the application window. Default value is "Ascendance Engine".
     /// </summary>
-    public System.String Title { get; init; } = "Ascendance";
+    public System.String Title { get; init; } = "Ascendance Engine";
 
     /// <summary>
     /// Gets the name of the main scene to be loaded. Default value is "main".

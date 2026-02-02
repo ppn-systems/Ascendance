@@ -66,7 +66,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// <summary>
     /// Sets a user-defined per-frame update handler.
     /// </summary>
-    public System.Action<System.Single> FrameUpdate { get; set; }
+    public event System.Action<System.Single> FrameUpdate;
 
     /// <summary>
     /// Window running state.
@@ -107,6 +107,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         );
 
         // Window events
+        this.IsDebugMode = false;
         this.RenderWindow.Closed += (_, _) => this.RenderWindow.Close();
         this.RenderWindow.LostFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(false);
         this.RenderWindow.GainedFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(true);
