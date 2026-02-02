@@ -8,12 +8,12 @@ namespace Ascendance.Rendering.Abstractions;
 public interface IFocusable
 {
     /// <summary>
-    /// Called when the object receives focus.
-    /// </summary>
-    void OnFocusGained();
-
-    /// <summary>
     /// Called when the object loses focus.
     /// </summary>
     void OnFocusLost();
+
+    /// <summary>
+    /// Called when the object receives focus.
+    /// </summary>
+    void OnFocusGained();
 }
