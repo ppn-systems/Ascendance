@@ -21,6 +21,14 @@ namespace Ascendance.Rendering.Engine;
 /// </summary>
 public class GraphicsEngine : SingletonBase<GraphicsEngine>
 {
+    #region Constants
+
+    private const System.Int32 INITIAL_SLEEP_MS = 20;
+    private const System.Int32 LOW_POWER_SLEEP_MS = 2;
+    private const System.Int32 DEFAULT_BACKGROUND_FPS = 15;
+
+    #endregion Constants
+
     #region Fields
 
     private readonly System.UInt32 _foregroundFps;
@@ -28,11 +36,16 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
 
     private System.Boolean _isFocused;
     private System.Boolean _renderCacheDirty;
-    private System.Collections.Generic.List<RenderObject> _renderObjectCache;
+    private System.Collections.Generic.IReadOnlyList<RenderObject> _renderObjectCache;
 
     #endregion Fields
 
     #region Properties
+
+    /// <summary>
+    /// Window used for rendering.
+    /// </summary>
+    public readonly RenderWindow RenderWindow;
 
     /// <summary>
     /// Gets application graphics configuration.
@@ -43,11 +56,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// Gets current window size.
     /// </summary>
     public static Vector2u ScreenSize { get; private set; }
-
-    /// <summary>
-    /// Window used for rendering.
-    /// </summary>
-    public readonly RenderWindow RenderWindow;
 
     /// <summary>
     /// Gets whether debug mode is enabled.
@@ -80,7 +88,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     public GraphicsEngine()
     {
         _isFocused = true;
-        _backgroundFps = 15;
+        _backgroundFps = DEFAULT_BACKGROUND_FPS;
         _renderObjectCache = [];
         _renderCacheDirty = true;
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
@@ -150,7 +158,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         SceneManager.Instance.InitializeScenes();
         TimeService time = InstanceManager.Instance.GetOrCreateInstance<TimeService>();
 
-        System.Threading.Thread.Sleep(20);
+        System.Threading.Thread.Sleep(INITIAL_SLEEP_MS);
 
         try
         {
@@ -178,7 +186,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
                         this.RenderWindow.SetFramerateLimit(_backgroundFps);
                     }
 
-                    System.Threading.Thread.Sleep(2);
+                    System.Threading.Thread.Sleep(LOW_POWER_SLEEP_MS);
                 }
                 else
                 {
@@ -250,9 +258,11 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     {
         if (_renderCacheDirty)
         {
-            _renderObjectCache = [.. SceneManager.Instance.GetActiveObjects<RenderObject>()];
-            _renderObjectCache.Sort(RenderObject.CompareZIndex);
+            System.Collections.Generic.List<RenderObject> cache = [.. SceneManager.Instance.GetActiveObjects<RenderObject>()];
+            cache.Sort(RenderObject.CompareZIndex);
+
             _renderCacheDirty = false;
+            _renderObjectCache = cache;
         }
 
         foreach (RenderObject obj in _renderObjectCache)
