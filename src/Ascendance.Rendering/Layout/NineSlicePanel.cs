@@ -10,6 +10,8 @@ namespace Ascendance.Rendering.Layout;
 /// A lightweight and efficient 9-slice panel for crisp, scalable UI frames.
 /// Corners are not scaled, edges only scale in one axis, and the center scales in both axes.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay(
+    "NineSlicePanel | Pos=({Position.X},{Position.Y}), Size=({Size.X},{Size.Y}), Border={Border}")]
 public sealed class NineSlicePanel : RenderObject
 {
     #region Fields

@@ -6,7 +6,9 @@ namespace Ascendance.Rendering.Layout;
 /// Represents thickness values for each side of a rectangle.
 /// Commonly used for 9-slice scaling, margins, or padding.
 /// </summary>
-public readonly struct Thickness(System.Int32 left, System.Int32 top, System.Int32 right, System.Int32 bottom)
+[System.Diagnostics.DebuggerDisplay("Thickness (L={Left}, T={Top}, R={Right}, B={Bottom})")]
+[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+public readonly struct Thickness(System.Int32 left, System.Int32 top, System.Int32 right, System.Int32 bottom) : System.IEquatable<Thickness>
 {
     #region Properties
 
@@ -47,4 +49,27 @@ public readonly struct Thickness(System.Int32 left, System.Int32 top, System.Int
     }
 
     #endregion Constructor
+
+    #region IEquatable Implementation
+
+    /// <inheritdoc/>
+    public System.Boolean Equals(Thickness other)
+        => Left == other.Left
+        && Top == other.Top
+        && Right == other.Right
+        && Bottom == other.Bottom;
+
+    /// <inheritdoc/>
+    public override System.Boolean Equals(System.Object obj) => obj is Thickness other && Equals(other);
+
+    /// <inheritdoc/>
+    public override System.Int32 GetHashCode() => System.HashCode.Combine(Left, Top, Right, Bottom);
+
+    /// <inheritdoc/>
+    public static System.Boolean operator ==(Thickness left, Thickness right) => left.Equals(right);
+
+    /// <inheritdoc/>
+    public static System.Boolean operator !=(Thickness left, Thickness right) => !left.Equals(right);
+
+    #endregion IEquatable Implementation
 }
