@@ -2,6 +2,8 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using SFML.Graphics;
 using SFML.System;
 
@@ -37,7 +39,7 @@ public sealed class LoadingOverlay : RenderObject
         };
 
 
-        base.SetZIndex(System.Int32.MaxValue - 2);
+        base.SetZIndex(RenderLayer.Overlay.ToZIndex());
 
         _spinner = new Spinner(new Vector2f(GraphicsEngine.ScreenSize.X / 2f, GraphicsEngine.ScreenSize.Y / 2f));
         _spinner.SetRotationSpeed(180f)

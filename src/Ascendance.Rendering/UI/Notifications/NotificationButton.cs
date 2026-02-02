@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.UI.Controls;
 using SFML.Graphics;
 using SFML.System;
@@ -98,6 +99,7 @@ public sealed class NotificationButton : Notification
 
         // Lần đầu layout nút.
         this.UPDATE_BUTTON_LAYOUT();
+        base.SetZIndex(RenderLayer.NotificationButton.ToZIndex());
     }
 
     #endregion Constructor

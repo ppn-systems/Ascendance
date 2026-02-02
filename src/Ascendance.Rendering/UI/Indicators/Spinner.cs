@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.UI.Theme;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
@@ -51,6 +53,7 @@ public sealed class Spinner : RenderObject, IUpdatable
     {
         _center = center;
         this.PRECOMPUTE_SEGMENTS();
+        base.SetZIndex(RenderLayer.Spinner.ToZIndex());
     }
 
     #endregion Constructor

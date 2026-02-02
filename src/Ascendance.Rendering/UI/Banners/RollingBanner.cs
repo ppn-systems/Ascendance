@@ -64,18 +64,14 @@ public class RollingBanner : RenderObject
     /// <param name="messages">
     /// The initial collection of messages to display in the banner.
     /// </param>
-    /// <param name="zIndex">
-    /// The rendering order used to layer the banner relative to other UI elements.
-    /// </param>
     /// <param name="font">
     /// The font used to render banner text.
     /// </param>
     /// <param name="speedPxPerSec">
     /// The horizontal scrolling speed in pixels per second.
     /// </param>
-    public RollingBanner(System.Collections.Generic.List<System.String> messages, System.Int32 zIndex, Font font, System.Single speedPxPerSec = 100f)
+    public RollingBanner(System.Collections.Generic.List<System.String> messages, Font font, System.Single speedPxPerSec = 100f)
     {
-        this.SetZIndex(zIndex);
         this.Show();
 
         _font = font;

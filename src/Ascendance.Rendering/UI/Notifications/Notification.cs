@@ -3,6 +3,7 @@
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;
@@ -112,6 +113,7 @@ public class Notification : RenderObject
         this.POSITION_TEXT_INSIDE_PANEL(this.Panel, textHeight, out _textAnchor);
 
         base.Show();
+        base.SetZIndex(RenderLayer.Notification.ToZIndex());
     }
 
     #endregion Constructors

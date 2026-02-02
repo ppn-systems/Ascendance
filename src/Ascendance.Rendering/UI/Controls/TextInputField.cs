@@ -2,6 +2,8 @@
 
 using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Internal.Input;
 using Ascendance.Rendering.Internal.Input.Rules;
@@ -210,7 +212,7 @@ public class TextInputField : RenderObject, IFocusable
         this.UPDATE_CARET_IMMEDIATE();
 
         // (VN) Cho UI nổi lên một chút; tùy engine của bạn
-        base.SetZIndex(800);
+        base.SetZIndex(RenderLayer.InputField.ToZIndex());
     }
 
     /// <summary>
