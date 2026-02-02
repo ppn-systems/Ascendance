@@ -2,6 +2,7 @@
 
 using Ascendance.Rendering.Internal.Input;
 using Nalix.Framework.Injection.DI;
+using Nalix.Logging.Extensions;
 using SFML.Window;
 
 namespace Ascendance.Rendering.Input;
@@ -152,6 +153,7 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     {
         if (snapshot.Length != KeyState.Length)
         {
+            NLogixFx.Error(message: $"RestoreKeyboardState: Invalid key state length {snapshot.Length}, expected {KeyState.Length}.", source: "KeyboardManager");
             throw new System.ArgumentException("Invalid key state length");
         }
 
@@ -159,6 +161,8 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
         {
             KeyState[i] = snapshot[i];
         }
+
+        NLogixFx.Debug(message: "Keyboard state successfully restored from snapshot.", source: "KeyboardManager");
     }
 
     #endregion Internal Methods

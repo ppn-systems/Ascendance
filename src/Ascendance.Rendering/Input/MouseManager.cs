@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Nalix.Framework.Injection.DI;
+using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -153,6 +154,10 @@ public class MouseManager : SingletonBase<MouseManager>
     {
         if (btnState.Length != MouseButtonState.Length)
         {
+            NLogixFx.Error(
+                message: $"RestoreMouseState: Invalid button state length {btnState.Length}, expected {MouseButtonState.Length}.",
+                source: "MouseManager"
+            );
             throw new System.ArgumentException("Invalid mouse button state length");
         }
 
@@ -162,6 +167,7 @@ public class MouseManager : SingletonBase<MouseManager>
         }
 
         _mousePosition = mousePos;
+        NLogixFx.Debug(message: $"Mouse state restored. Position=({mousePos.X},{mousePos.Y})", source: "MouseManager");
     }
 
     #endregion Internal Methods
