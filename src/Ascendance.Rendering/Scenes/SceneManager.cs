@@ -57,6 +57,7 @@ public class SceneManager : SingletonBase<SceneManager>
     {
         if (o.IsInitialized)
         {
+            NLogixFx.Error(message: $"Attempt to schedule already-initialized object {o.GetType().Name} (ID: {o.GetHashCode()}) for spawn.", source: "SceneManager");
             throw new System.Exception($"Instance of SceneObject {nameof(o)} already exists in Scenes");
         }
         if (!PendingSpawnObjects.Add(o))
@@ -89,6 +90,7 @@ public class SceneManager : SingletonBase<SceneManager>
     {
         if (!_activeSceneObjects.Contains(o) && !PendingSpawnObjects.Contains(o))
         {
+            NLogixFx.Error(message: $"Attempt to destroy non-existent SceneObject (ID: {o.GetHashCode()})", source: "SceneManager");
             throw new System.Exception("Instance of SceneObject does not exist in the scene.");
         }
         if (!PendingSpawnObjects.Remove(o) && !PendingDestroyObjects.Add(o))
@@ -186,20 +188,35 @@ public class SceneManager : SingletonBase<SceneManager>
     {
         if (_nextScene == _currentScene?.Name)
         {
-            _nextScene = ""; return;
+            _nextScene = "";
+            NLogixFx.Debug(message: $"Requested scene change to the same scene [{_nextScene}], no action taken.", source: "SceneManager");
+
+            return;
         }
 
         if (_nextScene?.Length == 0)
         {
+            NLogixFx.Debug(message: $"Empty scene change requested, no action taken.", source: "SceneManager");
+
             return;
         }
 
-        CLEAR_SCENE();
-        System.String lastScene = _currentScene?.Name ?? "";
-        LOAD_SCENE(_nextScene);
+        try
+        {
+            CLEAR_SCENE();
+            System.String lastScene = _currentScene?.Name ?? "";
+            LOAD_SCENE(_nextScene);
 
-        SceneChanged?.Invoke(this, new SceneChangedEventArgs(lastScene, _nextScene));
-        _nextScene = "";
+            NLogixFx.Info(message: $"Scene changed from [{lastScene}] to [{_nextScene}].", source: "SceneManager");
+            SceneChanged?.Invoke(this, new SceneChangedEventArgs(lastScene, _nextScene));
+
+            _nextScene = "";
+        }
+        catch (System.Exception ex)
+        {
+            NLogixFx.Error(message: $"Error occurred during scene change: {ex}", source: "SceneManager");
+            throw;
+        }
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
