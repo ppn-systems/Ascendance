@@ -20,7 +20,7 @@ public class Button : RenderObject, IUpdatable
     #region Constants
 
     private const System.Single DefaultHeight = 64f;
-    private const System.Single DefaultWidth = 100f;
+    private const System.Single DefaultWidth = 200f;
     private const System.UInt32 DefaultFontSize = 20;
     private const System.Single HorizontalPaddingDefault = 16f;
 
