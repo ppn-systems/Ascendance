@@ -5,8 +5,6 @@ using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Scenes;
-using Ascendance.Rendering.UI.Theme;
-using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -14,7 +12,7 @@ using SFML.Window;
 namespace Ascendance.Rendering.UI.Indicators;
 
 /// <summary>
-/// Renders debug information overlay on the game window with high efficiency and extensibility. Use AddCustomLine to append custom debug info.
+/// Renders debug information overlay on the game window with high efficiency and extensibility. Use <see cref="AddDiagnosticLine"/> to append custom debug info.
 /// </summary>
 public class DebugOverlay : RenderObject
 {
@@ -35,17 +33,55 @@ public class DebugOverlay : RenderObject
 
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the top-left origin for displaying the debug overlay.
+    /// </summary>
     public Vector2f Origin { get; set; } = new Vector2f(10, 10);
-    public Color FontColor { get; set; } = Color.White;
-    public Color OutlineColor { get; set; } = Color.Black;
-    public System.Single OutlineThickness { get; set; } = 1f;
-    public System.Boolean ShowObjectsInfo { get; set; } = true;
-    public System.Boolean ShowMemory { get; set; } = true;
-    public System.Boolean ShowInput { get; set; } = true;
-    public System.Boolean ShowScene { get; set; } = true;
-    public System.Boolean ShowVSync { get; set; } = true;
-    public System.Boolean ShowWindow { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets the color used for debug overlay text.
+    /// </summary>
+    public Color FontColor { get; set; } = Color.White;
+
+    /// <summary>
+    /// Gets or sets the outline color for debug overlay text.
+    /// </summary>
+    public Color OutlineColor { get; set; } = Color.Black;
+
+    /// <summary>
+    /// Gets or sets the thickness of outline applied to debug text.
+    /// </summary>
+    public System.Single OutlineThickness { get; set; } = 1f;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show object count information in overlay.
+    /// </summary>
+    public System.Boolean ShowObjectsInfo { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show managed memory usage in overlay.
+    /// </summary>
+    public System.Boolean ShowMemory { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show input (mouse position) in overlay.
+    /// </summary>
+    public System.Boolean ShowInput { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show scene information in overlay.
+    /// </summary>
+    public System.Boolean ShowScene { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show VSync status in overlay.
+    /// </summary>
+    public System.Boolean ShowVSync { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show window resolution in overlay.
+    /// </summary>
+    public System.Boolean ShowWindow { get; set; } = true;
 
     #endregion Properties
 
@@ -55,9 +91,10 @@ public class DebugOverlay : RenderObject
     /// Initializes a new instance of the <see cref="DebugOverlay"/> class.
     /// </summary>
     /// <param name="font">Debug font, must not be null.</param>
-    /// <param name="fontSize">Font size, default 16.</param>
-    /// <param name="lineSpacing">Line spacing, default 20.</param>
-    public DebugOverlay(Font font, System.UInt32 fontSize = 16, System.Single lineSpacing = 20f)
+    /// <param name="fontSize">Font size for debug text. Default is 16.</param>
+    /// <param name="lineSpacing">Vertical spacing between lines of debug text. Default is 20.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="font"/> is null.</exception>
+    public DebugOverlay(Font font, System.UInt32 fontSize = 13, System.Single lineSpacing = 20f)
     {
         _fpsClock = new();
         _fontSize = fontSize;
@@ -73,9 +110,10 @@ public class DebugOverlay : RenderObject
     #region APIs
 
     /// <summary>
-    /// Call this method to add custom debug text for this frame.
+    /// Adds a custom line of debug info to appear in this frame’s overlay.
     /// </summary>
-    public void AddCustomLine(System.String line)
+    /// <param name="line">The debug text line to add. If null or empty, nothing is added.</param>
+    public void AddDiagnosticLine(System.String line)
     {
         if (!System.String.IsNullOrEmpty(line))
         {
@@ -86,7 +124,7 @@ public class DebugOverlay : RenderObject
     /// <summary>
     /// Renders the debug overlay if debug mode is enabled.
     /// </summary>
-    /// <param name="target">The target SFML render window.</param>
+    /// <param name="target">The target SFML render window for drawing.</param>
     public override void Draw(RenderTarget target)
     {
         if (!_engine.IsDebugMode)
@@ -105,6 +143,7 @@ public class DebugOverlay : RenderObject
         }
 
         System.Single y = Origin.Y;
+
         for (System.Int32 i = 0; i < lines.Count; ++i)
         {
             Text text = _textObjects[i];
@@ -117,55 +156,58 @@ public class DebugOverlay : RenderObject
             target.Draw(text);
             y += _lineSpacing;
         }
+
         _customDebugLines.Clear();
     }
 
-    protected override Drawable GetDrawable() => null; // Không sử dụng draw kiểu này
+    /// <inheritdoc/>
+    protected override Drawable GetDrawable() => null; // Không sử dụng kiểu draw này
 
     #endregion APIs
 
     #region Private Methods
 
     /// <summary>
-    /// Compose all debug lines for the overlay.
+    /// Composes all debug lines for display in the overlay, respecting active toggles.
     /// </summary>
+    /// <returns>List of debug strings for this frame.</returns>
     private System.Collections.Generic.List<System.String> COMPOSE_DEBUG_LINES()
     {
-        var lines = new System.Collections.Generic.List<System.String>
-        {
+        System.Collections.Generic.List<System.String> lines =
+        [
             $"FPS: {_currentFps:F1}"
-        };
+        ];
 
-        if (ShowScene)
+        if (this.ShowScene)
         {
             lines.Add($"Scene: {SceneManager.Instance.GetActiveSceneName()}");
         }
 
-        if (ShowObjectsInfo)
+        if (this.ShowObjectsInfo)
         {
-            lines.Add($"Objects: {GraphicsEngine.Instance.ActiveObjectCount}");
+            lines.Add($"Rendered Objects: {GraphicsEngine.Instance.ActiveObjectCount}");
         }
 
-        if (ShowMemory)
+        if (this.ShowMemory)
         {
-            lines.Add($"Managed Memory: {System.GC.GetTotalMemory(false) / 1048576} MB");
+            lines.Add($"Memory Usage: {System.GC.GetTotalMemory(false) / 1048576} MB");
         }
 
-        if (ShowVSync)
+        if (this.ShowVSync)
         {
-            lines.Add($"VSync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}");
+            lines.Add($"Vertical Sync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}");
         }
 
-        if (ShowWindow)
+        if (this.ShowWindow)
         {
-            lines.Add($"Window: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}");
+            lines.Add($"Window Size: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}");
         }
 
-        lines.Add($"Debug: {_engine.IsDebugMode}");
+        lines.Add($"Debug Mode: {_engine.IsDebugMode}");
 
-        if (ShowInput)
+        if (this.ShowInput)
         {
-            lines.Add($"Mouse: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})");
+            lines.Add($"Mouse Position: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})");
         }
 
         // Show custom lines at the end
@@ -181,6 +223,7 @@ public class DebugOverlay : RenderObject
     {
         _frameCount++;
         System.Single elapsed = _fpsClock.ElapsedTime.AsSeconds();
+
         if (elapsed >= 1f)
         {
             _currentFps = _frameCount / elapsed;
@@ -190,129 +233,4 @@ public class DebugOverlay : RenderObject
     }
 
     #endregion Private Methods
-
-    #region Class
-
-    /// <summary>
-    /// Procedural animated spinner used as a loading indicator.
-    /// Can be shown independently or embedded as part of composite UI.
-    /// </summary>
-    /// <remarks>
-    /// This spinner is designed for efficient rendering by precomputing segment shapes and alpha multipliers
-    /// to avoid unnecessary allocations during each frame.
-    /// </remarks>
-    private sealed class Spinner : RenderObject, IUpdatable
-    {
-        #region Constants
-
-        private const System.Int32 SegmentCount = 12;
-        private const System.Single SpinnerRadius = 32f;
-        private const System.Single SegmentThickness = 7f;
-        private const System.Single DegreesToRadians = 0.017453292519943295f;
-
-        #endregion Constants
-
-        #region Fields
-
-        private Vector2f _center;
-        private System.Single _currentAngle = 0f;
-
-        // Precomputed values to avoid re-allocating every Draw
-        private readonly System.Byte _alpha = 255;
-        private readonly System.Single _rotationDegreesPerSecond = 150f;
-        private readonly CircleShape[] _segmentShapes = new CircleShape[SegmentCount];
-        private readonly System.Single[] _segmentOffsets = new System.Single[SegmentCount];
-        private readonly System.Byte[] _segmentAlphaMultipliers = new System.Byte[SegmentCount];
-
-        #endregion Fields
-
-        #region Constructor
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Spinner"/> class at a specific center point.
-        /// </summary>
-        /// <param name="center">The center point for the spinner.</param>
-        public Spinner(Vector2f center)
-        {
-            _center = center;
-            this.PRECOMPUTE_SEGMENTS();
-            base.SetZIndex(RenderLayer.Spinner.ToZIndex());
-        }
-
-        #endregion Constructor
-
-        #region Main Loop
-
-        /// <inheritdoc />
-        public override void Update(System.Single deltaTime)
-        {
-            _currentAngle += deltaTime * _rotationDegreesPerSecond;
-            if (_currentAngle >= 360f)
-            {
-                _currentAngle -= 360f;
-            }
-        }
-
-        /// <inheritdoc />
-        public override void Draw(RenderTarget target)
-        {
-
-            for (System.Int32 i = 0; i < SegmentCount; i++)
-            {
-                System.Single segAngle = _currentAngle + _segmentOffsets[i];
-                System.Single angleRad = segAngle * DegreesToRadians;
-
-                System.Single x = _center.X + (System.MathF.Cos(angleRad) * SpinnerRadius);
-                System.Single y = _center.Y + (System.MathF.Sin(angleRad) * SpinnerRadius);
-
-                CircleShape segCircle = _segmentShapes[i];
-
-                segCircle.Radius = SegmentThickness / 2f;
-                segCircle.Origin = new Vector2f(segCircle.Radius, segCircle.Radius);
-                segCircle.Position = new Vector2f(x, y);
-
-                System.Byte finalAlpha = (System.Byte)(_alpha * _segmentAlphaMultipliers[i] / 255);
-                segCircle.FillColor = new Color(Themes.SpinnerForegroundColor.R, Themes.SpinnerForegroundColor.G, Themes.SpinnerForegroundColor.B, finalAlpha);
-
-                target.Draw(segCircle);
-            }
-        }
-
-        /// <inheritdoc />
-        protected override Drawable GetDrawable() =>
-            throw new System.NotSupportedException("Spinner uses procedural geometry. Call Render() directly.");
-
-        #endregion Main Loop
-
-        #region Private Methods
-
-        /// <summary>
-        /// Precomputes static values for segment angle and multipliers to optimize drawing.
-        /// </summary>
-        private void PRECOMPUTE_SEGMENTS()
-        {
-            const System.Single anglePerSegment = 360f / SegmentCount;
-
-            for (System.Int32 i = 0; i < SegmentCount; i++)
-            {
-                // Offset angle for this segment (degrees)
-                _segmentOffsets[i] = i * anglePerSegment;
-
-                // trailing tail alpha effect: 0.2f + 0.8f * progress => multiply by 255 (max alpha)
-                System.Single progress = (System.Single)i / SegmentCount;
-                System.Single alphaMultiplier = 0.2f + (0.8f * progress);
-                _segmentAlphaMultipliers[i] = (System.Byte)(alphaMultiplier * 255);
-
-                // Init CircleShape ONCE, just set position/color each draw
-                _segmentShapes[i] = new CircleShape(SegmentThickness / 2f)
-                {
-                    Origin = new Vector2f(SegmentThickness / 2f, SegmentThickness / 2f)
-                };
-            }
-        }
-
-        #endregion Private Methods
-    }
-
-    #endregion Class
 }

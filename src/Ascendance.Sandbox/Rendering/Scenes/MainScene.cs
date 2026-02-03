@@ -36,9 +36,9 @@ internal sealed class MainScene : BaseScene
         button.SetPosition(new(20, 20));
 
         base.AddObject(debug);
-        base.AddObject(button);
-        base.AddObject(notification);
-        base.AddObject(passwordField);
-        base.AddObject(textInputField);
+        //base.AddObject(button);
+        //base.AddObject(notification);
+        //base.AddObject(passwordField);
+        //base.AddObject(textInputField);
     }
 }

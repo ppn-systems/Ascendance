@@ -17,6 +17,7 @@ public static class Program
     public static void Main()
     {
         // Setup logging
+        GraphicsEngine.Instance.DebugMode();
         NLogixFx.MinimumLevel = LogLevel.Debug;
 
         if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
