@@ -54,7 +54,7 @@ public abstract class RenderObject : SceneObject, IRenderable
     {
         if (this.IsVisible)
         {
-            target.Draw(GetDrawable());
+            target.Draw(this.GetDrawable());
         }
     }
 

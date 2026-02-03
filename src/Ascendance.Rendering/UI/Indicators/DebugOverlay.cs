@@ -5,6 +5,8 @@ using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Scenes;
+using Ascendance.Rendering.UI.Theme;
+using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -84,8 +86,8 @@ public class DebugOverlay : RenderObject
     /// <summary>
     /// Renders the debug overlay if debug mode is enabled.
     /// </summary>
-    /// <param name="window">The target SFML render window.</param>
-    public void Draw(RenderWindow window)
+    /// <param name="target">The target SFML render window.</param>
+    public override void Draw(RenderTarget target)
     {
         if (!_engine.IsDebugMode)
         {
@@ -94,7 +96,7 @@ public class DebugOverlay : RenderObject
         }
 
         UPDATE_FPS();
-        var lines = COMPOSE_DEBUG_LINES(window);
+        System.Collections.Generic.List<System.String> lines = COMPOSE_DEBUG_LINES();
 
         // Ensure object pool matches needed lines
         while (_textObjects.Count < lines.Count)
@@ -105,13 +107,14 @@ public class DebugOverlay : RenderObject
         System.Single y = Origin.Y;
         for (System.Int32 i = 0; i < lines.Count; ++i)
         {
-            var text = _textObjects[i];
-            text.DisplayedString = lines[i];
-            text.Position = new Vector2f(Origin.X, y);
+            Text text = _textObjects[i];
             text.FillColor = FontColor;
+            text.DisplayedString = lines[i];
             text.OutlineColor = OutlineColor;
             text.OutlineThickness = OutlineThickness;
-            window.Draw(text);
+            text.Position = new Vector2f(Origin.X, y);
+
+            target.Draw(text);
             y += _lineSpacing;
         }
         _customDebugLines.Clear();
@@ -126,7 +129,7 @@ public class DebugOverlay : RenderObject
     /// <summary>
     /// Compose all debug lines for the overlay.
     /// </summary>
-    private System.Collections.Generic.List<System.String> COMPOSE_DEBUG_LINES(RenderWindow window)
+    private System.Collections.Generic.List<System.String> COMPOSE_DEBUG_LINES()
     {
         var lines = new System.Collections.Generic.List<System.String>
         {
@@ -162,7 +165,7 @@ public class DebugOverlay : RenderObject
 
         if (ShowInput)
         {
-            lines.Add($"Mouse: ({Mouse.GetPosition(window).X}, {Mouse.GetPosition(window).Y})");
+            lines.Add($"Mouse: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})");
         }
 
         // Show custom lines at the end
@@ -187,4 +190,129 @@ public class DebugOverlay : RenderObject
     }
 
     #endregion Private Methods
+
+    #region Class
+
+    /// <summary>
+    /// Procedural animated spinner used as a loading indicator.
+    /// Can be shown independently or embedded as part of composite UI.
+    /// </summary>
+    /// <remarks>
+    /// This spinner is designed for efficient rendering by precomputing segment shapes and alpha multipliers
+    /// to avoid unnecessary allocations during each frame.
+    /// </remarks>
+    private sealed class Spinner : RenderObject, IUpdatable
+    {
+        #region Constants
+
+        private const System.Int32 SegmentCount = 12;
+        private const System.Single SpinnerRadius = 32f;
+        private const System.Single SegmentThickness = 7f;
+        private const System.Single DegreesToRadians = 0.017453292519943295f;
+
+        #endregion Constants
+
+        #region Fields
+
+        private Vector2f _center;
+        private System.Single _currentAngle = 0f;
+
+        // Precomputed values to avoid re-allocating every Draw
+        private readonly System.Byte _alpha = 255;
+        private readonly System.Single _rotationDegreesPerSecond = 150f;
+        private readonly CircleShape[] _segmentShapes = new CircleShape[SegmentCount];
+        private readonly System.Single[] _segmentOffsets = new System.Single[SegmentCount];
+        private readonly System.Byte[] _segmentAlphaMultipliers = new System.Byte[SegmentCount];
+
+        #endregion Fields
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Spinner"/> class at a specific center point.
+        /// </summary>
+        /// <param name="center">The center point for the spinner.</param>
+        public Spinner(Vector2f center)
+        {
+            _center = center;
+            this.PRECOMPUTE_SEGMENTS();
+            base.SetZIndex(RenderLayer.Spinner.ToZIndex());
+        }
+
+        #endregion Constructor
+
+        #region Main Loop
+
+        /// <inheritdoc />
+        public override void Update(System.Single deltaTime)
+        {
+            _currentAngle += deltaTime * _rotationDegreesPerSecond;
+            if (_currentAngle >= 360f)
+            {
+                _currentAngle -= 360f;
+            }
+        }
+
+        /// <inheritdoc />
+        public override void Draw(RenderTarget target)
+        {
+
+            for (System.Int32 i = 0; i < SegmentCount; i++)
+            {
+                System.Single segAngle = _currentAngle + _segmentOffsets[i];
+                System.Single angleRad = segAngle * DegreesToRadians;
+
+                System.Single x = _center.X + (System.MathF.Cos(angleRad) * SpinnerRadius);
+                System.Single y = _center.Y + (System.MathF.Sin(angleRad) * SpinnerRadius);
+
+                CircleShape segCircle = _segmentShapes[i];
+
+                segCircle.Radius = SegmentThickness / 2f;
+                segCircle.Origin = new Vector2f(segCircle.Radius, segCircle.Radius);
+                segCircle.Position = new Vector2f(x, y);
+
+                System.Byte finalAlpha = (System.Byte)(_alpha * _segmentAlphaMultipliers[i] / 255);
+                segCircle.FillColor = new Color(Themes.SpinnerForegroundColor.R, Themes.SpinnerForegroundColor.G, Themes.SpinnerForegroundColor.B, finalAlpha);
+
+                target.Draw(segCircle);
+            }
+        }
+
+        /// <inheritdoc />
+        protected override Drawable GetDrawable() =>
+            throw new System.NotSupportedException("Spinner uses procedural geometry. Call Render() directly.");
+
+        #endregion Main Loop
+
+        #region Private Methods
+
+        /// <summary>
+        /// Precomputes static values for segment angle and multipliers to optimize drawing.
+        /// </summary>
+        private void PRECOMPUTE_SEGMENTS()
+        {
+            const System.Single anglePerSegment = 360f / SegmentCount;
+
+            for (System.Int32 i = 0; i < SegmentCount; i++)
+            {
+                // Offset angle for this segment (degrees)
+                _segmentOffsets[i] = i * anglePerSegment;
+
+                // trailing tail alpha effect: 0.2f + 0.8f * progress => multiply by 255 (max alpha)
+                System.Single progress = (System.Single)i / SegmentCount;
+                System.Single alphaMultiplier = 0.2f + (0.8f * progress);
+                _segmentAlphaMultipliers[i] = (System.Byte)(alphaMultiplier * 255);
+
+                // Init CircleShape ONCE, just set position/color each draw
+                _segmentShapes[i] = new CircleShape(SegmentThickness / 2f)
+                {
+                    Origin = new Vector2f(SegmentThickness / 2f, SegmentThickness / 2f)
+                };
+            }
+        }
+
+        #endregion Private Methods
+    }
+
+    #endregion Class
 }
