@@ -3,6 +3,8 @@
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Managers;
+using Ascendance.Rendering.Scenes;
+using Ascendance.Rendering.UI.Indicators;
 using Ascendance.Sandbox.Native;
 using Nalix.Common.Diagnostics;
 using Nalix.Logging.Extensions;
@@ -13,11 +15,11 @@ namespace Ascendance.Sandbox;
 public static class Program
 {
     public static readonly Font Font = AssetManager.Instance.LoadFont("res/fonts/1.ttf");
+    private static readonly DebugOverlay Debug = new(Font);
 
     public static void Main()
     {
         // Setup logging
-        GraphicsEngine.Instance.DebugMode();
         NLogixFx.MinimumLevel = LogLevel.Debug;
 
         if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
@@ -52,10 +54,12 @@ public static class Program
             if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
             {
                 Kernel32.Hide();
+                SceneManager.Instance.EnqueueDestroy(Debug);
             }
             else if (System.OperatingSystem.IsWindows())
             {
                 Kernel32.Show();
+                SceneManager.Instance.EnqueueSpawn(Debug);
             }
         }
 
