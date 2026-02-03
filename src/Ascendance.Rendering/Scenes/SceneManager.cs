@@ -3,6 +3,7 @@
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
+using Ascendance.Shared.Abstractions;
 using Nalix.Framework.Injection.DI;
 using Nalix.Logging.Extensions;
 
@@ -12,7 +13,7 @@ namespace Ascendance.Rendering.Scenes;
 /// The SceneManager class is responsible for managing scenes and objects within those scenes.
 /// It handles scene transitions, object spawning, and object destruction.
 /// </summary>
-public class SceneManager : SingletonBase<SceneManager>
+public class SceneManager : SingletonBase<SceneManager>, IUpdatable
 {
     #region Events
 
@@ -38,6 +39,20 @@ public class SceneManager : SingletonBase<SceneManager>
     #endregion Fields
 
     #region APIs
+
+    /// <inheritdoc/>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void Update(System.Single deltaTime)
+    {
+        System.Threading.Tasks.Parallel.ForEach(_activeSceneObjects, o =>
+        {
+            if (o.IsEnabled)
+            {
+                o.Update(deltaTime);
+            }
+        });
+    }
 
     /// <summary>
     /// Queues a scene to be loaded on the next frame.
@@ -257,19 +272,6 @@ public class SceneManager : SingletonBase<SceneManager>
         }
 
         this.PendingDestroyObjects.Clear();
-    }
-
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    internal void UpdateSceneObjects(System.Single deltaTime)
-    {
-        System.Threading.Tasks.Parallel.ForEach(_activeSceneObjects, o =>
-        {
-            if (o.IsEnabled)
-            {
-                o.Update(deltaTime);
-            }
-        });
     }
 
     /// <summary>

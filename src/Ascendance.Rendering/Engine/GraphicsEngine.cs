@@ -6,6 +6,7 @@ using Ascendance.Rendering.Internal.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.Time;
+using Ascendance.Shared.Abstractions;
 using Nalix.Framework.Configuration;
 using Nalix.Framework.Injection;
 using Nalix.Framework.Injection.DI;
@@ -13,6 +14,7 @@ using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using System.Linq;
 
 namespace Ascendance.Rendering.Engine;
 
@@ -20,7 +22,7 @@ namespace Ascendance.Rendering.Engine;
 /// Central static class for managing the main game window, rendering loop, and core events.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("IsRunning={IsRunning}, DebugMode={IsDebugMode}, WindowTitle={RenderWindow?.Title}")]
-public class GraphicsEngine : SingletonBase<GraphicsEngine>
+public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
 {
     #region Constants
 
@@ -72,6 +74,12 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
     /// Window running state.
     /// </summary>
     public System.Boolean IsRunning => this.RenderWindow.IsOpen;
+
+    /// <summary>
+    /// Gets the number of active and visible render objects.
+    /// </summary>
+    /// <returns>The count of objects that are enabled and visible.</returns>
+    public System.Int32 ActiveObjectCount => _renderObjectCache.Count(obj => obj.IsEnabled && obj.IsVisible);
 
     #endregion Properties
 
@@ -176,7 +184,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
                 accumulator += time.Current.DeltaTime;
                 while (accumulator >= time.FixedDeltaTime)
                 {
-                    this.UPDATE_FRAME(time.FixedDeltaTime);
+                    this.Update(time.FixedDeltaTime);
                     accumulator -= time.FixedDeltaTime;
                 }
 
@@ -243,15 +251,11 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         }
     }
 
-    #endregion Methods
-
-    #region Private Methods
-
     /// <summary>
     /// Per-frame method: updates input, scenes, and user code.
     /// </summary>
     /// <param name="deltaTime">The time in seconds since the previous update.</param>
-    private void UPDATE_FRAME(System.Single deltaTime)
+    public virtual void Update(System.Single deltaTime)
     {
         this.FrameUpdate?.Invoke(deltaTime);
 
@@ -262,8 +266,12 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>
         SceneManager.Instance.ProcessSceneChange();
         SceneManager.Instance.ProcessPendingDestroy();
         SceneManager.Instance.ProcessPendingSpawn();
-        SceneManager.Instance.UpdateSceneObjects(deltaTime);
+        SceneManager.Instance.Update(deltaTime);
     }
+
+    #endregion Methods
+
+    #region Private Methods
 
     /// <summary>
     /// Draws all visible scene objects, sorted by Z-index.

@@ -32,6 +32,11 @@ public abstract class AssetLoader<[
     #region Properties
 
     /// <summary>
+    /// Indicates whether the asset loader has been disposed.
+    /// </summary>
+    public System.Boolean Disposed => _disposed;
+
+    /// <summary>
     /// The root folder where assets are located.
     /// </summary>
     public System.String RootFolder { get; set; }
@@ -40,12 +45,6 @@ public abstract class AssetLoader<[
     /// Indicates whether the asset loader should log debug information.
     /// </summary>
     public System.Boolean EnableLogging { get; set; }
-
-    /// <summary>
-    /// Indicates whether the asset loader has been disposed.
-    /// </summary>
-    public System.Boolean Disposed => _disposed;
-
 
     /// <summary>
     /// List of supported file endings for this AssetLoader

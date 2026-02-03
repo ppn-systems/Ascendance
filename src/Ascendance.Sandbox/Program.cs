@@ -2,6 +2,7 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
+using Ascendance.Rendering.Managers;
 using Ascendance.Sandbox.Native;
 using Nalix.Common.Diagnostics;
 using Nalix.Logging.Extensions;
@@ -11,6 +12,8 @@ namespace Ascendance.Sandbox;
 
 public static class Program
 {
+    public static readonly Font Font = AssetManager.Instance.LoadFont("res/fonts/1.ttf");
+
     public static void Main()
     {
         // Setup logging
@@ -44,6 +47,7 @@ public static class Program
         if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.F12))
         {
             GraphicsEngine.Instance.DebugMode();
+
             if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
             {
                 Kernel32.Hide();
