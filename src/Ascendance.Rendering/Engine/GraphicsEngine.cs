@@ -14,7 +14,6 @@ using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using System.Linq;
 
 namespace Ascendance.Rendering.Engine;
 
@@ -79,7 +78,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     /// Gets the number of active and visible render objects.
     /// </summary>
     /// <returns>The count of objects that are enabled and visible.</returns>
-    public System.Int32 ActiveObjectCount => _renderObjectCache.Count(obj => obj.IsEnabled && obj.IsVisible);
+    public System.Int32 ActiveObjectCount => System.Linq.Enumerable.Count(_renderObjectCache, obj => obj.IsEnabled && obj.IsVisible);
 
     #endregion Properties
 
@@ -97,9 +96,9 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     public GraphicsEngine()
     {
         _isFocused = true;
-        _backgroundFps = DEFAULT_BACKGROUND_FPS;
         _renderObjectCache = [];
         _renderCacheDirty = true;
+        _backgroundFps = DEFAULT_BACKGROUND_FPS;
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
         ContextSettings ctx = new()
@@ -116,7 +115,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
 
         // Window events
         this.IsDebugMode = false;
-        this.RenderWindow.Closed += (_, _) => this.RenderWindow.Close();
+        this.RenderWindow.Closed += (_, _) => this.CLOSE_RENDER_WINDOW();
         this.RenderWindow.LostFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(false);
         this.RenderWindow.GainedFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(true);
         this.RenderWindow.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
@@ -272,6 +271,12 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     #endregion Methods
 
     #region Private Methods
+
+    private void CLOSE_RENDER_WINDOW()
+    {
+        this.RenderWindow.Close();
+        System.Environment.Exit(0);
+    }
 
     /// <summary>
     /// Draws all visible scene objects, sorted by Z-index.
