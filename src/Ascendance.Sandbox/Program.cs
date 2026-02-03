@@ -2,9 +2,6 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
-using Ascendance.Rendering.Managers;
-using Ascendance.Rendering.Scenes;
-using Ascendance.Rendering.UI.Indicators;
 using Ascendance.Sandbox.Native;
 using Nalix.Common.Diagnostics;
 using Nalix.Logging.Extensions;
@@ -14,9 +11,6 @@ namespace Ascendance.Sandbox;
 
 public static class Program
 {
-    public static readonly Font Font = AssetManager.Instance.LoadFont("res/fonts/1.ttf");
-    private static readonly DebugOverlay Debug = new(Font);
-
     public static void Main()
     {
         // Setup logging
@@ -47,25 +41,28 @@ public static class Program
 
     private static void OnFrameUpdate(System.Single deltaTime)
     {
+        // Toggle debug mode with F12
         if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.F12))
         {
-            GraphicsEngine.Instance.DebugMode();
+            System.Boolean isWindows = System.OperatingSystem.IsWindows();
 
-            if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
+            if (!GraphicsEngine.Instance.IsDebugMode && isWindows)
             {
                 Kernel32.Hide();
-                SceneManager.Instance.EnqueueDestroy(Debug);
+                GraphicsEngine.Instance.DebugMode();
             }
-            else if (System.OperatingSystem.IsWindows())
+            else if (isWindows)
             {
                 Kernel32.Show();
-                SceneManager.Instance.EnqueueSpawn(Debug);
+                GraphicsEngine.Instance.DebugMode();
             }
         }
 
+        // Exit application with Escape
         if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.Escape))
         {
             GraphicsEngine.Instance.Shutdown();
+            System.Environment.Exit(0);
         }
     }
 

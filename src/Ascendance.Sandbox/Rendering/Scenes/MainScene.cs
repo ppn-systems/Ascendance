@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
@@ -22,11 +24,11 @@ internal sealed class MainScene : BaseScene
 
     protected override void LoadObjects()
     {
-        Font font = AssetManager.Instance.LoadFont("res/fonts/1.ttf");
+        Font font = EmbeddedAssets.JetBrainsMono.ToFont();
         Texture texture = AssetManager.Instance.LoadTexture("res/texture/transparent_border/015");
 
         Button button = new("OK", texture, font);
-        NotificationButton notification = new(font, texture, "askdmasdaklsndkl", Direction2D.Down);
+        NotificationButton notification = new(font, texture, "D=false", Direction2D.Down);
         PasswordField passwordField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(200, 200));
         TextInputField textInputField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(100, 100));
 
