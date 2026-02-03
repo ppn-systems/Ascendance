@@ -18,6 +18,7 @@ public enum RenderLayer : System.Int32
     Spinner = 999,
 
     Overlay = 1000,
+    Banner = 1010,
 
     /// <summary>
     /// Reserved for components that must always be on top.

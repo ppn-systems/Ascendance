@@ -2,6 +2,8 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.UI.Theme;
 using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
@@ -75,6 +77,7 @@ public class ScrollingBanner : RenderObject, IUpdatable
 
         base.Show();
         this.SetMessage(message);
+        base.SetZIndex(RenderLayer.Banner.ToZIndex());
     }
 
     #endregion Constructors

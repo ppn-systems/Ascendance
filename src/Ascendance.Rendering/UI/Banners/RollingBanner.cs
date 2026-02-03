@@ -2,6 +2,8 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.Enums;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.UI.Theme;
 using SFML.Graphics;
 using SFML.System;
@@ -79,6 +81,7 @@ public class RollingBanner : RenderObject
         _background = CREATE_BACKGROUND();
 
         this.INITIALIZE_TEXTS(messages);
+        base.SetZIndex(RenderLayer.Banner.ToZIndex());
     }
 
     #endregion Constructors
