@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Entities;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Layout;
 using Ascendance.Rendering.UI.Theme;
@@ -64,11 +66,11 @@ public class Button : RenderObject, IUpdatable
     /// <param name="width">Initial button width.</param>
     /// <param name="sourceRect">Source rect on texture (optional).</param>
     public Button(
-        System.String text, Texture texture, Font font,
+        System.String text, Texture texture, Font font = null,
         System.Single width = 240f, IntRect sourceRect = default)
     {
         _buttonWidth = System.Math.Max(DefaultWidth, width);
-        _label = new Text(text, font, DefaultFontSize) { FillColor = Color.Black };
+        _label = new Text(text, font ?? EmbeddedAssets.JetBrainsMono.ToFont(), DefaultFontSize) { FillColor = Color.Black };
         _panel = new NineSlicePanel(texture, DefaultSlice, sourceRect == default ? DefaultSrc : sourceRect);
 
         this.UPDATE_LAYOUT();

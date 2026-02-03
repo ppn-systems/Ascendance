@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
@@ -72,13 +73,13 @@ public class RollingBanner : RenderObject
     /// <param name="speedPxPerSec">
     /// The horizontal scrolling speed in pixels per second.
     /// </param>
-    public RollingBanner(System.Collections.Generic.List<System.String> messages, Font font, System.Single speedPxPerSec = 100f)
+    public RollingBanner(System.Collections.Generic.List<System.String> messages, Font font = null, System.Single speedPxPerSec = 100f)
     {
         this.Show();
 
-        _font = font;
         _speedPxPerSec = speedPxPerSec;
         _background = CREATE_BACKGROUND();
+        _font = font ?? EmbeddedAssets.JetBrainsMono.ToFont();
 
         this.INITIALIZE_TEXTS(messages);
         base.SetZIndex(RenderLayer.Banner.ToZIndex());

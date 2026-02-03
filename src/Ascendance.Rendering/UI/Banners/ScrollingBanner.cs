@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
@@ -69,11 +70,11 @@ public class ScrollingBanner : RenderObject, IUpdatable
     /// <param name="speedPxPerSec">
     /// The horizontal scrolling speed in pixels per second.
     /// </param>
-    public ScrollingBanner(System.String message, Font font, System.Single speedPxPerSec = 100f)
+    public ScrollingBanner(System.String message, Font font = null, System.Single speedPxPerSec = 100f)
     {
         _speedPxPerSec = speedPxPerSec;
         _background = CREATE_BACKGROUND();
-        _text = CREATE_TEXT(message, font);
+        _text = CREATE_TEXT(message, font ?? EmbeddedAssets.JetBrainsMono.ToFont());
 
         base.Show();
         this.SetMessage(message);
