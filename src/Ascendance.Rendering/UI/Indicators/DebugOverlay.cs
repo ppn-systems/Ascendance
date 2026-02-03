@@ -23,8 +23,8 @@ public class DebugOverlay : RenderObject
     private readonly GraphicsEngine _engine;
     private readonly System.UInt32 _fontSize;
     private readonly System.Single _lineSpacing;
-    private readonly System.Collections.Generic.List<System.String> _customDebugLines = [];
     private readonly System.Collections.Generic.List<Text> _textObjects = [];
+    private readonly System.Collections.Generic.List<System.String> _customDebugLines = [];
 
     private System.Int32 _frameCount;
     private System.Single _currentFps;
@@ -94,7 +94,7 @@ public class DebugOverlay : RenderObject
     /// <param name="fontSize">Font size for debug text. Default is 16.</param>
     /// <param name="lineSpacing">Vertical spacing between lines of debug text. Default is 20.</param>
     /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="font"/> is null.</exception>
-    public DebugOverlay(Font font, System.UInt32 fontSize = 13, System.Single lineSpacing = 20f)
+    public DebugOverlay(Font font, System.UInt32 fontSize = 15, System.Single lineSpacing = 20f)
     {
         _fpsClock = new();
         _fontSize = fontSize;
@@ -127,12 +127,6 @@ public class DebugOverlay : RenderObject
     /// <param name="target">The target SFML render window for drawing.</param>
     public override void Draw(RenderTarget target)
     {
-        if (!_engine.IsDebugMode)
-        {
-            _customDebugLines.Clear();
-            return;
-        }
-
         UPDATE_FPS();
         System.Collections.Generic.List<System.String> lines = COMPOSE_DEBUG_LINES();
 
@@ -147,6 +141,7 @@ public class DebugOverlay : RenderObject
         for (System.Int32 i = 0; i < lines.Count; ++i)
         {
             Text text = _textObjects[i];
+
             text.FillColor = FontColor;
             text.DisplayedString = lines[i];
             text.OutlineColor = OutlineColor;
@@ -167,58 +162,6 @@ public class DebugOverlay : RenderObject
 
     #region Private Methods
 
-    /// <summary>
-    /// Composes all debug lines for display in the overlay, respecting active toggles.
-    /// </summary>
-    /// <returns>List of debug strings for this frame.</returns>
-    private System.Collections.Generic.List<System.String> COMPOSE_DEBUG_LINES()
-    {
-        System.Collections.Generic.List<System.String> lines =
-        [
-            $"FPS: {_currentFps:F1}"
-        ];
-
-        if (this.ShowScene)
-        {
-            lines.Add($"Scene: {SceneManager.Instance.GetActiveSceneName()}");
-        }
-
-        if (this.ShowObjectsInfo)
-        {
-            lines.Add($"Rendered Objects: {GraphicsEngine.Instance.ActiveObjectCount}");
-        }
-
-        if (this.ShowMemory)
-        {
-            lines.Add($"Memory Usage: {System.GC.GetTotalMemory(false) / 1048576} MB");
-        }
-
-        if (this.ShowVSync)
-        {
-            lines.Add($"Vertical Sync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}");
-        }
-
-        if (this.ShowWindow)
-        {
-            lines.Add($"Window Size: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}");
-        }
-
-        lines.Add($"Debug Mode: {_engine.IsDebugMode}");
-
-        if (this.ShowInput)
-        {
-            lines.Add($"Mouse Position: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})");
-        }
-
-        // Show custom lines at the end
-        lines.AddRange(_customDebugLines);
-
-        return lines;
-    }
-
-    /// <summary>
-    /// Calculates and updates the FPS counter.
-    /// </summary>
     private void UPDATE_FPS()
     {
         _frameCount++;
@@ -230,6 +173,35 @@ public class DebugOverlay : RenderObject
             _fpsClock.Restart();
             _frameCount = 0;
         }
+    }
+
+    private static System.String GET_MEMORY()
+    {
+        System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess();
+
+        System.Single usedMb = process.WorkingSet64 / 1048576f;
+        System.Single allocatedMb = System.GC.GetTotalMemory(false) / 1048576f;
+
+        return $"Mem: {usedMb:F0}MB / Allocated: {allocatedMb:F0}MB";
+    }
+
+    private System.Collections.Generic.List<System.String> COMPOSE_DEBUG_LINES()
+    {
+        System.Collections.Generic.List<System.String> lines =
+        [
+            $"FPS: {_currentFps:F1}",
+            $"CPU: {System.Environment.ProcessorCount}x {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}",
+            $"Debug Mode: {_engine.IsDebugMode}",
+            $"Vertical Sync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}",
+            $"Window Size: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}",
+            $"Mouse Position: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})",
+            GET_MEMORY(),
+            $"Scene: {SceneManager.Instance.GetActiveSceneName()} - Rendered Objects: {GraphicsEngine.Instance.ActiveObjectCount}",
+        ];
+
+        lines.AddRange(_customDebugLines);
+
+        return lines;
     }
 
     #endregion Private Methods
