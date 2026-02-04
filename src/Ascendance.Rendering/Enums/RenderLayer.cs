@@ -19,6 +19,7 @@ public enum RenderLayer : System.Int32
 
     Overlay = 1000,
     Banner = 1010,
+    Tooltip = 1100,
 
     /// <summary>
     /// Reserved for components that must always be on top.
