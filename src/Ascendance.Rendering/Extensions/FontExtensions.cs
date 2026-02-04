@@ -11,7 +11,7 @@ public static class FontExtensions
 {
     #region Fields
 
-    private static readonly System.Collections.Concurrent.ConcurrentDictionary<System.Int32, Font> _fontCache = new();
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<System.Int32, Font> _cache = new();
 
     #endregion Fields
 
@@ -37,7 +37,7 @@ public static class FontExtensions
         // Font will manage the stream's lifetime, so we should not dispose it manually here.
         System.Int32 hash = GET_BYTE_ARRAY_HASH(fontBytes);
 
-        return _fontCache.GetOrAdd(hash, _ => new Font(new System.IO.MemoryStream(fontBytes)));
+        return _cache.GetOrAdd(hash, _ => new Font(new System.IO.MemoryStream(fontBytes)));
     }
 
     #endregion APIs
