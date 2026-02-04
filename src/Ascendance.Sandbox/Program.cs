@@ -9,8 +9,14 @@ using SFML.Graphics;
 
 namespace Ascendance.Sandbox;
 
+/// <summary>
+/// Program entry point for Ascendance Sandbox application.
+/// </summary>
 public static class Program
 {
+    /// <summary>
+    /// Main entry point of the application.
+    /// </summary>
     public static void Main()
     {
         // Setup logging
@@ -31,6 +37,8 @@ public static class Program
         System.Console.WriteLine("Press Enter to exit...");
         System.Console.ReadLine();
     }
+
+    #region Private Methods
 
     private static Image GetImageFromBase64(System.String base64)
     {
@@ -65,6 +73,8 @@ public static class Program
             System.Environment.Exit(0);
         }
     }
+
+    #endregion Private Methods
 
     #region Base64
 

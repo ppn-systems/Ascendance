@@ -27,10 +27,10 @@ internal sealed class MainScene : BaseScene
         Font font = EmbeddedAssets.JetBrainsMono.ToFont();
         Texture texture = AssetManager.Instance.LoadTexture("res/texture/transparent_border/015");
 
-        Button button = new("OK", texture, font);
-        NotificationButton notification = new(font, texture, "D=false", Direction2D.Down);
-        PasswordField passwordField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(200, 200));
-        TextInputField textInputField = new(texture, default, font, 20, new Vector2f(200, 40), new Vector2f(100, 100));
+        Button button = new("OK", texture);
+        NotificationButton notification = new(texture, null, "D=false", Direction2D.Down);
+        PasswordField passwordField = new(texture, default, new Vector2f(200, 40), new Vector2f(200, 200));
+        TextInputField textInputField = new(texture, default, new Vector2f(200, 40), new Vector2f(100, 100));
 
         notification.SetZIndex(10);
         button.SetPosition(new(20, 20));
