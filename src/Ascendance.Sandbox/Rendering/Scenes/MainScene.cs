@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Enums;
-using Ascendance.Rendering.Managers;
+using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
 using Ascendance.Rendering.UI.Notifications;
@@ -22,7 +23,7 @@ internal sealed class MainScene : BaseScene
 
     protected override void LoadObjects()
     {
-        Texture texture = AssetManager.Instance.LoadTexture("res/texture/transparent_border/015");
+        Texture texture = EmbeddedAssets.SquareOutline.ToTexture();
 
         Button button = new("OK", texture);
         NotificationButton notification = new(texture, "D=false", Direction2D.Down);
