@@ -2,7 +2,6 @@
 
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Input;
-using Ascendance.Rendering.Internal.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.Time;
@@ -258,7 +257,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     {
         this.FrameUpdate?.Invoke(deltaTime);
 
-        InputTimeline.Instance.Update();
         KeyboardManager.Instance.Update();
         MouseManager.Instance.Update(RenderWindow);
 
