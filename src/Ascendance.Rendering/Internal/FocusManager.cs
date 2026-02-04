@@ -3,12 +3,12 @@
 using Ascendance.Rendering.Abstractions;
 using Nalix.Framework.Injection.DI;
 
-namespace Ascendance.Rendering.UI.Controls;
+namespace Ascendance.Rendering.Internal;
 
 /// <summary>
 /// Manages the focus state of <see cref="IFocusable"/> objects within the UI.
 /// </summary>
-public sealed class FocusManager : SingletonBase<FocusManager>
+internal sealed class FocusManager : SingletonBase<FocusManager>
 {
     #region Fields
 

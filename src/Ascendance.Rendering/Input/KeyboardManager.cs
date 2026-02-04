@@ -9,7 +9,7 @@ namespace Ascendance.Rendering.Input;
 /// Manages keyboard state and input.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay(
-    "KeyboardManager | PressedKeys={GetPressedKeyCount()}, Recording={InputTimeline.Instance.IsRecording}")]
+    "KeyboardManager | PressedKeys={GetPressedKeyCount()}")]
 public class KeyboardManager : SingletonBase<KeyboardManager>
 {
     #region Fields
