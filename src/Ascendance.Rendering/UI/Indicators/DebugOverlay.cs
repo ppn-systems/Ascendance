@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2026 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
@@ -94,13 +95,13 @@ public class DebugOverlay : RenderObject
     /// <param name="fontSize">Font size for debug text. Default is 16.</param>
     /// <param name="lineSpacing">Vertical spacing between lines of debug text. Default is 20.</param>
     /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="font"/> is null.</exception>
-    public DebugOverlay(Font font, System.UInt32 fontSize = 15, System.Single lineSpacing = 20f)
+    public DebugOverlay(Font font = null, System.UInt32 fontSize = 15, System.Single lineSpacing = 20f)
     {
         _fpsClock = new();
         _fontSize = fontSize;
         _lineSpacing = lineSpacing;
         _engine = GraphicsEngine.Instance;
-        _font = font ?? throw new System.ArgumentNullException(nameof(font));
+        _font = font ?? EmbeddedAssets.JetBrainsMono.ToFont();
 
         base.SetZIndex(RenderLayer.Highest.ToZIndex());
     }

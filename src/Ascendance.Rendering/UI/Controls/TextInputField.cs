@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Abstractions;
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Extensions;
@@ -174,11 +175,11 @@ public class TextInputField : RenderObject, IFocusable
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="border">9-slice borders.</param>
     /// <param name="sourceRect">Texture rect.</param>
-    /// <param name="font">SFML font to render text.</param>
-    /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
-    public TextInputField(Texture panelTexture, Thickness border, IntRect sourceRect, Font font, System.UInt32 fontSize, Vector2f size, Vector2f position)
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
+    public TextInputField(Texture panelTexture, Thickness border, IntRect sourceRect, Vector2f size, Vector2f position, Font font = null, System.UInt32 fontSize = 16)
     {
         _caretWidth = 1f;
         _fontSize = fontSize;
@@ -186,15 +187,16 @@ public class TextInputField : RenderObject, IFocusable
         _backspaceRepeat = new();
         _padding = new(DefaultPaddingX, DefaultPaddingY);
         _panel = new NineSlicePanel(panelTexture, border, sourceRect);
-        _ = _panel.SetPosition(position).SetSize(ENSURE_MIN_SIZE(size, border));
+        _ = _panel.SetPosition(position)
+                  .SetSize(ENSURE_MIN_SIZE(size, border));
 
         // (VN) _measure chỉ dùng đo kích thước/khoảng cách glyph → tránh xê dịch do bearings
-        _measure = new Text(System.String.Empty, font, _fontSize)
+        _measure = new Text(System.String.Empty, font ?? EmbeddedAssets.JetBrainsMono.ToFont(), _fontSize)
         {
             FillColor = new Color(30, 30, 30)
         };
 
-        _text = new Text(System.String.Empty, font, _fontSize)
+        _text = new Text(System.String.Empty, font ?? EmbeddedAssets.JetBrainsMono.ToFont(), _fontSize)
         {
             FillColor = new Color(30, 30, 30)
         };
@@ -220,24 +222,24 @@ public class TextInputField : RenderObject, IFocusable
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="sourceRect">Texture rect.</param>
-    /// <param name="font">SFML font to render text.</param>
-    /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
-    public TextInputField(Texture panelTexture, IntRect sourceRect, Font font, System.UInt32 fontSize, Vector2f size, Vector2f position)
-        : this(panelTexture, new Thickness(32), sourceRect, font, fontSize, size, position)
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
+    public TextInputField(Texture panelTexture, IntRect sourceRect, Vector2f size, Vector2f position, Font font = null, System.UInt32 fontSize = 16)
+        : this(panelTexture, new Thickness(32), sourceRect, size, position, font, fontSize)
     { }
 
     /// <summary>
     /// Creates a new <see cref="TextInputField"/>.
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
-    /// <param name="font">SFML font to render text.</param>
-    /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
-    public TextInputField(Texture panelTexture, Font font, System.UInt32 fontSize, Vector2f size, Vector2f position)
-        : this(panelTexture, new Thickness(32), default, font, fontSize, size, position)
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
+    public TextInputField(Texture panelTexture, Vector2f size, Vector2f position, Font font = null, System.UInt32 fontSize = 16)
+        : this(panelTexture, new Thickness(32), default, size, position, font, fontSize)
     { }
 
     #endregion Construction

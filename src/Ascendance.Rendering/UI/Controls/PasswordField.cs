@@ -59,19 +59,19 @@ public sealed class PasswordField : TextInputField
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="border">Panel border thickness.</param>
     /// <param name="sourceRect">Rectangle region from the texture.</param>
-    /// <param name="font">SFML font to render text.</param>
-    /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
     public PasswordField(
         Texture panelTexture,
         Thickness border,
         IntRect sourceRect,
-        Font font,
-        System.UInt32 fontSize,
         Vector2f size,
-        Vector2f position)
-        : base(panelTexture, border, sourceRect, font, fontSize, size, position) => base.ValidationRule = new PasswordValidationRule();
+        Vector2f position,
+        Font font = null,
+        System.UInt32 fontSize = 16)
+        : base(panelTexture, border, sourceRect, size, position, font, fontSize) => base.ValidationRule = new PasswordValidationRule();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PasswordField"/> class
@@ -79,18 +79,18 @@ public sealed class PasswordField : TextInputField
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="sourceRect">Rectangle region from the texture.</param>
-    /// <param name="font">SFML font to render text.</param>
-    /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
     public PasswordField(
         Texture panelTexture,
         IntRect sourceRect,
-        Font font,
-        System.UInt32 fontSize,
         Vector2f size,
-        Vector2f position)
-        : base(panelTexture, new Thickness(32), sourceRect, font, fontSize, size, position)
+        Vector2f position,
+        Font font = null,
+        System.UInt32 fontSize = 16)
+        : base(panelTexture, new Thickness(32), sourceRect, size, position, font, fontSize)
     { }
 
     /// <summary>
@@ -98,17 +98,17 @@ public sealed class PasswordField : TextInputField
     /// with the default border thickness and default source rectangle.
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
-    /// <param name="font">SFML font to render text.</param>
-    /// <param name="fontSize">Font size in points.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
+    /// <param name="font">SFML font to render text.</param>
+    /// <param name="fontSize">Font size in points.</param>
     public PasswordField(
         Texture panelTexture,
-        Font font,
-        System.UInt32 fontSize,
         Vector2f size,
-        Vector2f position)
-        : base(panelTexture, new Thickness(32), default, font, fontSize, size, position)
+        Vector2f position,
+        Font font = null,
+        System.UInt32 fontSize = 16)
+        : base(panelTexture, new Thickness(32), default, size, position, font, fontSize)
     { }
 
     #endregion Constructor

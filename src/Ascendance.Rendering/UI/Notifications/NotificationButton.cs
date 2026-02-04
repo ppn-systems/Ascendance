@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.UI.Controls;
@@ -79,18 +80,18 @@ public sealed class NotificationButton : Notification
     /// <summary>
     /// Initializes a notification box with an action button under the message.
     /// </summary>
-    /// <param name="font">Font for notification and button text.</param>
     /// <param name="buttonTexture">Texture for button panel.</param>
     /// <param name="initialMessage">Initial notification message.</param>
     /// <param name="side">Side of the screen to display notification.</param>
     /// <param name="buttonText">Label of action button.</param>
+    /// <param name="font">Font for notification and button text.</param>
     public NotificationButton(
-        Font font, Texture buttonTexture, System.String initialMessage = "",
-        Direction2D side = Direction2D.Down, System.String buttonText = "OK")
-        : base(font, buttonTexture, initialMessage, side)
+        Texture buttonTexture, System.String initialMessage = "",
+        Direction2D side = Direction2D.Down, System.String buttonText = "OK", Font font = null)
+        : base(buttonTexture, initialMessage, side, font)
     {
         // Tạo button, có thể chỉnh pad, màu tuỳ ý qua các hàm của Button.
-        _actionButton = new Button(buttonText, buttonTexture, font)
+        _actionButton = new Button(buttonText, buttonTexture, font: font ?? EmbeddedAssets.JetBrainsMono.ToFont())
             .SetFontSize(ButtonFontSize)
             .SetSize(DefaultButtonWidth, DefaultButtonHeight);
 

@@ -62,12 +62,12 @@ public class Button : RenderObject, IUpdatable
     /// </summary>
     /// <param name="text">Button label text.</param>
     /// <param name="texture">Texture for button panel.</param>
-    /// <param name="font">Text font.</param>
     /// <param name="width">Initial button width.</param>
     /// <param name="sourceRect">Source rect on texture (optional).</param>
+    /// <param name="font">Text font.</param>
     public Button(
-        System.String text, Texture texture, Font font = null,
-        System.Single width = 240f, IntRect sourceRect = default)
+        System.String text, Texture texture,
+        System.Single width = 240f, IntRect sourceRect = default, Font font = null)
     {
         _buttonWidth = System.Math.Max(DefaultWidth, width);
         _label = new Text(text, font ?? EmbeddedAssets.JetBrainsMono.ToFont(), DefaultFontSize) { FillColor = Color.Black };
