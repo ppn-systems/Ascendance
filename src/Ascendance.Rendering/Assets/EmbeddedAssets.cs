@@ -8,6 +8,24 @@ namespace Ascendance.Rendering.Assets;
 public static class EmbeddedAssets
 {
     /// <summary>
+    /// PNG image data for a bordered square (outline only), typically used as an unchecked checkbox or frame UI element.
+    /// </summary>
+    /// <remarks>
+    /// 96x96px image, black border, transparent/empty center. 
+    /// PNG format.
+    /// </remarks>
+    public static readonly System.Byte[] SquareOutline = 
+    [
+        137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 96,
+        0, 0, 0, 96, 1, 3, 0, 0, 0, 216, 86, 229, 123, 0, 0, 0, 4, 103, 65, 77,
+        65, 0, 0, 177, 143, 11, 252, 97, 5, 0, 0, 0, 6, 80, 76, 84, 69, 0, 0, 0,
+        255, 255, 255, 165, 217, 159, 221, 0, 0, 0, 1, 116, 82, 78, 83, 0, 64, 230, 216, 102,
+        0, 0, 0, 37, 73, 68, 65, 84, 56, 203, 99, 248, 143, 4, 24, 136, 228, 124, 96, 128,
+        3, 126, 162, 57, 8, 253, 163, 156, 81, 206, 40, 103, 164, 115, 200, 40, 67, 200, 40, 171,
+        0, 91, 221, 212, 86, 206, 113, 82, 163, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130
+    ];
+
+    /// <summary>
     /// JetBrains Mono font data, embedded as a byte array resource.
     /// </summary>
     public static readonly System.Byte[] JetBrainsMono =
