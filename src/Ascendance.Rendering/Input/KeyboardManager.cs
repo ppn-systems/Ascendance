@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Rendering.Internal.Input;
 using Nalix.Framework.Injection.DI;
-using Nalix.Logging.Extensions;
 using SFML.Window;
 
 namespace Ascendance.Rendering.Input;
@@ -56,11 +54,6 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
             PreviousKeyState[idx] = KeyState[idx];
             KeyState[idx] = Keyboard.IsKeyPressed(AllKeys[i]);
         }
-
-        if (InputTimeline.Instance.IsRecording)
-        {
-            KeyState.Clone();
-        }
     }
 
     #endregion Input Control
@@ -104,47 +97,4 @@ public class KeyboardManager : SingletonBase<KeyboardManager>
     public System.Boolean IsKeyReleased(Keyboard.Key key) => !KeyState[(System.Int32)key] && PreviousKeyState[(System.Int32)key];
 
     #endregion Keyboard
-
-    #region Internal Methods
-
-    /// <summary>
-    /// Creates a snapshot of the current keyboard state.
-    /// </summary>
-    /// <returns>
-    /// A boolean array representing which keys are down.
-    /// </returns>
-    internal System.Boolean[] CreateKeyboardStateSnapshot()
-    {
-        System.Boolean[] arr = new System.Boolean[KeyState.Length];
-        KeyState.CopyTo(arr, 0);
-
-        return arr;
-    }
-
-    /// <summary>
-    /// Restores the keyboard state from a previously saved snapshot.
-    /// </summary>
-    /// <param name="snapshot">
-    /// A boolean array containing key states to restore.
-    /// </param>
-    /// <exception cref="System.ArgumentException">
-    /// Thrown if the provided array length does not match the internal state length.
-    /// </exception>
-    internal void RestoreKeyboardState(System.Boolean[] snapshot)
-    {
-        if (snapshot.Length != KeyState.Length)
-        {
-            NLogixFx.Error(message: $"RestoreKeyboardState: Invalid key state length {snapshot.Length}, expected {KeyState.Length}.", source: "KeyboardManager");
-            throw new System.ArgumentException("Invalid key state length");
-        }
-
-        for (System.Int32 i = 0; i < KeyState.Length; i++)
-        {
-            KeyState[i] = snapshot[i];
-        }
-
-        NLogixFx.Debug(message: "Keyboard state successfully restored from snapshot.", source: "KeyboardManager");
-    }
-
-    #endregion Internal Methods
 }

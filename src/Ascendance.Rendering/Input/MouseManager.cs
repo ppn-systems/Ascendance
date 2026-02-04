@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Nalix.Framework.Injection.DI;
-using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -115,47 +114,4 @@ public class MouseManager : SingletonBase<MouseManager>
     public System.Boolean IsMouseButtonReleased(Mouse.Button button) => !MouseButtonState[(System.Int32)button] && PreviousMouseButtonState[(System.Int32)button];
 
     #endregion Mouse Button State Methods
-
-    #region Internal Methods
-
-    /// <summary>
-    /// Creates a snapshot array of the current mouse button state.
-    /// </summary>
-    /// <returns>
-    /// A boolean array representing the current button state.
-    /// </returns>
-    internal System.Boolean[] CreateMouseButtonSnapshot()
-    {
-        System.Boolean[] arr = new System.Boolean[MouseButtonState.Length];
-        MouseButtonState.CopyTo(arr, 0);
-        return arr;
-    }
-
-    /// <summary>
-    /// Restores the mouse button and position state from a snapshot.
-    /// </summary>
-    /// <param name="btnState">Boolean array representing mouse button states.</param>
-    /// <param name="mousePos">The position to restore for the mouse.</param>
-    /// <exception cref="System.ArgumentException">Thrown if the button state array length is invalid.</exception>
-    internal void RestoreMouseState(System.Boolean[] btnState, Vector2i mousePos)
-    {
-        if (btnState.Length != MouseButtonState.Length)
-        {
-            NLogixFx.Error(
-                message: $"RestoreMouseState: Invalid button state length {btnState.Length}, expected {MouseButtonState.Length}.",
-                source: "MouseManager"
-            );
-            throw new System.ArgumentException("Invalid mouse button state length");
-        }
-
-        for (System.Int32 i = 0; i < MouseButtonState.Length; i++)
-        {
-            MouseButtonState[i] = btnState[i];
-        }
-
-        _mousePosition = mousePos;
-        NLogixFx.Debug(message: $"Mouse state restored. Position=({mousePos.X},{mousePos.Y})", source: "MouseManager");
-    }
-
-    #endregion Internal Methods
 }
