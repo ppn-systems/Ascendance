@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
 using Ascendance.Rendering.Abstractions;
 
-namespace Ascendance.Rendering.Internal.Input.Rules;
+namespace Ascendance.Rendering.Internal.Input;
 
 /// <inheritdoc/>
 public class UsernameValidationRule : ITextValidationRule

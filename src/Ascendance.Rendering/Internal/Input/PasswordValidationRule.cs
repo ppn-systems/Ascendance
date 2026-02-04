@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
 using Ascendance.Rendering.Abstractions;
 
-namespace Ascendance.Rendering.Internal.Input.Rules;
+namespace Ascendance.Rendering.Internal.Input;
 
 /// <summary>
 /// Sample validation: password must be 6-64 chars, only allow certain symbols.

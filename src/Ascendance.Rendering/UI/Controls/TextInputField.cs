@@ -7,7 +7,6 @@ using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Internal.Input;
-using Ascendance.Rendering.Internal.Input.Rules;
 using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;
