@@ -21,6 +21,7 @@ internal static partial class Kernel32
     private const System.String DLL_KERNEL32 = "kernel32.dll";
 
     private const System.String ENTRYPOINT_USER32_SHOW_WINDOW = "ShowWindow";
+    private const System.String ENTRYPOINT_USER32_IS_WINDOW_VISIBLE = "IsWindowVisible";
     private const System.String ENTRYPOINT_KERNEL32_GET_CONSOLE_WINDOW = "GetConsoleWindow";
 
     #endregion Constants
@@ -50,6 +51,18 @@ internal static partial class Kernel32
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
     private static partial System.Boolean SHOW_WINDOW(System.IntPtr hWnd, System.Int32 nCmdShow);
+
+    [System.Security.SuppressUnmanagedCodeSecurity]
+    [System.Runtime.InteropServices.DefaultDllImportSearchPaths(
+        System.Runtime.InteropServices.DllImportSearchPath.System32)]
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [System.Runtime.InteropServices.LibraryImport(
+        DLL_USER32, SetLastError = SET_LAST_ERROR, EntryPoint = ENTRYPOINT_USER32_IS_WINDOW_VISIBLE,
+        StringMarshalling = System.Runtime.InteropServices.StringMarshalling.Utf8)]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static partial System.Boolean IS_WINDOW_VISIBLE(System.IntPtr hWnd);
 
     #endregion Invoke Declarations
 
@@ -85,6 +98,15 @@ internal static partial class Kernel32
         {
             Kernel32.SHOW_WINDOW(handle, SW_SHOW);
         }
+    }
+
+    /// <summary>
+    /// Checks whether the current process console window is visible.
+    /// </summary>
+    public static System.Boolean IsConsoleVisible()
+    {
+        System.IntPtr handle = Kernel32.GET_CONSOLE_WINDOW();
+        return handle != System.IntPtr.Zero && Kernel32.IS_WINDOW_VISIBLE(handle);
     }
 
     #endregion APIs

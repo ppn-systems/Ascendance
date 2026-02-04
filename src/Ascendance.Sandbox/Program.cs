@@ -2,6 +2,7 @@
 
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
+using Ascendance.Rendering.UI.Indicators;
 using Ascendance.Sandbox.Native;
 using Nalix.Common.Diagnostics;
 using Nalix.Logging.Extensions;
@@ -14,6 +15,19 @@ namespace Ascendance.Sandbox;
 /// </summary>
 public static class Program
 {
+    private static class Debug
+    {
+        public static System.Boolean IsEnabled;
+
+        public static readonly DebugOverlay Overlay;
+
+        static Debug()
+        {
+            IsEnabled = false;
+            Overlay = new DebugOverlay();
+        }
+    }
+
     /// <summary>
     /// Main entry point of the application.
     /// </summary>
@@ -49,20 +63,32 @@ public static class Program
 
     private static void OnFrameUpdate(System.Single deltaTime)
     {
+        if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.F10) && System.OperatingSystem.IsWindows())
+        {
+            if (Kernel32.IsConsoleVisible())
+            {
+                Kernel32.Hide();
+            }
+            else
+            {
+                Kernel32.Show();
+            }
+        }
+
         // Toggle debug mode with F12
         if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.F12))
         {
-            System.Boolean isWindows = System.OperatingSystem.IsWindows();
+            Debug.IsEnabled = !Debug.IsEnabled;
 
-            if (!GraphicsEngine.Instance.IsDebugMode && isWindows)
+            if (!GraphicsEngine.Instance.IsDebugMode)
             {
-                Kernel32.Hide();
                 GraphicsEngine.Instance.DebugMode();
+                GraphicsEngine.Instance.FrameRender -= OnFrameRender;
             }
-            else if (isWindows)
+            else
             {
-                Kernel32.Show();
                 GraphicsEngine.Instance.DebugMode();
+                GraphicsEngine.Instance.FrameRender += OnFrameRender;
             }
         }
 
@@ -73,6 +99,8 @@ public static class Program
             System.Environment.Exit(0);
         }
     }
+
+    private static void OnFrameRender(RenderTarget target) => Debug.Overlay.Draw(target);
 
     #endregion Private Methods
 

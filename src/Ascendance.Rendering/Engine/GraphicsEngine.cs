@@ -64,6 +64,11 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     public System.Boolean IsDebugMode { get; private set; }
 
     /// <summary>
+    /// Sets a user-defined per-frame render handler.
+    /// </summary>
+    public event System.Action<RenderTarget> FrameRender;
+
+    /// <summary>
     /// Sets a user-defined per-frame update handler.
     /// </summary>
     public event System.Action<System.Single> FrameUpdate;
@@ -300,6 +305,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
                 obj.Draw(target);
             }
         }
+
+        FrameRender?.Invoke(target);
     }
 
     /// <summary>
