@@ -13,6 +13,8 @@ namespace Ascendance.Rendering.Scenes;
 /// The SceneManager class is responsible for managing scenes and objects within those scenes.
 /// It handles scene transitions, object spawning, and object destruction.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
+[System.Diagnostics.DebuggerDisplay("CurrentScene = {_currentScene?.Name}, ActiveObjects = {_activeSceneObjects.Count}")]
 public class SceneManager : SingletonBase<SceneManager>, IUpdatable
 {
     #region Events

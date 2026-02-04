@@ -12,6 +12,8 @@ namespace Ascendance.Rendering.Scenes;
 /// Initializes a new instance of the <see cref="BaseScene"/> class with a specified name.
 /// </remarks>
 /// <param name="name">The name of the scene.</param>
+[System.Diagnostics.DebuggerDisplay("Scene = {Name}, Objects = {_sceneObjects.Count}")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
 public abstract class BaseScene(System.String name)
 {
     #region Fields
