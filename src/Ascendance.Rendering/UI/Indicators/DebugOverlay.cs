@@ -172,21 +172,30 @@ public class DebugOverlay : RenderObject
         System.Single usedMb = process.WorkingSet64 / 1048576f;
         System.Single allocatedMb = System.GC.GetTotalMemory(false) / 1048576f;
 
-        return $"Mem: {usedMb:F0}MB / Allocated: {allocatedMb:F0}MB";
+        return $"Mem: {usedMb:F0}MB   Allocated: {allocatedMb:F0}MB";
     }
 
     private System.Collections.Generic.List<System.String> COMPOSE_DEBUG_LINES()
     {
         System.Collections.Generic.List<System.String> lines =
         [
+            // 1. Tổng quan window & mode
+            $"Window Size: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}",
             $"Debug Mode: {_engine.IsDebugMode}",
             $"Vertical Sync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}",
-            $"Window Size: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}",
+
+            // 2. Thông tin FPS, Frame, Time
             $"FPS: {_currentFps:00.0}   Frame: {_frameCount:00}   Time: {System.DateTime.Now:HH:mm:ss}",
-            $"Mouse Position: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})",
-            $"Logic: {GraphicsEngine.Instance.LogicUpdateMilliseconds:00.00} ms   Render: {GraphicsEngine.Instance.RenderFrameMilliseconds:00.00} ms",
+
+            // 3. Perf (Logic, Render, Memory)
             GET_MEMORY(),
-            $"Scene: {SceneManager.Instance.GetActiveSceneName()} - Rendered Objects: {GraphicsEngine.Instance.ActiveObjectCount}",
+            $"Logic: {_engine.LogicUpdateMilliseconds:00.00} ms   Render: {_engine.RenderFrameMilliseconds:00.00} ms",
+
+            // 4. Input
+            $"Mouse Position: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})",
+
+            // 5. Scene/Objects
+            $"Scene: {SceneManager.Instance.GetActiveSceneName()}   Rendered Objects: {_engine.ActiveObjectCount}",
         ];
 
         lines.AddRange(_customDebugLines);
