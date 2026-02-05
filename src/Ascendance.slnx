@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="Ascendance.Desktop/Ascendance.Desktop.csproj" Id="87a7091b-82b3-408b-886c-317f165f45ee" />
+  <Project Path="Ascendance.Gateway/Ascendance.Gateway.csproj" Id="cea93ca3-3245-49d0-994f-3cb64c970ff7" />
+  <Project Path="Ascendance.Infrastructure/Ascendance.Infrastructure.csproj" Id="9053752a-8769-4369-856f-e1dcbb2b8603" />
   <Project Path="Ascendance.Physics/Ascendance.Physics.csproj" Id="5203a60b-4786-4fa3-9abb-4b93aaa1aeef" />
   <Project Path="Ascendance.Rendering/Ascendance.Rendering.csproj" />
   <Project Path="Ascendance.Sandbox/Ascendance.Sandbox.csproj" Id="defa4f1c-673a-4691-8b2f-a2331bf4c87b" />
