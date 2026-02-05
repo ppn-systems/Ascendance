@@ -13,7 +13,7 @@ using SFML.Window;
 namespace Ascendance.Rendering.UI.Indicators;
 
 /// <summary>
-/// Renders debug information overlay on the game window with high efficiency and extensibility. Use <see cref="AddDiagnosticLine"/> to append custom debug info.
+/// Renders debug information overlay on the game window with high efficiency and extensibility.
 /// </summary>
 public class DebugOverlay : RenderObject
 {
@@ -111,18 +111,6 @@ public class DebugOverlay : RenderObject
     #region APIs
 
     /// <summary>
-    /// Adds a custom line of debug info to appear in this frame’s overlay.
-    /// </summary>
-    /// <param name="line">The debug text line to add. If null or empty, nothing is added.</param>
-    public void AddDiagnosticLine(System.String line)
-    {
-        if (!System.String.IsNullOrEmpty(line))
-        {
-            _customDebugLines.Add(line);
-        }
-    }
-
-    /// <summary>
     /// Renders the debug overlay if debug mode is enabled.
     /// </summary>
     /// <param name="target">The target SFML render window for drawing.</param>
@@ -191,7 +179,6 @@ public class DebugOverlay : RenderObject
         System.Collections.Generic.List<System.String> lines =
         [
             $"FPS: {_currentFps:F1}",
-            $"CPU: {System.Environment.ProcessorCount}x {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}",
             $"Debug Mode: {_engine.IsDebugMode}",
             $"Vertical Sync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}",
             $"Window Size: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}",

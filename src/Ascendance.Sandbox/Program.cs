@@ -58,13 +58,6 @@ public static class Program
 
     #region Private Methods
 
-    private static Image GetImageFromBase64(System.String base64)
-    {
-        System.Byte[] bytes = System.Convert.FromBase64String(base64);
-        using System.IO.MemoryStream ms = new(bytes);
-        return new Image(ms);
-    }
-
     private static void OnFrameUpdate(System.Single deltaTime)
     {
         // Command line debug mode with F10
@@ -106,6 +99,13 @@ public static class Program
             GraphicsEngine.Instance.Shutdown();
             System.Environment.Exit(0);
         }
+    }
+
+    private static Image GetImageFromBase64(System.String base64)
+    {
+        System.Byte[] bytes = System.Convert.FromBase64String(base64);
+        using System.IO.MemoryStream ms = new(bytes);
+        return new Image(ms);
     }
 
     private static void OnFrameRender(RenderTarget target) => Debug.Overlay.Draw(target);
