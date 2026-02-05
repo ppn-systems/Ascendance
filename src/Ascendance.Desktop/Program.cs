@@ -23,10 +23,10 @@ public static class Program
         // Setup logging
         NLogixFx.MinimumLevel = LogLevel.Information;
 
-        if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
-        {
-            Kernel32.Hide();
-        }
+        //if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
+        //{
+        //    Kernel32.Hide();
+        //}
 
         // Create and set application icon
         Image icon = GetImageFromBase64(IconBase64);
