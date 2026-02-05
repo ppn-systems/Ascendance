@@ -15,19 +15,6 @@ namespace Ascendance.Sandbox;
 /// </summary>
 public static class Program
 {
-    private static class Debug
-    {
-        public static System.Boolean IsEnabled;
-
-        public static readonly DebugOverlay Overlay;
-
-        static Debug()
-        {
-            IsEnabled = false;
-            Overlay = new DebugOverlay();
-        }
-    }
-
     /// <summary>
     /// Main entry point of the application.
     /// </summary>
@@ -52,6 +39,23 @@ public static class Program
         System.Console.ReadLine();
     }
 
+    #region Private Class
+
+    private static class Debug
+    {
+        public static System.Boolean IsEnabled;
+
+        public static readonly DebugOverlay Overlay;
+
+        static Debug()
+        {
+            IsEnabled = false;
+            Overlay = new DebugOverlay();
+        }
+    }
+
+    #endregion Private Class
+
     #region Private Methods
 
     private static Image GetImageFromBase64(System.String base64)
@@ -63,15 +67,19 @@ public static class Program
 
     private static void OnFrameUpdate(System.Single deltaTime)
     {
-        if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.F10) && System.OperatingSystem.IsWindows())
+        // Command line debug mode with F10
+        if (KeyboardManager.Instance.IsKeyPressed(SFML.Window.Keyboard.Key.F10))
         {
-            if (Kernel32.IsConsoleVisible())
+            if (System.OperatingSystem.IsWindows())
             {
-                Kernel32.Hide();
-            }
-            else
-            {
-                Kernel32.Show();
+                if (Kernel32.IsConsoleVisible())
+                {
+                    Kernel32.Hide();
+                }
+                else
+                {
+                    Kernel32.Show();
+                }
             }
         }
 
