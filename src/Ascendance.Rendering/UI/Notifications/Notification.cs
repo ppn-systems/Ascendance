@@ -98,14 +98,17 @@ public class Notification : RenderObject
     /// </summary>
     /// <param name="initialMessage">Initial message to display.</param>
     /// <param name="side">Which side of the screen to display (Top or Bottom).</param>
-    public Notification(Texture frameTexture, System.String initialMessage = "", Direction2D side = Direction2D.Up, Font font = null)
+    public Notification(Texture frameTexture = null, System.String initialMessage = "", Direction2D side = Direction2D.Up, Font font = null)
     {
+        font ??= EmbeddedAssets.JetBrainsMono.ToFont();
+        frameTexture ??= EmbeddedAssets.SquareOutline.ToTexture();
+
         COMPUTE_LAYOUT(side, out System.Single panelY, out System.Single panelWidth, out System.Single panelX);
 
         this.Panel = this.CREATE_PANEL(frameTexture, panelX, panelY, panelWidth);
 
         System.Single innerWidth = COMPUTE_INNER_WIDTH(panelWidth);
-        this.MessageText = PREPARE_WRAPPED_TEXT(font ?? EmbeddedAssets.JetBrainsMono.ToFont(), initialMessage, (System.UInt32)TextCharSizePx, innerWidth);
+        this.MessageText = PREPARE_WRAPPED_TEXT(font, initialMessage, (System.UInt32)TextCharSizePx, innerWidth);
 
         System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(this.MessageText);
         System.Single panelHeight = COMPUTE_TARGET_HEIGHT(textHeight);

@@ -14,8 +14,9 @@ using SFML.Window;
 namespace Ascendance.Rendering.UI.Controls;
 
 /// <summary>
-/// A resizable button based on NineSlicePanel (single image), with text color changing on hover using tint.
-/// Supports mouse and keyboard interactions, custom colors, and fluent configuration.
+/// Represents a resizable button based on NineSlicePanel (single image).
+/// Changes text color on hover using tint, supports mouse and keyboard interactions,
+/// allows custom colors, and provides a fluent configuration API.
 /// </summary>
 public class Button : RenderObject, IUpdatable
 {
@@ -58,19 +59,22 @@ public class Button : RenderObject, IUpdatable
     #region Constructor
 
     /// <summary>
-    /// Creates a new stretchable button instance.
+    /// Initializes a new instance of the <see cref="Button"/> class.
     /// </summary>
-    /// <param name="text">Button label text.</param>
-    /// <param name="texture">Texture for button panel.</param>
-    /// <param name="width">Initial button width.</param>
-    /// <param name="sourceRect">Source rect on texture (optional).</param>
-    /// <param name="font">Text font.</param>
+    /// <param name="text">The button label text.</param>
+    /// <param name="texture">The texture used for the button panel background.</param>
+    /// <param name="width">The initial button width in pixels. Default is 240.</param>
+    /// <param name="sourceRect">The source rectangle on the texture (optional).</param>
+    /// <param name="font">The font used for the button label text (optional).</param>
     public Button(
-        System.String text, Texture texture,
+        System.String text, Texture texture = null,
         System.Single width = 240f, IntRect sourceRect = default, Font font = null)
     {
+        font ??= EmbeddedAssets.JetBrainsMono.ToFont();
+        texture ??= EmbeddedAssets.SquareOutline.ToTexture();
+
         _buttonWidth = System.Math.Max(DefaultWidth, width);
-        _label = new Text(text, font ?? EmbeddedAssets.JetBrainsMono.ToFont(), DefaultFontSize) { FillColor = Color.Black };
+        _label = new Text(text, font, DefaultFontSize) { FillColor = Color.Black };
         _panel = new NineSlicePanel(texture, DefaultSlice, sourceRect == default ? DefaultSrc : sourceRect);
 
         this.UPDATE_LAYOUT();

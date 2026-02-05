@@ -86,12 +86,15 @@ public sealed class NotificationButton : Notification
     /// <param name="buttonText">Label of action button.</param>
     /// <param name="font">Font for notification and button text.</param>
     public NotificationButton(
-        Texture buttonTexture, System.String initialMessage = "",
+        Texture buttonTexture = null, System.String initialMessage = "",
         Direction2D side = Direction2D.Down, System.String buttonText = "OK", Font font = null)
         : base(buttonTexture, initialMessage, side, font)
     {
+        font ??= EmbeddedAssets.JetBrainsMono.ToFont();
+        buttonTexture ??= EmbeddedAssets.SquareOutline.ToTexture();
+
         // Tạo button, có thể chỉnh pad, màu tuỳ ý qua các hàm của Button.
-        _actionButton = new Button(buttonText, buttonTexture, font: font ?? EmbeddedAssets.JetBrainsMono.ToFont())
+        _actionButton = new Button(buttonText, buttonTexture, 240, default, font)
             .SetFontSize(ButtonFontSize)
             .SetSize(DefaultButtonWidth, DefaultButtonHeight);
 

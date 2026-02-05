@@ -181,22 +181,23 @@ public class TextInputField : RenderObject, IFocusable
     /// <param name="fontSize">Font size in points.</param>
     public TextInputField(Texture panelTexture, Thickness border, IntRect sourceRect, Vector2f size, Vector2f position, Font font = null, System.UInt32 fontSize = 16)
     {
+
         _caretWidth = 1f;
         _fontSize = fontSize;
         _deleteRepeat = new();
         _backspaceRepeat = new();
+        font ??= EmbeddedAssets.JetBrainsMono.ToFont();
         _padding = new(DefaultPaddingX, DefaultPaddingY);
         _panel = new NineSlicePanel(panelTexture, border, sourceRect);
         _ = _panel.SetPosition(position)
                   .SetSize(ENSURE_MIN_SIZE(size, border));
 
-        // (VN) _measure chỉ dùng đo kích thước/khoảng cách glyph → tránh xê dịch do bearings
-        _measure = new Text(System.String.Empty, font ?? EmbeddedAssets.JetBrainsMono.ToFont(), _fontSize)
+        _measure = new Text(System.String.Empty, font, _fontSize)
         {
             FillColor = new Color(30, 30, 30)
         };
 
-        _text = new Text(System.String.Empty, font ?? EmbeddedAssets.JetBrainsMono.ToFont(), _fontSize)
+        _text = new Text(System.String.Empty, font, _fontSize)
         {
             FillColor = new Color(30, 30, 30)
         };
@@ -213,7 +214,6 @@ public class TextInputField : RenderObject, IFocusable
         this.UPDATE_HIT_BOX();
         this.UPDATE_CARET_IMMEDIATE();
 
-        // (VN) Cho UI nổi lên một chút; tùy engine của bạn
         base.SetZIndex(RenderLayer.InputField.ToZIndex());
     }
 
