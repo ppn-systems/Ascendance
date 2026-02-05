@@ -28,6 +28,7 @@ public sealed class FontLoader(System.String rootFolder = "") : AssetLoader<Font
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Font Load(System.Byte[] bytes)
     {
         if (bytes == null || bytes.Length == 0)

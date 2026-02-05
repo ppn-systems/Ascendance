@@ -42,6 +42,7 @@ public abstract class RenderObject : SceneObject, IRenderable
     /// <returns>ScreenSize <see cref="Drawable"/> object to be rendered.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected abstract Drawable GetDrawable();
 
     /// <summary>
@@ -94,6 +95,7 @@ public abstract class RenderObject : SceneObject, IRenderable
     /// </returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public static System.Int32 CompareZIndex(RenderObject r1, RenderObject r2)
         => r1 == null && r2 == null ? 0 : r1 == null ? -1 : r2 == null ? 1 : r1._zIndex - r2._zIndex;
 

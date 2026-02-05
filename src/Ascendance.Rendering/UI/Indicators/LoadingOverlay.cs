@@ -55,6 +55,7 @@ public sealed class LoadingOverlay : RenderObject
     /// <summary>
     /// Sets the overlay background color and alpha (default is dark semi-transparent).
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public LoadingOverlay SetOverlayColor(Color color, System.Byte? alpha = null)
     {
         var a = alpha ?? DefaultOverlayAlpha;

@@ -301,6 +301,7 @@ public class TextInputField : RenderObject, IFocusable
     /// <summary>
     /// Not used by engine (we render explicitly in <see cref="Draw"/>), but must be provided.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable() => _text;
 
     /// <summary>
@@ -320,10 +321,12 @@ public class TextInputField : RenderObject, IFocusable
     /// <summary>
     /// Returns what should be displayed: placeholder, masked password, or raw text.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected virtual System.String GetRenderText()
         => _buffer.Length == 0 && !this.Focused && !System.String.IsNullOrEmpty(this.Placeholder) ? this.Placeholder : _buffer.ToString();
 
     /// <inheritdoc/>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     void IFocusable.OnFocusGained()
     {
         this.Focused = true;
@@ -332,6 +335,7 @@ public class TextInputField : RenderObject, IFocusable
     }
 
     /// <inheritdoc/>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     void IFocusable.OnFocusLost()
     {
         this.Focused = false;

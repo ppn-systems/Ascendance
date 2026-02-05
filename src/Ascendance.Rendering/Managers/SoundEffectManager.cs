@@ -143,6 +143,7 @@ public class SoundEffectManager(SoundEffectLoader loader, System.Func<System.Int
     /// <exception cref="System.ArgumentException">Thrown if no sound is found with the specified name.</exception>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Sound GetSound(System.String name, System.Boolean spatial = false)
     {
         System.ObjectDisposedException.ThrowIf(_soundEffectLoader.Disposed, nameof(_soundEffectLoader));

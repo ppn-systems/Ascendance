@@ -95,6 +95,7 @@ public sealed class NineSlicePanel : RenderObject
     /// </summary>
     /// <param name="pos">The new position of the panel.</param>
     /// <returns>This panel instance for fluent chaining.</returns>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public NineSlicePanel SetPosition(Vector2f pos)
     {
         if (pos != Position)
@@ -110,6 +111,7 @@ public sealed class NineSlicePanel : RenderObject
     /// </summary>
     /// <param name="size">The new size, in pixels.</param>
     /// <returns>This panel instance for fluent chaining.</returns>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public NineSlicePanel SetSize(Vector2f size)
     {
         if (size != Size)
@@ -125,6 +127,7 @@ public sealed class NineSlicePanel : RenderObject
     /// </summary>
     /// <param name="rect">The new source region on the texture.</param>
     /// <returns>This panel instance for fluent chaining.</returns>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public NineSlicePanel SetSourceRect(IntRect rect)
     {
         if (rect != SourceRect)
@@ -140,6 +143,7 @@ public sealed class NineSlicePanel : RenderObject
     /// </summary>
     /// <param name="border">The new border thickness.</param>
     /// <returns>This panel instance for fluent chaining.</returns>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public NineSlicePanel SetBorder(Thickness border)
     {
         if (!border.Equals(Border))
@@ -155,6 +159,7 @@ public sealed class NineSlicePanel : RenderObject
     /// </summary>
     /// <param name="color">The tint color to apply.</param>
     /// <returns>This panel instance for fluent chaining.</returns>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public NineSlicePanel SetTintColor(Color color)
     {
         for (System.Int32 i = 0; i < _parts.Length; i++)
@@ -169,6 +174,7 @@ public sealed class NineSlicePanel : RenderObject
     /// Gets the current tint color of all slices (returns color of the top-left slice).
     /// </summary>
     /// <returns>The current tint color.</returns>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Color GetTintColor() => _parts.Length > 0 ? _parts[0].Color : Color.White;
 
     #endregion Fluent Setters
@@ -195,6 +201,7 @@ public sealed class NineSlicePanel : RenderObject
     /// </summary>
     /// <returns>None. This panel must be drawn via <see cref="Draw(RenderTarget)"/>.</returns>
     /// <exception cref="System.NotImplementedException">Always thrown.</exception>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable()
         => throw new System.NotImplementedException("Use Draw(RenderTarget) instead.");
 

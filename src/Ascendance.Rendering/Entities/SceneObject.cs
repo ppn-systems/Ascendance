@@ -105,6 +105,7 @@ public abstract class SceneObject : IUpdatable
     /// <returns>True if the object has the tag; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public System.Boolean HasTag(System.String tag) => _tags.Contains(tag);
 
     /// <summary>
@@ -141,6 +142,7 @@ public abstract class SceneObject : IUpdatable
     /// <returns>True if the object is queued for spawning; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public System.Boolean IsQueuedForSpawn() => this.InSpawnQueue();
 
     /// <summary>
@@ -149,6 +151,7 @@ public abstract class SceneObject : IUpdatable
     /// <returns>True if the object is queued for destruction; otherwise, false.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public System.Boolean IsQueuedForDestroy() => this.InDestroyQueue();
 
     /// <summary>

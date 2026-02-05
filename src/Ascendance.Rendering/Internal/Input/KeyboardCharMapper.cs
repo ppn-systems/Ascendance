@@ -44,6 +44,7 @@ public class KeyboardCharMapper : SingletonBase<KeyboardCharMapper>
     #region APIs
 
     /// <inheritdoc/>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public System.Boolean TryMapKeyToChar(out System.Char c, System.Boolean shift)
     {
         c = '\0';

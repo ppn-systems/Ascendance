@@ -11,6 +11,7 @@ namespace Ascendance.Rendering.Internal.Input;
 public class UsernameValidationRule : ITextValidationRule
 {
     /// <inheritdoc/>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public System.Boolean IsValid(System.String value)
         => !System.String.IsNullOrWhiteSpace(value)
         && value.Length <= 20

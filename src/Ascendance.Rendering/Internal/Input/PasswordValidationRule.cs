@@ -13,6 +13,7 @@ namespace Ascendance.Rendering.Internal.Input;
 /// </summary>
 public class PasswordValidationRule : ITextValidationRule
 {
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public System.Boolean IsValid(System.String value)
     {
         if (System.String.IsNullOrEmpty(value) || value.Length < 6 || value.Length > 64)

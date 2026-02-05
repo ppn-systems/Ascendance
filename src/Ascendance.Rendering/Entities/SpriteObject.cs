@@ -95,6 +95,7 @@ public abstract class SpriteObject : RenderObject
     /// <returns>The Sprite as a drawable object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected sealed override Drawable GetDrawable() => this.Sprite;
 
     #endregion APIs

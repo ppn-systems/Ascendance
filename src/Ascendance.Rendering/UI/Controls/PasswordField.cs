@@ -124,6 +124,7 @@ public sealed class PasswordField : TextInputField
     /// Returns what should be displayed: raw text when <see cref="IsPasswordVisible"/> is true,
     /// otherwise masked with <see cref="MaskCharacter"/>.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override System.String GetRenderText()
     {
         // Nếu đang “show”, hiển thị text thường

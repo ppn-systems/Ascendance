@@ -39,6 +39,7 @@ public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoad
     /// <returns>The managed Sound</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public SoundBuffer Load(System.String name, System.IO.Stream stream)
     {
         System.ObjectDisposedException.ThrowIf(Disposed, nameof(SoundEffectLoader));
@@ -65,6 +66,7 @@ public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoad
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override SoundBuffer Load(System.Byte[] bytes)
     {
         if (bytes == null || bytes.Length == 0)
@@ -82,6 +84,7 @@ public sealed class SoundEffectLoader(System.String rootFolder = "") : AssetLoad
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override SoundBuffer CreateInstanceFromPath(System.String path)
         => System.String.IsNullOrWhiteSpace(path) ? throw new System.ArgumentException("Path is null or empty.", nameof(path)) : new SoundBuffer(path);
 

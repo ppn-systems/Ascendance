@@ -50,6 +50,7 @@ public sealed class SceneTransitionData<T> : SceneObject
     /// <returns>The information of type <typeparamref name="T"/>.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
          System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public T GetData() => _data;
 
     /// <summary>
@@ -89,6 +90,7 @@ public sealed class SceneTransitionData<T> : SceneObject
     /// <returns>The stored information of type <typeparamref name="T"/> or the default value.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public static T FindByName(System.String name, T defaultValue)
     {
         SceneTransitionData<T> info = SceneManager.Instance.GetFirstActive<SceneTransitionData<T>>();

@@ -88,6 +88,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Sets button width (in pixels).
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Button SetWidth(System.Single width)
     {
         _buttonWidth = width;
@@ -98,6 +99,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Sets button height (in pixels).
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Button SetHeight(System.Single height)
     {
         _buttonHeight = height;
@@ -108,6 +110,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Sets both width and height of the button.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Button SetSize(System.Single width, System.Single height)
     {
         _buttonWidth = width;
@@ -120,6 +123,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Sets button label text.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Button SetText(System.String text)
     {
         _label.DisplayedString = text;
@@ -130,6 +134,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Sets label font size.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Button SetFontSize(System.UInt32 size)
     {
         _label.CharacterSize = size;
@@ -140,6 +145,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Sets horizontal padding inside button (pixels).
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Button SetPadding(System.Single horizontalPadding)
     {
         _horizontalPadding = System.MathF.Max(0f, horizontalPadding);
@@ -159,6 +165,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Enables or disables the button interactively and visually.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Button SetEnabled(System.Boolean enabled)
     {
         _isEnabled = enabled;
@@ -188,6 +195,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// Returns the button's bounds in screen space.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public FloatRect GetGlobalBounds() => _totalBounds;
 
     #endregion
@@ -278,6 +286,7 @@ public class Button : RenderObject, IUpdatable
     /// <summary>
     /// This button does not support GetDrawable (use Render).
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable() => throw new System.NotSupportedException("Use Render() instead.");
 
     #endregion

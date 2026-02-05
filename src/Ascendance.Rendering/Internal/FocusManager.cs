@@ -22,6 +22,8 @@ internal sealed class FocusManager : SingletonBase<FocusManager>
 
     #endregion Constructors
 
+    #region APIs
+
     /// <summary>
     /// Requests focus for the specified <see cref="IFocusable"/> target.
     /// If the target is already focused, no action is taken.
@@ -54,4 +56,6 @@ internal sealed class FocusManager : SingletonBase<FocusManager>
             _focused = null;
         }
     }
+
+    #endregion APIs
 }

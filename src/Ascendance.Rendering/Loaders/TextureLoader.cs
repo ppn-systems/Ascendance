@@ -50,6 +50,7 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
     /// <returns>The managed Texture</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public override Texture Load(System.String name, System.Byte[] rawData = null) => this.Load(name, Repeat, Smoothing, rawData);
 
     /// <summary>Loads or retrieves an already loaded instance of a Texture from a File or Raw Data Source</summary>
@@ -60,6 +61,7 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
     /// <returns>The managed Texture</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Texture Load(
         System.String name, System.Boolean? repeat = null,
         System.Boolean? smoothing = null, System.Byte[] rawData = null)
@@ -77,6 +79,7 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Texture Load(System.Byte[] bytes)
     {
         if (bytes == null || bytes.Length == 0)
@@ -95,6 +98,7 @@ public sealed class TextureLoader(System.String assetRoot = "", System.Boolean r
     /// <inheritdoc/>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Texture CreateInstanceFromPath(System.String path)
     {
         if (System.String.IsNullOrWhiteSpace(path))

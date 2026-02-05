@@ -52,6 +52,7 @@ public sealed class AssetManager(System.String rootFolder = null!) : SingletonBa
     /// <returns>ScreenSize <see cref="Texture"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Texture LoadTexture(System.String name, System.Byte[] data = null) => this.TextureManager.Load(name, data);
 
     /// <summary>
@@ -62,6 +63,7 @@ public sealed class AssetManager(System.String rootFolder = null!) : SingletonBa
     /// <returns>ScreenSize <see cref="Font"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public Font LoadFont(System.String name, System.Byte[] data = null) => this.FontManager.Load(name, data);
 
     /// <summary>
@@ -72,6 +74,7 @@ public sealed class AssetManager(System.String rootFolder = null!) : SingletonBa
     /// <returns>ScreenSize <see cref="SoundBuffer"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public SoundBuffer LoadSound(System.String name, System.Byte[] data = null) => this.SoundEffectManager.Load(name, data);
 
     /// <summary>
@@ -82,6 +85,7 @@ public sealed class AssetManager(System.String rootFolder = null!) : SingletonBa
     /// <returns>ScreenSize <see cref="SoundBuffer"/> object.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public SoundBuffer LoadSound(System.String name, System.IO.Stream stream) => this.SoundEffectManager.Load(name, stream);
 
     /// <summary>

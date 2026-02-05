@@ -145,6 +145,7 @@ public class DebugOverlay : RenderObject
     }
 
     /// <inheritdoc/>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable() => null; // Không sử dụng kiểu draw này
 
     #endregion APIs

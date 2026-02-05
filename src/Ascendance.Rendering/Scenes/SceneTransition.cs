@@ -102,6 +102,7 @@ public sealed class SceneTransition : RenderObject, IUpdatable
     /// <returns>
     /// The <see cref="Drawable"/> containing the visual effect.
     /// </returns>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable() => _effect.GetDrawable();
 
     #endregion Virtual Methods
