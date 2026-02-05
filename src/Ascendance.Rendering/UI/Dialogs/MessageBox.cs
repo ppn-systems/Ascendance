@@ -9,12 +9,12 @@ using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.UI.Notifications;
+namespace Ascendance.Rendering.UI.Dialogs;
 
 /// <summary>
 /// Lightweight notification box (without buttons), rendering a 9-slice panel background and automatically word-wrapped text.
 /// </summary>
-public class Notification : RenderObject
+public class MessageBox : RenderObject
 {
     #region Constants
 
@@ -98,7 +98,7 @@ public class Notification : RenderObject
     /// </summary>
     /// <param name="initialMessage">Initial message to display.</param>
     /// <param name="side">Which side of the screen to display (Top or Bottom).</param>
-    public Notification(Texture frameTexture = null, System.String initialMessage = "", Direction2D side = Direction2D.Up, Font font = null)
+    public MessageBox(Texture frameTexture = null, System.String initialMessage = "", Direction2D side = Direction2D.Up, Font font = null)
     {
         font ??= EmbeddedAssets.JetBrainsMono.ToFont();
         frameTexture ??= EmbeddedAssets.SquareOutline.ToTexture();
@@ -169,7 +169,7 @@ public class Notification : RenderObject
     }
 
     /// <summary>
-    /// Not supported for <see cref="Notification"/>. Use <see cref="Draw(RenderTarget)"/> instead.
+    /// Not supported for <see cref="MessageBox"/>. Use <see cref="Draw(RenderTarget)"/> instead.
     /// </summary>
     protected override Drawable GetDrawable() =>
         throw new System.NotSupportedException("Use Render() instead.");

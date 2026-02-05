@@ -7,7 +7,7 @@ using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
-using Ascendance.Rendering.UI.Notifications;
+using Ascendance.Rendering.UI.Dialogs;
 using Nalix.Framework.Configuration;
 using SFML.Graphics;
 using SFML.System;
@@ -26,7 +26,7 @@ internal sealed class MainScene : BaseScene
         Texture texture = EmbeddedAssets.SquareOutline.ToTexture();
 
         Button button = new("OK", texture);
-        NotificationButton notification = new(texture, "D=false", Direction2D.Down);
+        MessageBoxAction notification = new(texture, "D=false", Direction2D.Down);
         PasswordField passwordField = new(texture, default, new Vector2f(200, 40), new Vector2f(200, 200));
         TextInputField textInputField = new(texture, default, new Vector2f(200, 40), new Vector2f(100, 100));
 

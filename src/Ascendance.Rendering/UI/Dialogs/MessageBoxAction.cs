@@ -7,13 +7,13 @@ using Ascendance.Rendering.UI.Controls;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Rendering.UI.Notifications;
+namespace Ascendance.Rendering.UI.Dialogs;
 
 /// <summary>
 /// Notification box with a single action button using reusable Button class.
 /// Supports click visual effects and automatically closes when the button is clicked.
 /// </summary>
-public sealed class NotificationButton : Notification
+public sealed class MessageBoxAction : MessageBox
 {
     #region Constants
 
@@ -85,7 +85,7 @@ public sealed class NotificationButton : Notification
     /// <param name="side">Side of the screen to display notification.</param>
     /// <param name="buttonText">Label of action button.</param>
     /// <param name="font">Font for notification and button text.</param>
-    public NotificationButton(
+    public MessageBoxAction(
         Texture buttonTexture = null, System.String initialMessage = "",
         Direction2D side = Direction2D.Down, System.String buttonText = "OK", Font font = null)
         : base(buttonTexture, initialMessage, side, font)
