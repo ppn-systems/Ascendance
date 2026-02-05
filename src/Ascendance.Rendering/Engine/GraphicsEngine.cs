@@ -36,6 +36,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     private readonly System.UInt32 _backgroundFps;
 
     private System.Boolean _isFocused;
+    private System.Single _lastLogicMs;
+    private System.Single _lastRenderMs;
     private System.Boolean _renderCacheDirty;
     private System.Collections.Generic.IReadOnlyList<RenderObject> _renderObjectCache;
 
@@ -79,6 +81,16 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     public System.Boolean IsRunning => this.RenderWindow.IsOpen;
 
     /// <summary>
+    /// Last logic update time in milliseconds.
+    /// </summary>
+    public System.Single LogicUpdateMilliseconds => _lastLogicMs;
+
+    /// <summary>
+    /// Last render time in milliseconds.
+    /// </summary>
+    public System.Single RenderFrameMilliseconds => _lastRenderMs;
+
+    /// <summary>
     /// Gets the number of active and visible render objects.
     /// </summary>
     /// <returns>The count of objects that are enabled and visible.</returns>
@@ -99,7 +111,9 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     /// </summary>
     public GraphicsEngine()
     {
+        _lastLogicMs = 0f;
         _isFocused = true;
+        _lastRenderMs = 0f;
         _renderObjectCache = [];
         _renderCacheDirty = true;
         _backgroundFps = DEFAULT_BACKGROUND_FPS;
@@ -260,6 +274,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     /// <param name="deltaTime">The time in seconds since the previous update.</param>
     public virtual void Update(System.Single deltaTime)
     {
+        System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+
         this.FrameUpdate?.Invoke(deltaTime);
 
         KeyboardManager.Instance.Update();
@@ -269,6 +285,9 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         SceneManager.Instance.ProcessPendingDestroy();
         SceneManager.Instance.ProcessPendingSpawn();
         SceneManager.Instance.Update(deltaTime);
+
+        sw.Stop();
+        _lastLogicMs = (System.Single)sw.Elapsed.TotalMilliseconds;
     }
 
     #endregion Methods
@@ -287,6 +306,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     /// <param name="target">The render target to draw scene objects to.</param>
     private void UPDATE_DRAW(RenderTarget target)
     {
+        System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+
         if (_renderCacheDirty)
         {
             System.Collections.Generic.List<RenderObject> cache = [.. SceneManager.Instance.GetActiveObjects<RenderObject>()];
@@ -307,6 +328,9 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         }
 
         FrameRender?.Invoke(target);
+
+        sw.Stop();
+        _lastRenderMs = (System.Single)sw.Elapsed.TotalMilliseconds;
     }
 
     /// <summary>

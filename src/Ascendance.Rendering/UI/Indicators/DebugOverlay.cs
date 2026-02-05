@@ -179,11 +179,12 @@ public class DebugOverlay : RenderObject
     {
         System.Collections.Generic.List<System.String> lines =
         [
-            $"FPS: {_currentFps:F1}",
             $"Debug Mode: {_engine.IsDebugMode}",
             $"Vertical Sync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}",
             $"Window Size: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}",
+            $"FPS: {_currentFps:00.0}   Frame: {_frameCount:00}   Time: {System.DateTime.Now:HH:mm:ss}",
             $"Mouse Position: ({Mouse.GetPosition(_engine.RenderWindow).X}, {Mouse.GetPosition(_engine.RenderWindow).Y})",
+            $"Logic: {GraphicsEngine.Instance.LogicUpdateMilliseconds:00.00} ms   Render: {GraphicsEngine.Instance.RenderFrameMilliseconds:00.00} ms",
             GET_MEMORY(),
             $"Scene: {SceneManager.Instance.GetActiveSceneName()} - Rendered Objects: {GraphicsEngine.Instance.ActiveObjectCount}",
         ];
