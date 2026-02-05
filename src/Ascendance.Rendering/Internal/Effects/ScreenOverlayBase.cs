@@ -49,5 +49,6 @@ internal abstract class ScreenOverlayBase : ITransitionDrawable
     /// <summary>
     /// Gets the object that renders the current overlay.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public abstract Drawable GetDrawable();
 }

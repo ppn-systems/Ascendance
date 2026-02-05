@@ -53,5 +53,6 @@ internal sealed class ZoomOverlay : ScreenOverlayBase
     /// <summary>
     /// Gets the zoom overlay rectangle for the current frame.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public override Drawable GetDrawable() => _rect;
 }

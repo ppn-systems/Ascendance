@@ -53,5 +53,6 @@ internal sealed class SlideCoverOverlay : ScreenOverlayBase
     /// <summary>
     /// Gets the sliding cover overlay rectangle.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public override Drawable GetDrawable() => _rect;
 }

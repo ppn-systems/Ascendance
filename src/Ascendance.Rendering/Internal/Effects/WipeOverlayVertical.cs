@@ -46,5 +46,6 @@ internal sealed class WipeOverlayVertical : ScreenOverlayBase
     /// <summary>
     /// Gets the wipe overlay rectangle covering the screen vertically.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public override Drawable GetDrawable() => _rect;
 }

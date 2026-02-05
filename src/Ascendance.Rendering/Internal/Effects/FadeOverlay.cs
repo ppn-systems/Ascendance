@@ -43,5 +43,6 @@ internal sealed class FadeOverlay : ScreenOverlayBase
     /// <summary>
     /// Gets the drawable overlay rectangle for the current frame.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     public override Drawable GetDrawable() => _rect;
 }
