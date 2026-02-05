@@ -43,7 +43,7 @@ public static class Themes
     /// </remarks>
     public static readonly ButtonStateColors TextTheme = new(
         new Color(200, 200, 200),
-        new Color(255, 255, 255),
+        new Color(235, 235, 235),
         new Color(160, 160, 160, 200)
     );
 
@@ -54,7 +54,7 @@ public static class Themes
     /// This color represents fully opaque white and is typically used
     /// for high-contrast foreground text.
     /// </remarks>
-    public static readonly Color PrimaryTextColor = new(255, 255, 255);
+    public static readonly Color PrimaryTextColor = new(220, 220, 220);
 
     /// <summary>
     /// Gets the default background color for banner-style UI elements.
@@ -71,5 +71,5 @@ public static class Themes
     /// <remarks>
     /// Designed to be clearly visible on dark backgrounds.
     /// </remarks>
-    public static readonly Color SpinnerForegroundColor = new(255, 255, 255);
+    public static readonly Color SpinnerForegroundColor = new(230, 230, 230);
 }

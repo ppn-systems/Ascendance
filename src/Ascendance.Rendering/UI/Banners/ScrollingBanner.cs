@@ -97,21 +97,6 @@ public class ScrollingBanner : RenderObject, IUpdatable
         this.RESET_TEXT_POSITION();
     }
 
-    /// <summary>
-    /// Renders the scrolling banner (background and message) onto the given render target.
-    /// </summary>
-    /// <param name="target">The render target.</param>
-    public void Render(RenderTarget target)
-    {
-        if (!this.IsVisible)
-        {
-            return;
-        }
-
-        target.Draw(_background);
-        target.Draw(_text);
-    }
-
     #endregion Public Methods
 
     #region Overrides
@@ -134,6 +119,21 @@ public class ScrollingBanner : RenderObject, IUpdatable
         {
             _text.Position = new Vector2f(GraphicsEngine.ScreenSize.X, _text.Position.Y);
         }
+    }
+
+    /// <summary>
+    /// Renders the scrolling banner (background and message) onto the given render target.
+    /// </summary>
+    /// <param name="target">The render target.</param>
+    public override void Draw(RenderTarget target)
+    {
+        if (!this.IsVisible)
+        {
+            return;
+        }
+
+        target.Draw(_background);
+        target.Draw(_text);
     }
 
     /// <summary>
