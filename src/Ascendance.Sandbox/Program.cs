@@ -3,7 +3,6 @@
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.UI.Indicators;
-using Ascendance.Sandbox.Native;
 using Nalix.Common.Diagnostics;
 using Nalix.Logging.Extensions;
 using SFML.Graphics;

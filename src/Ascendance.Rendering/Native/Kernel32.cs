@@ -1,15 +1,16 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Sandbox.Native;
+namespace Ascendance.Rendering.Native;
 
 /// <summary>
-/// Provides native helpers for controlling the Windows console window.
+/// Provides native helpers for controlling the Windows console window,
+/// including show/hide and visibility checks by using relevant Windows APIs.
 /// </summary>
 [System.Security.SecuritySafeCritical]
 [System.Diagnostics.DebuggerNonUserCode]
 [System.Runtime.InteropServices.BestFitMapping(false)]
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-internal static partial class Kernel32
+public static partial class Kernel32
 {
     #region Constants
 
@@ -69,8 +70,11 @@ internal static partial class Kernel32
     #region APIs
 
     /// <summary>
-    /// Hides the current process console window if it exists.
+    /// Hides the console window belonging to the current process, if one exists.
     /// </summary>
+    /// <remarks>
+    /// This method has no effect if the process does not own a console window.
+    /// </remarks>
     [System.Runtime.CompilerServices.SkipLocalsInit]
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -85,8 +89,11 @@ internal static partial class Kernel32
     }
 
     /// <summary>
-    /// Shows the current process console window if it exists.
+    /// Shows the console window belonging to the current process, if one exists.
     /// </summary>
+    /// <remarks>
+    /// This method has no effect if the process does not own a console window.
+    /// </remarks>
     [System.Runtime.CompilerServices.SkipLocalsInit]
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -101,8 +108,11 @@ internal static partial class Kernel32
     }
 
     /// <summary>
-    /// Checks whether the current process console window is visible.
+    /// Determines whether the console window for the current process is visible.
     /// </summary>
+    /// <returns>
+    /// <c>true</c> if the console window exists and is visible; otherwise, <c>false</c>.
+    /// </returns>
     public static System.Boolean IsConsoleVisible()
     {
         System.IntPtr handle = Kernel32.GET_CONSOLE_WINDOW();
