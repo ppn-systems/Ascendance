@@ -57,6 +57,25 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
     }
 
     /// <summary>
+    /// Determines whether an active object of the specified type exists.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
+    public System.Boolean HasActiveObject<T>() where T : SceneObject
+    {
+        foreach (SceneObject o in _activeSceneObjects)
+        {
+            if (o is T)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Queues a scene to be loaded on the next frame.
     /// </summary>
     /// <param name="name">The name of the scene to be loaded.</param>
@@ -152,25 +171,6 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
     {
         System.Collections.Generic.IReadOnlyCollection<T> objects = GetActiveObjects<T>();
         return objects.Count != 0 ? System.Linq.Enumerable.First(objects) : null;
-    }
-
-    /// <summary>
-    /// Determines whether an active object of the specified type exists.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public System.Boolean HasActiveObject<T>() where T : SceneObject
-    {
-        foreach (SceneObject o in _activeSceneObjects)
-        {
-            if (o is T)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /// <summary>
