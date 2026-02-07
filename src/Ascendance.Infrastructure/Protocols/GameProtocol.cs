@@ -41,7 +41,7 @@ public sealed class GameProtocol : Protocol
             IConnection connection = args.Connection;
 
             InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                .Trace($"[GAME.{nameof(GameProtocol)}:{nameof(ProcessMessage)}] processing from={connection.EndPoint} id={connection.ID}");
+                                    .Trace($"[GAME.{nameof(GameProtocol)}:{nameof(ProcessMessage)}] processing from={connection.EndPoint} id={connection.ID}");
 
             // TODO: Implement game message routing
             // Example message types:
@@ -54,7 +54,7 @@ public sealed class GameProtocol : Protocol
         catch (System.Exception ex)
         {
             InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                .Error($"[GAME.{nameof(GameProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
+                                    .Error($"[GAME.{nameof(GameProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
         }
     }
 
@@ -72,7 +72,7 @@ public sealed class GameProtocol : Protocol
         // 3. Check if player is already connected (prevent multi-login)
 
         InstanceManager.Instance.GetExistingInstance<ILogger>()?
-            .Debug($"[GAME.{nameof(GameProtocol)}:{nameof(ValidateConnection)}] validating from={connection.EndPoint}");
+                                .Debug($"[GAME.{nameof(GameProtocol)}:{nameof(ValidateConnection)}] validating from={connection.EndPoint}");
 
         return true;
     }
@@ -88,7 +88,7 @@ public sealed class GameProtocol : Protocol
         System.Threading.CancellationToken cancellationToken = default)
     {
         InstanceManager.Instance.GetExistingInstance<ILogger>()?
-            .Info($"[GAME.{nameof(GameProtocol)}:{nameof(OnAccept)}] new-player from={connection.EndPoint} id={connection.ID}");
+                                .Info($"[GAME.{nameof(GameProtocol)}:{nameof(OnAccept)}] new-player from={connection.EndPoint} id={connection.ID}");
 
         // TODO: Initialize player session
         // 1. Load player data from database
@@ -109,7 +109,7 @@ public sealed class GameProtocol : Protocol
         base.OnConnectionError(connection, exception);
 
         InstanceManager.Instance.GetExistingInstance<ILogger>()?
-            .Error($"[GAME.{nameof(GameProtocol)}:{nameof(OnConnectionError)}] connection-error from={connection.EndPoint}", exception);
+                                .Error($"[GAME.{nameof(GameProtocol)}:{nameof(OnConnectionError)}] connection-error from={connection.EndPoint}", exception);
 
         // TODO: Cleanup player session on error
         // 1. Save player data

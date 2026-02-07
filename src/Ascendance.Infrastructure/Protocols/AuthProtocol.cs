@@ -4,6 +4,7 @@ using Nalix.Common.Connection;
 using Nalix.Common.Diagnostics;
 using Nalix.Common.Infrastructure.Connection;
 using Nalix.Framework.Injection;
+using Nalix.Network.Connections;
 using Nalix.Network.Protocols;
 
 namespace Ascendance.Infrastructure.Protocols;
@@ -42,7 +43,7 @@ public sealed class AuthProtocol : Protocol
             IConnection connection = args.Connection;
 
             InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                .Debug($"[AUTH.{nameof(AuthProtocol)}:{nameof(ProcessMessage)}] processing from={connection.EndPoint} id={connection.ID}");
+                                    .Debug($"[AUTH.{nameof(AuthProtocol)}:{nameof(ProcessMessage)}] processing from={connection.EndPoint} id={connection.ID}");
 
             // TODO: Implement authentication message parsing
             // Example:
@@ -53,11 +54,14 @@ public sealed class AuthProtocol : Protocol
             // 4. Send response back to client
             // TODO: Send authentication response
             // connection.TCP.Send(responseBuffer);
+
+            _ = InstanceManager.Instance.GetOrCreateInstance<ConnectionHub>()
+                                        .RegisterConnection(connection);
         }
         catch (System.Exception ex)
         {
             InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                .Error($"[AUTH.{nameof(AuthProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
+                                    .Error($"[AUTH.{nameof(AuthProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
 
             args.Connection.Disconnect();
         }
@@ -78,7 +82,7 @@ public sealed class AuthProtocol : Protocol
         // 3. Geographic restrictions
 
         InstanceManager.Instance.GetExistingInstance<ILogger>()?
-            .Debug($"[AUTH.{nameof(AuthProtocol)}:{nameof(ValidateConnection)}] validating from={connection.EndPoint}");
+                                .Debug($"[AUTH.{nameof(AuthProtocol)}:{nameof(ValidateConnection)}] validating from={connection.EndPoint}");
 
         return true;
     }
@@ -93,6 +97,6 @@ public sealed class AuthProtocol : Protocol
         base.OnConnectionError(connection, exception);
 
         InstanceManager.Instance.GetExistingInstance<ILogger>()?
-            .Error($"[AUTH.{nameof(AuthProtocol)}:{nameof(OnConnectionError)}] connection-error from={connection.EndPoint}", exception);
+                                .Error($"[AUTH.{nameof(AuthProtocol)}:{nameof(OnConnectionError)}] connection-error from={connection.EndPoint}", exception);
     }
 }

@@ -59,20 +59,18 @@ public sealed class WorldProtocol : Protocol
         catch (System.Exception ex)
         {
             InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                .Error($"[WORLD.{nameof(WorldProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
+                                    .Error($"[WORLD.{nameof(WorldProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
         }
     }
 
+    // TODO: Implement world sync validation
+    // 1. Verify player is in valid world/zone
+    // 2. Check anti-cheat flags
+    // 3. Validate position update frequency
     /// <summary>
     /// Validates incoming world sync connections.
     /// </summary>
     /// <param name="connection">The connection to validate.</param>
     /// <returns>True if connection is valid, false otherwise.</returns>
-    protected override System.Boolean ValidateConnection(IConnection connection) =>
-        // TODO: Implement world sync validation
-        // 1. Verify player is in valid world/zone
-        // 2. Check anti-cheat flags
-        // 3. Validate position update frequency
-
-        true;
+    protected override System.Boolean ValidateConnection(IConnection connection) => true;
 }

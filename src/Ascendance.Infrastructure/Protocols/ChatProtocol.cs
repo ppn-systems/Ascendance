@@ -41,7 +41,7 @@ public sealed class ChatProtocol : Protocol
             IConnection connection = args.Connection;
 
             InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                .Trace($"[CHAT.{nameof(ChatProtocol)}:{nameof(ProcessMessage)}] processing from={connection.EndPoint} id={connection.ID}");
+                                    .Trace($"[CHAT.{nameof(ChatProtocol)}:{nameof(ProcessMessage)}] processing from={connection.EndPoint} id={connection.ID}");
 
             // TODO: Implement chat message routing
             // Message types:
@@ -55,20 +55,18 @@ public sealed class ChatProtocol : Protocol
         catch (System.Exception ex)
         {
             InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                .Error($"[CHAT.{nameof(ChatProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
+                                    .Error($"[CHAT.{nameof(ChatProtocol)}:{nameof(ProcessMessage)}] error id={args.Connection.ID}", ex);
         }
     }
 
+    // TODO: Implement chat spam prevention
+    // 1. Rate limiting per player
+    // 2. Check if player is muted
+    // 3. Validate message length
     /// <summary>
     /// Validates incoming chat connections.
     /// </summary>
     /// <param name="connection">The connection to validate.</param>
     /// <returns>True if connection is valid, false otherwise.</returns>
-    protected override System.Boolean ValidateConnection(IConnection connection) =>
-        // TODO: Implement chat spam prevention
-        // 1. Rate limiting per player
-        // 2. Check if player is muted
-        // 3. Validate message length
-
-        true;
+    protected override System.Boolean ValidateConnection(IConnection connection) => true;
 }
