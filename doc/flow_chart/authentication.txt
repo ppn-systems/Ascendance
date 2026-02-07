@@ -1,0 +1,29 @@
+┌──────────────────────────────────────────────────────────────┐
+│              Stateful Authentication Flow                     │
+└──────────────────────────────────────────────────────────────┘
+
+Client                          AuthListener (7776)
+  │                                    │
+  ├──── 1. TCP Connect ───────────────>│ State: None
+  │                                    │
+  ├──── 2. HANDSHAKE Packet ──────────>│ HandshakeOps
+  │     (X25519 public key)            │ ├─ Generate keypair
+  │                                    │ ├─ connection.Secret = key
+  │                                    │ ├─ connection.Level = GUEST
+  │<──── 3. Server Public Key ─────────┤ └─ State = HandshakeComplete ✅
+  │                                    │     KeepAlive = true (ShouldKeepAlive())
+  │                                    │
+  │ ── Connection still alive ────────>│
+  │                                    │
+  ├──── 4. LOGIN Packet ──────────────>│ LoginOps
+  │     (username, password)           │ ├─ Validate credentials
+  │     [Encrypted]                    │ ├─ Generate token
+  │                                    │ └─ State = LoginComplete ✅
+  │<──── 5. SessionToken ──────────────┤
+  │                                    │
+  │                                    │ OnPostProcess:
+  │                                    │ ├─ Check ShouldKeepAlive()
+  │                                    │ └─ State == LoginComplete → Close
+  │<──── 6. Connection Close ──────────┤
+  │                                    │
+  └──> Client connects to GameListener (7777) with token
