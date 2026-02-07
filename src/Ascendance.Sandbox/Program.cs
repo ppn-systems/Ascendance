@@ -22,6 +22,7 @@ public static class Program
     {
         // Setup logging
         NLogixFx.MinimumLevel = LogLevel.Debug;
+        //ConfigurationManager.Instance.ConfigFilePath = System.IO.Path.Combine(Directories.ConfigurationDirectory, "configured.ini");
 
         if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
         {

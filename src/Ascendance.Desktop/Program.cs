@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Desktop.Security.AntiCheat;
+using Ascendance.Desktop.Security.AntiCheat.Events;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Native;
@@ -22,18 +24,24 @@ public static class Program
     {
         // Setup logging
         NLogixFx.MinimumLevel = LogLevel.Information;
+        System.Threading.CancellationTokenSource cts = new();
 
-        //if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
-        //{
-        //    Kernel32.Hide();
-        //}
+        if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
+        {
+            Kernel32.Hide();
+        }
+
+        AntiCheatMonitor.Instance.Activate(cts.Token);
 
         // Create and set application icon
         Image icon = GetImageFromBase64(IconBase64);
 
         GraphicsEngine.Instance.FrameUpdate += OnFrameUpdate;
+        AntiCheatMonitor.Instance.CheatDetected += OnCheatDetected;
+
         GraphicsEngine.Instance.SetIcon(icon);
         GraphicsEngine.Instance.Launch();
+        AntiCheatMonitor.Instance.Deactivate();
 
         System.Console.WriteLine("Press Enter to exit...");
         System.Console.ReadLine();
@@ -57,6 +65,25 @@ public static class Program
     #endregion Private Class
 
     #region Private Methods
+
+    private static void OnCheatDetected(System.Object sender, CheatDetectedEventArgs e)
+    {
+        const System.String title = "Error";
+        const System.String message =
+            "Third-party software is interfering with Ascendance.\n" +
+            "If you're using software for exploiting or reverse-engineering, " +
+            "you'll need to uninstall it.";
+
+        if (System.OperatingSystem.IsWindows())
+        {
+            GraphicsEngine.Instance.Dispose();
+            User32.MessageBox(title, message);
+        }
+        else
+        {
+            message.Error();
+        }
+    }
 
     private static void OnFrameUpdate(System.Single deltaTime)
     {
