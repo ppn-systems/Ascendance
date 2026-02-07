@@ -31,7 +31,7 @@ internal sealed class MainScene : BaseScene
         TextInputField textInputField = new(texture, default, new Vector2f(200, 40), new Vector2f(100, 100));
 
         notification.SetZIndex(10);
-        button.SetPosition(new(20, 20));
+        button.Position = new(20, 20);
 
         base.AddObject(button);
         base.AddObject(notification);
