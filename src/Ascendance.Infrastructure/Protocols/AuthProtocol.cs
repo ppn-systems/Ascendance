@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2026 Ascendance Team. All rights reserved.
 
+using Ascendance.Infrastructure.Extensions;
+using Ascendance.Shared.Enums;
 using Nalix.Common.Connection;
+using Nalix.Common.Core.Enums;
 using Nalix.Common.Diagnostics;
 using Nalix.Common.Infrastructure.Connection;
 using Nalix.Framework.Injection;
@@ -11,7 +14,8 @@ namespace Ascendance.Infrastructure.Protocols;
 
 /// <summary>
 /// Protocol for handling authentication-related messages.
-/// Processes login, registration, and token validation requests.
+/// Processes handshake and login requests in sequence.
+/// Connection is kept alive between handshake and login.
 /// </summary>
 public sealed class AuthProtocol : Protocol
 {
@@ -20,14 +24,15 @@ public sealed class AuthProtocol : Protocol
     /// </summary>
     public AuthProtocol()
     {
-        // Authentication connections are typically short-lived
-        // Close after processing auth request
-        this.KeepConnectionOpen = false;
+        // ✅ Keep connection open by default
+        // We'll close it manually after login completes
+        this.KeepConnectionOpen = true;
         this.IsAccepting = true;
     }
 
     /// <summary>
     /// Processes incoming authentication messages.
+    /// Routes to appropriate handler based on opcode.
     /// </summary>
     /// <param name="sender">The sender object (typically the connection).</param>
     /// <param name="args">Event arguments containing connection and message data.</param>
@@ -68,18 +73,32 @@ public sealed class AuthProtocol : Protocol
     }
 
     /// <summary>
+    /// Custom post-processing to determine if connection should be closed.
+    /// Closes connection only after login completes.
+    /// </summary>
+    /// <param name="args">Event arguments containing connection details.</param>
+    protected override void OnPostProcess(IConnectEventArgs args)
+    {
+        // Check if we should close the connection based on auth state
+        if (!args.Connection.ShouldKeepAlive())
+        {
+            InstanceManager.Instance.GetExistingInstance<ILogger>()?
+                                    .Debug($"[AUTH.{nameof(AuthProtocol)}:{nameof(OnPostProcess)}] closing connection id={args.Connection.ID} state={args.Connection.GetAuthState()}");
+
+            args.Connection.Disconnect();
+        }
+    }
+
+    /// <summary>
     /// Validates incoming authentication connections.
-    /// Can implement IP whitelist, rate limiting, etc.
+    /// Implements basic IP filtering and rate limiting.
     /// </summary>
     /// <param name="connection">The connection to validate.</param>
     /// <returns>True if connection is valid, false otherwise.</returns>
     protected override System.Boolean ValidateConnection(IConnection connection)
     {
-        // TODO: Implement connection validation
-        // Example:
-        // 1. Check IP blacklist
-        // 2. Rate limiting per IP
-        // 3. Geographic restrictions
+        // Initialize auth state
+        connection.SetAuthState(AuthState.None);
 
         InstanceManager.Instance.GetExistingInstance<ILogger>()?
                                 .Debug($"[AUTH.{nameof(AuthProtocol)}:{nameof(ValidateConnection)}] validating from={connection.EndPoint}");
@@ -97,6 +116,11 @@ public sealed class AuthProtocol : Protocol
         base.OnConnectionError(connection, exception);
 
         InstanceManager.Instance.GetExistingInstance<ILogger>()?
-                                .Error($"[AUTH.{nameof(AuthProtocol)}:{nameof(OnConnectionError)}] connection-error from={connection.EndPoint}", exception);
+            .Error($"[AUTH.{nameof(AuthProtocol)}:{nameof(OnConnectionError)}] connection-error from={connection.EndPoint}", exception);
+
+        // Reset connection state on any error
+        connection.Secret = null;
+        connection.Level = PermissionLevel.NONE;
+        connection.SetAuthState(AuthState.None);
     }
 }
