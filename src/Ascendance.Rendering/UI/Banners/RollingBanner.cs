@@ -23,30 +23,12 @@ public class RollingBanner : RenderObject
 {
     #region Constants
 
-    /// <summary>
-    /// Banner height in pixels.
-    /// </summary>
-    private const System.Single BannerHeight = 32f;
-
-    /// <summary>
-    /// Horizontal gap (in pixels) between adjacent messages.
-    /// </summary>
-    private const System.Single MessageSpacing = 50f;
-
-    /// <summary>
-    /// Default font size in pixels.
-    /// </summary>
     private const System.UInt32 DefaultFontSize = 18u;
-
-    /// <summary>
-    /// Vertical offset (in pixels) for the text inside the banner.
-    /// </summary>
-    private const System.Single TextVerticalOffset = 4f;
-
-    /// <summary>
-    /// Vector representing leftward scroll.
-    /// </summary>
-    private static readonly Vector2f ScrollLeftDirection = new(-1f, 0f);
+    private const System.Single ScrollDirectionX = -1f;
+    private const System.Single DefaultScrollSpeed = 100f;
+    private const System.Single DefaultBannerHeight = 32f;
+    private const System.Single DefaultMessageSpacing = 50f;
+    private const System.Single DefaultTextVerticalOffset = 4f;
 
     #endregion Constants
 
@@ -54,10 +36,132 @@ public class RollingBanner : RenderObject
 
     private readonly Font _font;
     private readonly RectangleShape _background;
-    private readonly System.Single _speedPxPerSec;
     private readonly System.Collections.Generic.List<Text> _texts = [];
 
+    private System.UInt32 _fontSize;
+    private System.Single _bannerHeight;
+    private System.Single _speedPxPerSec;
+    private System.Single _messageSpacing;
+    private System.Single _textVerticalOffset;
+    private System.Collections.Generic.List<System.String> _messages = [];
+
     #endregion Fields
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets the scrolling speed in pixels per second.
+    /// </summary>
+    public System.Single ScrollSpeed
+    {
+        get => _speedPxPerSec;
+        set => _speedPxPerSec = System.MathF.Max(0f, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the banner height in pixels.
+    /// </summary>
+    public System.Single BannerHeight
+    {
+        get => _bannerHeight;
+        set
+        {
+            System.Single newValue = System.MathF.Max(1f, value);
+            if (_bannerHeight != newValue)
+            {
+                _bannerHeight = newValue;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the horizontal spacing between messages in pixels.
+    /// </summary>
+    public System.Single MessageSpacing
+    {
+        get => _messageSpacing;
+        set
+        {
+            System.Single newValue = System.MathF.Max(0f, value);
+            if (_messageSpacing != newValue)
+            {
+                _messageSpacing = newValue;
+                this.REINITIALIZE_TEXTS();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the font size in pixels.
+    /// </summary>
+    public System.UInt32 FontSize
+    {
+        get => _fontSize;
+        set
+        {
+            if (_fontSize != value)
+            {
+                _fontSize = value;
+                this.REINITIALIZE_TEXTS();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the vertical offset for text inside the banner.
+    /// </summary>
+    public System.Single TextVerticalOffset
+    {
+        get => _textVerticalOffset;
+        set
+        {
+            if (_textVerticalOffset != value)
+            {
+                _textVerticalOffset = value;
+                this.REINITIALIZE_TEXTS();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the background color of the banner.
+    /// </summary>
+    public Color BackgroundColor
+    {
+        get => _background.FillColor;
+        set => _background.FillColor = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the text color.
+    /// </summary>
+    public Color TextColor { get; set; } = Themes.PrimaryTextColor;
+
+    /// <summary>
+    /// Gets or sets the list of messages to display.
+    /// </summary>
+    public System.Collections.Generic.List<System.String> Messages
+    {
+        get => _messages;
+        set
+        {
+            _messages = value ?? [];
+            this.REINITIALIZE_TEXTS();
+        }
+    }
+
+    /// <summary>
+    /// Gets the position of the banner.
+    /// </summary>
+    public Vector2f Position => _background.Position;
+
+    /// <summary>
+    /// Gets the size of the banner.
+    /// </summary>
+    public Vector2f Size => _background.Size;
+
+    #endregion Properties
 
     #region Constructors
 
@@ -73,33 +177,27 @@ public class RollingBanner : RenderObject
     /// <param name="speedPxPerSec">
     /// The horizontal scrolling speed in pixels per second.
     /// </param>
-    public RollingBanner(System.Collections.Generic.List<System.String> messages, Font font = null, System.Single speedPxPerSec = 100f)
+    public RollingBanner(
+        System.Collections.Generic.List<System.String> messages,
+        Font font = null,
+        System.Single speedPxPerSec = DefaultScrollSpeed)
     {
-        this.Show();
-
-        _speedPxPerSec = speedPxPerSec;
-        _background = CREATE_BACKGROUND();
         _font = font ?? EmbeddedAssets.JetBrainsMono.ToFont();
+        _speedPxPerSec = System.MathF.Max(0f, speedPxPerSec);
+        _bannerHeight = DefaultBannerHeight;
+        _messageSpacing = DefaultMessageSpacing;
+        _fontSize = DefaultFontSize;
+        _textVerticalOffset = DefaultTextVerticalOffset;
+        _messages = messages ?? [];
 
-        this.INITIALIZE_TEXTS(messages);
+        _background = this.CREATE_BACKGROUND();
+        this.INITIALIZE_TEXTS();
+
+        base.Show();
         base.SetZIndex(RenderLayer.Banner.ToZIndex());
     }
 
     #endregion Constructors
-
-    #region Public API
-
-    /// <summary>
-    /// Updates the message list and resets all text positions.
-    /// </summary>
-    /// <param name="messages">The new list of messages to display.</param>
-    public void SetMessages(System.Collections.Generic.List<System.String> messages)
-    {
-        _texts.Clear();
-        this.INITIALIZE_TEXTS(messages);
-    }
-
-    #endregion Public API
 
     #region Overrides
 
@@ -121,16 +219,7 @@ public class RollingBanner : RenderObject
         }
 
         this.SCROLL_TEXTS(deltaTime);
-
-        Text first = _texts[0];
-        if (first.Position.X + first.GetGlobalBounds().Width < 0)
-        {
-            Text last = _texts[^1];
-            first.Position = new Vector2f(last.Position.X + last.GetGlobalBounds().Width + MessageSpacing, first.Position.Y);
-
-            _texts.RemoveAt(0);
-            _texts.Add(first);
-        }
+        this.RECYCLE_OFF_SCREEN_TEXT();
     }
 
     /// <summary>
@@ -139,7 +228,7 @@ public class RollingBanner : RenderObject
     /// <param name="target">
     /// The render target on which the banner will be drawn.
     /// </param>
-    public void Render(RenderTarget target)
+    public override void Draw(RenderTarget target)
     {
         if (!this.IsVisible)
         {
@@ -154,44 +243,72 @@ public class RollingBanner : RenderObject
     }
 
     /// <summary>
-    /// Not supported for <see cref="RollingBanner"/>. Use <see cref="Render(RenderTarget)"/> instead.
+    /// Not supported for <see cref="RollingBanner"/>. Use <see cref="Draw(RenderTarget)"/> instead.
     /// </summary>
     /// <returns>No return; always throws.</returns>
     /// <exception cref="System.NotSupportedException"></exception>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable() =>
-        throw new System.NotSupportedException("Please use Render() instead of GetDrawable().");
+        throw new System.NotSupportedException("Use Draw() instead.");
 
     #endregion Overrides
 
-    #region Private Helpers
+    #region Private Methods - Layout
 
     /// <summary>
     /// Creates the banner's background rectangle.
     /// </summary>
     /// <returns>A <see cref="RectangleShape"/> configured as banner background.</returns>
-    private static RectangleShape CREATE_BACKGROUND()
+    private RectangleShape CREATE_BACKGROUND()
     {
         return new RectangleShape
         {
             FillColor = Themes.BannerBackgroundColor,
-            Size = new Vector2f(GraphicsEngine.ScreenSize.X, BannerHeight),
-            Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - BannerHeight),
+            Size = new Vector2f(GraphicsEngine.ScreenSize.X, _bannerHeight),
+            Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - _bannerHeight)
         };
+    }
+
+    /// <summary>
+    /// Updates the background layout based on current banner height.
+    /// </summary>
+    private void UPDATE_LAYOUT()
+    {
+        _background.Size = new Vector2f(GraphicsEngine.ScreenSize.X, _bannerHeight);
+        _background.Position = new Vector2f(0, GraphicsEngine.ScreenSize.Y - _bannerHeight);
+        this.REINITIALIZE_TEXTS();
+    }
+
+    #endregion Private Methods - Layout
+
+    #region Private Methods - Text Management
+
+    /// <summary>
+    /// Clears and reinitializes all text objects.
+    /// </summary>
+    private void REINITIALIZE_TEXTS()
+    {
+        _texts.Clear();
+        this.INITIALIZE_TEXTS();
     }
 
     /// <summary>
     /// Initializes the message texts and arranges them horizontally for seamless scrolling.
     /// </summary>
-    /// <param name="messages">The list of messages.</param>
-    private void INITIALIZE_TEXTS(System.Collections.Generic.List<System.String> messages)
+    private void INITIALIZE_TEXTS()
     {
-        System.Single startX = GraphicsEngine.ScreenSize.X;
-        foreach (System.String msg in messages)
+        if (_messages is null || _messages.Count == 0)
         {
-            Text text = CREATE_TEXT(msg, _font, startX);
+            return;
+        }
+
+        System.Single startX = GraphicsEngine.ScreenSize.X;
+        foreach (System.String msg in _messages)
+        {
+            Text text = this.CREATE_TEXT(msg, startX);
             _texts.Add(text);
 
-            startX += text.GetGlobalBounds().Width + MessageSpacing;
+            startX += text.GetGlobalBounds().Width + _messageSpacing;
         }
     }
 
@@ -199,17 +316,22 @@ public class RollingBanner : RenderObject
     /// Creates a <see cref="Text"/> SFML object with default style and specified horizontal position.
     /// </summary>
     /// <param name="message">The message string to display.</param>
-    /// <param name="font">The font used to render the text.</param>
     /// <param name="startX">X coordinate for initial placement.</param>
     /// <returns>A configured <see cref="Text"/> object.</returns>
-    private static Text CREATE_TEXT(System.String message, Font font, System.Single startX)
+    private Text CREATE_TEXT(System.String message, System.Single startX)
     {
-        return new Text(message, font, DefaultFontSize)
+        System.Single yPos = GraphicsEngine.ScreenSize.Y - _bannerHeight + _textVerticalOffset;
+
+        return new Text(message, _font, _fontSize)
         {
-            FillColor = Themes.PrimaryTextColor,
-            Position = new Vector2f(startX, GraphicsEngine.ScreenSize.Y - BannerHeight + TextVerticalOffset)
+            FillColor = this.TextColor,
+            Position = new Vector2f(startX, yPos)
         };
     }
+
+    #endregion Private Methods - Text Management
+
+    #region Private Methods - Animation
 
     /// <summary>
     /// Scrolls all messages left based on configured speed and elapsed time.
@@ -218,11 +340,36 @@ public class RollingBanner : RenderObject
     private void SCROLL_TEXTS(System.Single deltaTime)
     {
         System.Single displacement = _speedPxPerSec * deltaTime;
+        Vector2f scrollVector = new(ScrollDirectionX * displacement, 0f);
+
         for (System.Int32 i = 0; i < _texts.Count; i++)
         {
-            _texts[i].Position += ScrollLeftDirection * displacement;
+            _texts[i].Position += scrollVector;
         }
     }
 
-    #endregion Private Helpers
+    /// <summary>
+    /// Recycles the first text element when it scrolls off-screen to the left.
+    /// </summary>
+    private void RECYCLE_OFF_SCREEN_TEXT()
+    {
+        if (_texts.Count == 0)
+        {
+            return;
+        }
+
+        Text first = _texts[0];
+        if (first.Position.X + first.GetGlobalBounds().Width < 0)
+        {
+            Text last = _texts[^1];
+            System.Single newX = last.Position.X + last.GetGlobalBounds().Width + _messageSpacing;
+
+            first.Position = new Vector2f(newX, first.Position.Y);
+
+            _texts.RemoveAt(0);
+            _texts.Add(first);
+        }
+    }
+
+    #endregion Private Methods - Animation
 }
