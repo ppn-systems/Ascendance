@@ -7,6 +7,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
-		<ProjectReference Include="..\Ascendance.Security\Ascendance.Security.csproj" />
+		<ProjectReference Include="..\Ascendance.Infrastructure\Ascendance.Infrastructure.csproj" />
 	</ItemGroup>
 </Project>
