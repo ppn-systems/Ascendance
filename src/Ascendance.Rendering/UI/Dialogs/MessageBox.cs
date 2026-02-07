@@ -18,76 +18,125 @@ public class MessageBox : RenderObject
 {
     #region Constants
 
-    /// <summary>
-    /// Default character size for notification text (in pixels).
-    /// </summary>
-    private const System.Single TextCharSizePx = 20f;
-
-    /// <summary>
-    /// Horizontal padding (in pixels) inside the panel.
-    /// </summary>
-    private const System.Single HorizontalPaddingPx = 12f;
-
-    /// <summary>
-    /// Vertical padding (in pixels) inside the panel.
-    /// </summary>
-    private const System.Single VerticalPaddingPx = 30f;
-
-    /// <summary>
-    /// Relative Y position when anchored to top of the screen.
-    /// </summary>
+    private const System.Single DefaultTextCharSize = 20f;
+    private const System.Single DefaultHorizontalPadding = 12f;
+    private const System.Single DefaultVerticalPadding = 30f;
     private const System.Single TopYRatio = 0.10f;
-
-    /// <summary>
-    /// Relative Y position when anchored to bottom of the screen.
-    /// </summary>
     private const System.Single BottomYRatio = 0.70f;
-
-    /// <summary>
-    /// Maximum width as a fraction of screen width.
-    /// </summary>
     private const System.Single MaxWidthFraction = 0.85f;
-
-    /// <summary>
-    /// Absolute maximum notification width (in pixels).
-    /// </summary>
-    private const System.Single MaxWidthCapPx = 720f;
-
-    /// <summary>
-    /// Initial panel height (in pixels, before calculating actual text size).
-    /// </summary>
-    private const System.Single InitialPanelHeightPx = 64f;
-
-    /// <summary>
-    /// Minimum allowed panel height (in pixels).
-    /// </summary>
-    private const System.Single MinPanelHeightPx = 162f;
-
-    /// <summary>
-    /// Minimum allowed text inner width (in pixels) inside the panel.
-    /// </summary>
-    private const System.Single MinInnerWidthPx = 50f;
+    private const System.Single MaxWidthCap = 720f;
+    private const System.Single InitialPanelHeight = 64f;
+    private const System.Single MinPanelHeight = 162f;
+    private const System.Single MinInnerWidth = 50f;
+    private const System.Int32 DefaultBorderThickness = 32;
 
     #endregion Constants
 
     #region Fields
 
+    private readonly Text _messageText;
+    private readonly NineSlicePanel _panel;
+    private readonly Thickness _border;
+
     private Vector2f _textAnchor;
-    private readonly Thickness _border = new(32);
+    private System.Single _horizontalPadding;
+    private System.Single _verticalPadding;
 
     #endregion Fields
 
     #region Properties
 
     /// <summary>
-    /// Message text object.
+    /// Gets or sets the message text displayed in the box.
     /// </summary>
-    protected readonly Text MessageText;
+    public System.String Message
+    {
+        get => _messageText.DisplayedString;
+        set
+        {
+            if (_messageText.DisplayedString != value)
+            {
+                this.UPDATE_MESSAGE_INTERNAL(value);
+            }
+        }
+    }
 
     /// <summary>
-    /// Panel background object.
+    /// Gets or sets the text color.
     /// </summary>
-    protected readonly NineSlicePanel Panel;
+    public Color TextColor
+    {
+        get => _messageText.FillColor;
+        set => _messageText.FillColor = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the panel background color.
+    /// </summary>
+    public Color PanelColor
+    {
+        set => _panel.SetTintColor(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the font size of the message text.
+    /// </summary>
+    public System.UInt32 FontSize
+    {
+        get => _messageText.CharacterSize;
+        set
+        {
+            if (_messageText.CharacterSize != value)
+            {
+                _messageText.CharacterSize = value;
+                this.UPDATE_MESSAGE_INTERNAL(_messageText.DisplayedString);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the horizontal padding inside the panel.
+    /// </summary>
+    public System.Single HorizontalPadding
+    {
+        get => _horizontalPadding;
+        set
+        {
+            System.Single newValue = System.MathF.Max(0f, value);
+            if (_horizontalPadding != newValue)
+            {
+                _horizontalPadding = newValue;
+                this.UPDATE_MESSAGE_INTERNAL(_messageText.DisplayedString);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the vertical padding inside the panel.
+    /// </summary>
+    public System.Single VerticalPadding
+    {
+        get => _verticalPadding;
+        set
+        {
+            System.Single newValue = System.MathF.Max(0f, value);
+            if (_verticalPadding != newValue)
+            {
+                _verticalPadding = newValue;
+                this.UPDATE_MESSAGE_INTERNAL(_messageText.DisplayedString);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the size of the message box.
+    /// </summary>
+    public Vector2f Size => _panel.Size;
+
+    /// <summary>
+    /// Gets the position of the message box.
+    /// </summary>
+    public Vector2f Position => _panel.Position;
 
     #endregion Properties
 
@@ -96,25 +145,35 @@ public class MessageBox : RenderObject
     /// <summary>
     /// Initializes a notification box that displays an automatically word-wrapped message at the specified side of the screen.
     /// </summary>
+    /// <param name="frameTexture">Texture for the panel background.</param>
     /// <param name="initialMessage">Initial message to display.</param>
-    /// <param name="side">Which side of the screen to display (Top or Bottom).</param>
-    public MessageBox(Texture frameTexture = null, System.String initialMessage = "", Direction2D side = Direction2D.Up, Font font = null)
+    /// <param name="side">Which side of the screen to display (Up for top, Down for bottom).</param>
+    /// <param name="font">Font to use for the message text.</param>
+    public MessageBox(
+        Texture frameTexture = null,
+        System.String initialMessage = "",
+        Direction2D side = Direction2D.Up,
+        Font font = null)
     {
         font ??= EmbeddedAssets.JetBrainsMono.ToFont();
         frameTexture ??= EmbeddedAssets.SquareOutline.ToTexture();
 
-        COMPUTE_LAYOUT(side, out System.Single panelY, out System.Single panelWidth, out System.Single panelX);
+        _border = new Thickness(DefaultBorderThickness);
+        _horizontalPadding = DefaultHorizontalPadding;
+        _verticalPadding = DefaultVerticalPadding;
 
-        this.Panel = this.CREATE_PANEL(frameTexture, panelX, panelY, panelWidth);
+        this.COMPUTE_LAYOUT(side, out System.Single panelY, out System.Single panelWidth, out System.Single panelX);
 
-        System.Single innerWidth = COMPUTE_INNER_WIDTH(panelWidth);
-        this.MessageText = PREPARE_WRAPPED_TEXT(font, initialMessage, (System.UInt32)TextCharSizePx, innerWidth);
+        _panel = this.CREATE_PANEL(frameTexture, panelX, panelY, panelWidth);
 
-        System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(this.MessageText);
-        System.Single panelHeight = COMPUTE_TARGET_HEIGHT(textHeight);
+        System.Single innerWidth = this.COMPUTE_INNER_WIDTH(panelWidth);
+        _messageText = PREPARE_WRAPPED_TEXT(font, initialMessage, (System.UInt32)DefaultTextCharSize, innerWidth);
 
-        this.Panel.SetSize(new Vector2f(panelWidth, panelHeight));
-        this.POSITION_TEXT_INSIDE_PANEL(this.Panel, textHeight, out _textAnchor);
+        System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(_messageText);
+        System.Single panelHeight = this.COMPUTE_TARGET_HEIGHT(textHeight);
+
+        _panel.SetSize(new Vector2f(panelWidth, panelHeight));
+        this.POSITION_TEXT_INSIDE_PANEL(_panel, textHeight, out _textAnchor);
 
         base.Show();
         base.SetZIndex(RenderLayer.Notification.ToZIndex());
@@ -122,34 +181,11 @@ public class MessageBox : RenderObject
 
     #endregion Constructors
 
-    #region Public API
-
-    /// <summary>
-    /// Updates the message text, maintaining the anchor position and applying word wrap.
-    /// </summary>
-    /// <param name="newMessage">New message to display.</param>
-    public virtual void UpdateMessage(System.String newMessage)
-    {
-        this.MessageText.DisplayedString = WRAP_TEXT(this.MessageText.Font, newMessage, this.MessageText.CharacterSize, COMPUTE_INNER_WIDTH(this.Panel.Size.X));
-
-        // Re-center origin but preserve anchor position
-        FloatRect bounds = this.MessageText.GetLocalBounds();
-        this.MessageText.Position = _textAnchor;
-        this.MessageText.Origin = new Vector2f(bounds.Left + (bounds.Width / 2f), bounds.Top + (bounds.Height / 2f));
-    }
-
-    #endregion Public API
-
     #region Overrides
 
     /// <inheritdoc />
     public override void Update(System.Single deltaTime)
     {
-        if (!this.IsVisible)
-        {
-            return;
-        }
-
         // No animation/state update for basic notification
     }
 
@@ -164,19 +200,20 @@ public class MessageBox : RenderObject
             return;
         }
 
-        Panel.Draw(target);
-        target.Draw(MessageText);
+        _panel.Draw(target);
+        target.Draw(_messageText);
     }
 
     /// <summary>
     /// Not supported for <see cref="MessageBox"/>. Use <see cref="Draw(RenderTarget)"/> instead.
     /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable() =>
-        throw new System.NotSupportedException("Use Render() instead.");
+        throw new System.NotSupportedException("Use Draw() instead.");
 
     #endregion Overrides
 
-    #region Private Methods
+    #region Private Methods - Layout
 
     /// <summary>
     /// Calculates panel position and size depending on screen side.
@@ -185,7 +222,7 @@ public class MessageBox : RenderObject
     /// <param name="panelY">Y position of panel.</param>
     /// <param name="panelWidth">Width of panel.</param>
     /// <param name="panelX">X position of panel.</param>
-    private static void COMPUTE_LAYOUT(
+    private void COMPUTE_LAYOUT(
         Direction2D side,
         out System.Single panelY,
         out System.Single panelWidth,
@@ -195,7 +232,7 @@ public class MessageBox : RenderObject
         System.Single screenW = GraphicsEngine.ScreenSize.X;
 
         System.Single rawWidth = screenW * MaxWidthFraction;
-        panelWidth = System.MathF.Min(rawWidth, MaxWidthCapPx);
+        panelWidth = System.MathF.Min(rawWidth, MaxWidthCap);
 
         panelX = (screenW - panelWidth) / 2f;
         panelY = GraphicsEngine.ScreenSize.Y * ratio;
@@ -213,7 +250,7 @@ public class MessageBox : RenderObject
     {
         NineSlicePanel panel = new NineSlicePanel(frameTexture, _border)
             .SetPosition(new Vector2f(x, y))
-            .SetSize(new Vector2f(width, InitialPanelHeightPx)); // Temporary height
+            .SetSize(new Vector2f(width, InitialPanelHeight));
 
         return panel;
     }
@@ -223,8 +260,40 @@ public class MessageBox : RenderObject
     /// </summary>
     /// <param name="panelWidth">Panel width.</param>
     /// <returns>Usable width for text rendering.</returns>
-    private static System.Single COMPUTE_INNER_WIDTH(System.Single panelWidth)
-        => System.MathF.Max(MinInnerWidthPx, panelWidth - (2f * HorizontalPaddingPx));
+    private System.Single COMPUTE_INNER_WIDTH(System.Single panelWidth)
+        => System.MathF.Max(MinInnerWidth, panelWidth - (2f * _horizontalPadding));
+
+    /// <summary>
+    /// Computes target panel height based on text height and vertical padding.
+    /// </summary>
+    /// <param name="textHeight">Measured text height.</param>
+    /// <returns>Panel height.</returns>
+    private System.Single COMPUTE_TARGET_HEIGHT(System.Single textHeight)
+    {
+        System.Single height = _verticalPadding + textHeight + _verticalPadding;
+        return System.MathF.Max(MinPanelHeight, height);
+    }
+
+    /// <summary>
+    /// Positions the message text centered within the inner panel bounds and computes anchor position.
+    /// </summary>
+    /// <param name="panel">Panel object.</param>
+    /// <param name="textHeight">Measured text height.</param>
+    /// <param name="anchorOut">Returns computed anchor position.</param>
+    private void POSITION_TEXT_INSIDE_PANEL(NineSlicePanel panel, System.Single textHeight, out Vector2f anchorOut)
+    {
+        System.Single innerLeft = panel.Position.X + _border.Left + _horizontalPadding;
+        System.Single innerRight = panel.Position.X + panel.Size.X - _border.Right - _horizontalPadding;
+        System.Single innerCenterX = (innerLeft + innerRight) / 2f;
+        System.Single innerTop = panel.Position.Y + _border.Top + _verticalPadding;
+
+        _messageText.Position = new Vector2f(innerCenterX, innerTop + (textHeight * 0.5f));
+        anchorOut = _messageText.Position;
+    }
+
+    #endregion Private Methods - Layout
+
+    #region Private Methods - Text Processing
 
     /// <summary>
     /// Prepares SFML Text object with word-wrapped message.
@@ -244,37 +313,28 @@ public class MessageBox : RenderObject
     /// <returns>Measured height of text block.</returns>
     private static System.Single CENTER_TEXT_ORIGIN_AND_MEASURE(Text text)
     {
-        var localBounds = text.GetLocalBounds();
-        text.Origin = new Vector2f(localBounds.Left + (localBounds.Width / 2f), localBounds.Top + (localBounds.Height / 2f));
+        FloatRect localBounds = text.GetLocalBounds();
+        text.Origin = new Vector2f(
+            localBounds.Left + (localBounds.Width / 2f),
+            localBounds.Top + (localBounds.Height / 2f));
         return text.GetGlobalBounds().Height;
     }
 
     /// <summary>
-    /// Computes target panel height based on text height and vertical padding.
+    /// Updates the message text, maintaining the anchor position and applying word wrap.
     /// </summary>
-    /// <param name="textHeight">Measured text height.</param>
-    /// <returns>Panel height.</returns>
-    private static System.Single COMPUTE_TARGET_HEIGHT(System.Single textHeight)
+    /// <param name="newMessage">New message to display.</param>
+    private void UPDATE_MESSAGE_INTERNAL(System.String newMessage)
     {
-        System.Single height = VerticalPaddingPx + textHeight + VerticalPaddingPx;
-        return System.MathF.Max(MinPanelHeightPx, height);
-    }
+        System.Single innerWidth = this.COMPUTE_INNER_WIDTH(_panel.Size.X);
+        _messageText.DisplayedString = WRAP_TEXT(_messageText.Font, newMessage, _messageText.CharacterSize, innerWidth);
 
-    /// <summary>
-    /// Positions the <see cref="MessageText"/> centered within the inner panel bounds and computes anchor position.
-    /// </summary>
-    /// <param name="panel">Panel object.</param>
-    /// <param name="textHeight">Measured text height.</param>
-    /// <param name="anchorOut">Returns computed anchor position.</param>
-    private void POSITION_TEXT_INSIDE_PANEL(NineSlicePanel panel, System.Single textHeight, out Vector2f anchorOut)
-    {
-        System.Single innerLeft = panel.Position.X + _border.Left + HorizontalPaddingPx;
-        System.Single innerRight = panel.Position.X + panel.Size.X - _border.Right - HorizontalPaddingPx;
-        System.Single innerCenterX = (innerLeft + innerRight) / 2f;
-        System.Single innerTop = panel.Position.Y + _border.Top + VerticalPaddingPx;
+        // Re-center origin and recalculate layout
+        System.Single textHeight = CENTER_TEXT_ORIGIN_AND_MEASURE(_messageText);
+        System.Single panelHeight = this.COMPUTE_TARGET_HEIGHT(textHeight);
 
-        MessageText.Position = new Vector2f(innerCenterX, innerTop + (textHeight * 0.5f));
-        anchorOut = MessageText.Position;
+        _panel.SetSize(new Vector2f(_panel.Size.X, panelHeight));
+        this.POSITION_TEXT_INSIDE_PANEL(_panel, textHeight, out _textAnchor);
     }
 
     /// <summary>
@@ -293,28 +353,29 @@ public class MessageBox : RenderObject
             return System.String.Empty;
         }
 
-        System.String result = "";
-        System.String currentLine = "";
+        System.Text.StringBuilder result = new();
+        System.String currentLine = System.String.Empty;
         System.String[] words = text.Split(' ');
 
-        var measurer = new Text("", font, characterSize);
+        Text measurer = new(System.String.Empty, font, characterSize);
 
         foreach (System.String word in words)
         {
             System.String testLine = System.String.IsNullOrEmpty(currentLine) ? word : $"{currentLine} {word}";
             measurer.DisplayedString = testLine;
+
             if (measurer.GetLocalBounds().Width > maxWidth)
             {
                 if (!System.String.IsNullOrEmpty(currentLine))
                 {
-                    result += currentLine + "\n";
+                    _ = result.AppendLine(currentLine);
                     currentLine = word;
                 }
                 else
                 {
                     // Word longer than maxWidth: force wrapping on this word
-                    result += word + "\n";
-                    currentLine = "";
+                    _ = result.AppendLine(word);
+                    currentLine = System.String.Empty;
                 }
             }
             else
@@ -323,9 +384,13 @@ public class MessageBox : RenderObject
             }
         }
 
-        result += currentLine;
-        return result;
+        if (!System.String.IsNullOrEmpty(currentLine))
+        {
+            _ = result.Append(currentLine);
+        }
+
+        return result.ToString();
     }
 
-    #endregion Private Methods
+    #endregion Private Methods - Text Processing
 }

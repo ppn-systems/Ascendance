@@ -17,63 +17,136 @@ public sealed class MessageBoxAction : MessageBox
 {
     #region Constants
 
-    /// <summary>
-    /// Vertical gap (in pixels) between message text and the button.
-    /// </summary>
-    private const System.Single VerticalGapPx = 12f;
-
-    /// <summary>
-    /// Font size for button text (in pixels).
-    /// </summary>
-    private const System.UInt32 ButtonFontSize = 18;
-
-    /// <summary>
-    /// Default button width.
-    /// </summary>
+    private const System.Single DefaultVerticalGap = 12f;
+    private const System.UInt32 DefaultButtonFontSize = 18;
     private const System.Single DefaultButtonWidth = 180f;
-
-    /// <summary>
-    /// Default button height.
-    /// </summary>
     private const System.Single DefaultButtonHeight = 32f;
+    private const System.Single DefaultButtonExtraOffset = 35f;
+    private const System.Int32 ButtonZIndexOffset = 1;
 
     #endregion Constants
 
     #region Fields
 
-    /// <summary>
-    /// The action button (reused from UI.Controls.Button).
-    /// </summary>
     private readonly Button _actionButton;
-
-    /// <summary>
-    /// Button extra vertical offset after layout.
-    /// </summary>
-    private System.Single _buttonExtraOffsetY = 35;
+    private System.Single _buttonExtraOffsetY;
+    private System.Single _verticalGap;
 
     #endregion Fields
 
     #region Properties
 
     /// <summary>
-    /// Callback fired when button is clicked.
+    /// Gets or sets the message text. Automatically repositions the button when changed.
     /// </summary>
-    private event System.Action OnClicked;
+    public new System.String Message
+    {
+        get => base.Message;
+        set
+        {
+            if (base.Message != value)
+            {
+                base.Message = value;
+                this.UPDATE_BUTTON_LAYOUT();
+            }
+        }
+    }
 
     /// <summary>
-    /// Extra vertical offset for the button after layout.
+    /// Gets or sets the extra vertical offset for the button after layout.
     /// </summary>
     public System.Single ButtonExtraOffsetY
     {
         get => _buttonExtraOffsetY;
         set
         {
-            _buttonExtraOffsetY = value;
-            this.UPDATE_BUTTON_LAYOUT();
+            if (_buttonExtraOffsetY != value)
+            {
+                _buttonExtraOffsetY = value;
+                this.UPDATE_BUTTON_LAYOUT();
+            }
         }
     }
 
+    /// <summary>
+    /// Gets or sets the vertical gap between message text and the button.
+    /// </summary>
+    public System.Single VerticalGap
+    {
+        get => _verticalGap;
+        set
+        {
+            System.Single newValue = System.MathF.Max(0f, value);
+            if (_verticalGap != newValue)
+            {
+                _verticalGap = newValue;
+                this.UPDATE_BUTTON_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the button text.
+    /// </summary>
+    public System.String ButtonText
+    {
+        get => _actionButton.Text;
+        set => _actionButton.Text = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the button width. Automatically repositions when changed.
+    /// </summary>
+    public System.Single ButtonWidth
+    {
+        get => _actionButton.Width;
+        set
+        {
+            if (_actionButton.Width != value)
+            {
+                _actionButton.Width = value;
+                this.UPDATE_BUTTON_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the button height.
+    /// </summary>
+    public System.Single ButtonHeight
+    {
+        get => _actionButton.Height;
+        set => _actionButton.Height = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the button font size.
+    /// </summary>
+    public System.UInt32 ButtonFontSize
+    {
+        get => _actionButton.FontSize;
+        set => _actionButton.FontSize = value;
+    }
+
+    /// <summary>
+    /// Gets or sets whether the button is enabled.
+    /// </summary>
+    public System.Boolean ButtonEnabled
+    {
+        get => _actionButton.IsEnabled;
+        set => _actionButton.IsEnabled = value;
+    }
+
     #endregion Properties
+
+    #region Events
+
+    /// <summary>
+    /// Raised when the action button is clicked.
+    /// </summary>
+    public event System.Action ButtonClicked;
+
+    #endregion Events
 
     #region Constructor
 
@@ -86,56 +159,39 @@ public sealed class MessageBoxAction : MessageBox
     /// <param name="buttonText">Label of action button.</param>
     /// <param name="font">Font for notification and button text.</param>
     public MessageBoxAction(
-        Texture buttonTexture = null, System.String initialMessage = "",
-        Direction2D side = Direction2D.Down, System.String buttonText = "OK", Font font = null)
+        Texture buttonTexture = null,
+        System.String initialMessage = "",
+        Direction2D side = Direction2D.Down,
+        System.String buttonText = "OK",
+        Font font = null)
         : base(buttonTexture, initialMessage, side, font)
     {
         font ??= EmbeddedAssets.JetBrainsMono.ToFont();
         buttonTexture ??= EmbeddedAssets.SquareOutline.ToTexture();
 
-        // Tạo button, có thể chỉnh pad, màu tuỳ ý qua các hàm của Button.
-        _actionButton = new Button(buttonText, buttonTexture, 240, default, font)
-            .SetFontSize(ButtonFontSize)
-            .SetSize(DefaultButtonWidth, DefaultButtonHeight);
+        _buttonExtraOffsetY = DefaultButtonExtraOffset;
+        _verticalGap = DefaultVerticalGap;
 
-        // Đăng ký sự kiện click để đóng notification và gọi OnClicked.
+        _actionButton = new Button(buttonText, buttonTexture, DefaultButtonWidth, default, font)
+        {
+            FontSize = DefaultButtonFontSize,
+            Size = new Vector2f(DefaultButtonWidth, DefaultButtonHeight)
+        };
+
         _actionButton.RegisterClickHandler(this.ON_BUTTON_PRESSED);
 
-        // Lần đầu layout nút.
         this.UPDATE_BUTTON_LAYOUT();
-        base.SetZIndex(RenderLayer.NotificationButton.ToZIndex());
+        this.SYNC_BUTTON_Z_INDEX();
     }
 
     #endregion Constructor
 
-    #region Event Registration
-
-    /// <summary>
-    /// Registers a callback to be invoked when the button is clicked.
-    /// </summary>
-    public void RegisterAction(System.Action handler) => this.OnClicked += handler;
-
-    /// <summary>
-    /// Unregisters a previously registered action callback.
-    /// </summary>
-    public void UnregisterAction(System.Action handler) => this.OnClicked -= handler;
-
-    #endregion Event Registration
-
     #region Overrides
 
     /// <summary>
-    /// Sets Z-Index of notification and its button.
+    /// Updates the notification and its button.
     /// </summary>
-    public new void SetZIndex(System.Int32 zOrder)
-    {
-        base.SetZIndex(zOrder);
-        _actionButton.SetZIndex(zOrder + 1);
-    }
-
-    /// <summary>
-    /// Updates notification and its button.
-    /// </summary>
+    /// <param name="deltaTime">Time elapsed since last update.</param>
     public override void Update(System.Single deltaTime)
     {
         if (!this.IsVisible)
@@ -148,8 +204,9 @@ public sealed class MessageBoxAction : MessageBox
     }
 
     /// <summary>
-    /// Renders notification base and action button.
+    /// Renders the notification base and action button.
     /// </summary>
+    /// <param name="target">Render target.</param>
     public override void Draw(RenderTarget target)
     {
         if (!this.IsVisible)
@@ -161,41 +218,35 @@ public sealed class MessageBoxAction : MessageBox
         _actionButton.Draw(target);
     }
 
-    /// <summary>
-    /// Called when notification message is updated to reposition button.
-    /// </summary>
-    public override void UpdateMessage(System.String newMessage)
-    {
-        base.UpdateMessage(newMessage);
-        this.UPDATE_BUTTON_LAYOUT();
-    }
-
     #endregion Overrides
 
-    #region Private Logic
+    #region Private Methods
 
     /// <summary>
     /// Lays out the action button underneath the notification message.
     /// </summary>
     private void UPDATE_BUTTON_LAYOUT()
     {
-        FloatRect messageBounds = MessageText.GetGlobalBounds();
+        System.Single panelCenterX = this.Position.X + (this.Size.X / 2f);
+        System.Single buttonX = panelCenterX - (_actionButton.Width / 2f);
+        System.Single buttonY = this.Position.Y + this.Size.Y + _verticalGap + _buttonExtraOffsetY;
 
-        // Trung tâm theo chiều ngang notification, bên dưới message một đoạn.
-        System.Single x = Panel.Position.X + ((Panel.Size.X - DefaultButtonWidth) / 2f);
-        System.Single y = messageBounds.Top + messageBounds.Height + VerticalGapPx + ButtonExtraOffsetY;
-
-        _actionButton.SetPosition(new Vector2f(x, y));
+        _actionButton.Position = new Vector2f(buttonX, buttonY);
     }
+
+    /// <summary>
+    /// Synchronizes the button's Z-index with the message box's Z-index.
+    /// </summary>
+    private void SYNC_BUTTON_Z_INDEX() => _actionButton.SetZIndex(this.ZIndex + ButtonZIndexOffset);
 
     /// <summary>
     /// Handles button pressed event: fires external callback and hides this notification.
     /// </summary>
     private void ON_BUTTON_PRESSED()
     {
-        this.OnClicked?.Invoke();
+        this.ButtonClicked?.Invoke();
         base.Hide();
     }
 
-    #endregion Private Logic
+    #endregion Private Methods
 }
