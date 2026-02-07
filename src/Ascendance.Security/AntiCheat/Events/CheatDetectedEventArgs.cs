@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Desktop.Security.AntiCheat.Events;
+namespace Ascendance.Security.AntiCheat.Events;
 
 /// <summary>
 /// Event arguments for cheat detection events.

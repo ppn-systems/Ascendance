@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Desktop.Security.AntiCheat.Abstractions;
-using Ascendance.Desktop.Security.AntiCheat.Models;
+using Ascendance.Security.AntiCheat.Abstractions;
+using Ascendance.Security.AntiCheat.Models;
 using System.Linq;
 
-namespace Ascendance.Desktop.Security.AntiCheat.Platform;
+namespace Ascendance.Security.AntiCheat.Platform;
 
 /// <summary>
 /// Linux-specific anti-cheat detection implementation.

@@ -5,5 +5,6 @@
   <Project Path="Ascendance.Physics/Ascendance.Physics.csproj" Id="5203a60b-4786-4fa3-9abb-4b93aaa1aeef" />
   <Project Path="Ascendance.Rendering/Ascendance.Rendering.csproj" />
   <Project Path="Ascendance.Sandbox/Ascendance.Sandbox.csproj" Id="defa4f1c-673a-4691-8b2f-a2331bf4c87b" />
+  <Project Path="Ascendance.Security/Ascendance.Security.csproj" Id="ba573946-3a5b-4220-bc77-a1c96aab4e37" />
   <Project Path="Ascendance.Shared/Ascendance.Shared.csproj" Id="c1f6bae4-5ed5-4b31-b596-f5c322f789b3" />
 </Solution>

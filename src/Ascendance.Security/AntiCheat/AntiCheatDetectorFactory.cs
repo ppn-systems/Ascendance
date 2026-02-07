@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Desktop.Security.AntiCheat.Abstractions;
 using Ascendance.Desktop.Security.AntiCheat.Platform;
 using Ascendance.Desktop.Security.Platform;
+using Ascendance.Security.AntiCheat.Abstractions;
 
-namespace Ascendance.Desktop.Security.AntiCheat;
+namespace Ascendance.Security.AntiCheat;
 
 /// <summary>
 /// Factory for creating platform-specific anti-cheat detectors.

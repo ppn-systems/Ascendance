@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Desktop.Security.AntiCheat;
-using Ascendance.Desktop.Security.AntiCheat.Events;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Native;
 using Ascendance.Rendering.UI.Indicators;
+using Ascendance.Security.AntiCheat;
+using Ascendance.Security.AntiCheat.Events;
 using Nalix.Common.Diagnostics;
 using Nalix.Logging.Extensions;
 using SFML.Graphics;

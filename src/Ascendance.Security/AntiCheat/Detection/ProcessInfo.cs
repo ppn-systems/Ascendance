@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Desktop.Security.AntiCheat.Detection;
+namespace Ascendance.Security.AntiCheat.Detection;
 
 /// <summary>
 /// Information about a detected process.

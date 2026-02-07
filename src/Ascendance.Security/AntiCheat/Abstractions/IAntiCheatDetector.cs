@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Desktop.Security.AntiCheat.Models;
 
-namespace Ascendance.Desktop.Security.AntiCheat.Abstractions;
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Security.AntiCheat.Models;
+
+namespace Ascendance.Security.AntiCheat.Abstractions;
 
 /// <summary>
 /// Platform-agnostic interface for anti-cheat detection.
