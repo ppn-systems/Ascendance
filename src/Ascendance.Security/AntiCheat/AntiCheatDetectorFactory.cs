@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Desktop.Security.AntiCheat.Platform;
 using Ascendance.Desktop.Security.Platform;
 using Ascendance.Security.AntiCheat.Abstractions;
+using Ascendance.Security.AntiCheat.Platform;
 
 namespace Ascendance.Security.AntiCheat;
 
