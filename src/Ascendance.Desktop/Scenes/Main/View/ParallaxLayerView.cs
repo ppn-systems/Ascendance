@@ -67,8 +67,46 @@ public sealed class ParallaxLayerView : RenderObject
     /// </summary>
     /// <param name="preset">Parallax background preset.</param>
     /// <param name="zIndex">Z-index for sorting the render order.</param>
-    public ParallaxLayerView(ParallaxPreset preset, System.Int32 zIndex)
+    public ParallaxLayerView(ParallaxPreset preset = null, System.Int32 zIndex = -1)
     {
+        preset ??= new ParallaxPreset()
+        {
+            Variant = 1,
+            Layers =
+            [
+                new ParallaxPreset.Layer
+                {
+                    Speed = 00f,
+                    Repeat = true,
+                    TexturePath = "res/texture/wcp/1"
+                },
+                new ParallaxPreset.Layer
+                {
+                    Speed = 35f,
+                    Repeat = true,
+                    TexturePath = "res/texture/wcp/2"
+                },
+                new ParallaxPreset.Layer
+                {
+                    Speed = 40f,
+                    Repeat = true,
+                    TexturePath = "res/texture/wcp/3"
+                },
+                new ParallaxPreset.Layer
+                {
+                    Speed = 45f,
+                    Repeat = true,
+                    TexturePath = "res/texture/wcp/4"
+                },
+                new ParallaxPreset.Layer
+                {
+                    Speed = 50f,
+                    Repeat = true,
+                    TexturePath = "res/texture/wcp/5"
+                },
+            ]
+        };
+
         _c = new ParallaxBackground(GraphicsEngine.ScreenSize);
         for (System.Int32 i = 0; i < preset.Layers.Count; i++)
         {

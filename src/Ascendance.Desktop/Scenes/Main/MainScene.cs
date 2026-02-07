@@ -14,48 +14,7 @@ public sealed class MainScene : BaseScene
 {
     private readonly ParallaxLayerView _parallaxLayerView;
 
-    public MainScene() : base(ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene)
-    {
-        ParallaxLayerView.ParallaxPreset preset = new()
-        {
-            Variant = 1,
-            Layers =
-            [
-                new ParallaxLayerView.ParallaxPreset.Layer
-                {
-                    Speed = 00f,
-                    Repeat = true,
-                    TexturePath = "res/texture/wcp/1"
-                },
-                new ParallaxLayerView.ParallaxPreset.Layer
-                {
-                    Speed = 35f,
-                    Repeat = true,
-                    TexturePath = "res/texture/wcp/2"
-                },
-                new ParallaxLayerView.ParallaxPreset.Layer
-                {
-                    Speed = 40f,
-                    Repeat = true,
-                    TexturePath = "res/texture/wcp/3"
-                },
-                new ParallaxLayerView.ParallaxPreset.Layer
-                {
-                    Speed = 45f,
-                    Repeat = true,
-                    TexturePath = "res/texture/wcp/4"
-                },
-                new ParallaxLayerView.ParallaxPreset.Layer
-                {
-                    Speed = 50f,
-                    Repeat = true,
-                    TexturePath = "res/texture/wcp/5"
-                },
-            ]
-        };
-
-        _parallaxLayerView = new ParallaxLayerView(preset, -10);
-    }
+    public MainScene() : base(ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene) => _parallaxLayerView = new ParallaxLayerView(null, -10);
 
     protected override void LoadObjects()
     {
