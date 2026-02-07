@@ -29,6 +29,7 @@ public class ButtonView : RenderObject
     private readonly Button _newGame;
     private readonly Button _serverInfo;
     private readonly Button _changeAccount;
+
     private readonly Button[] _buttons;
 
     #endregion Fields
@@ -54,6 +55,27 @@ public class ButtonView : RenderObject
     /// Raised when the change account button is clicked.
     /// </summary>
     public event System.Action ChangeAccountRequested;
+
+    /// <summary>
+    /// Login button visibility property.
+    /// </summary>
+    public System.Boolean IsLoginButtonVisible
+    {
+        get => _login.IsVisible;
+        set
+        {
+            if (value)
+            {
+                _login.Show();
+            }
+            else if (!value)
+            {
+                _login.Hide();
+            }
+
+            LAYOUT_BUTTONS();
+        }
+    }
 
     #endregion Properties
 
@@ -133,6 +155,10 @@ public class ButtonView : RenderObject
         System.Single total = 0f;
         foreach (Button b in _buttons)
         {
+            if (!b.IsVisible)
+            {
+                continue;
+            }
             total += b.GlobalBounds.Height + VerticalSpacing;
         }
 
@@ -142,6 +168,10 @@ public class ButtonView : RenderObject
 
         foreach (Button b in _buttons)
         {
+            if (!b.IsVisible)
+            {
+                continue;
+            }
             FloatRect r = b.GlobalBounds;
             System.Single x = (GraphicsEngine.ScreenSize.X - r.Width) / HorizontalCenterDivisor;
 

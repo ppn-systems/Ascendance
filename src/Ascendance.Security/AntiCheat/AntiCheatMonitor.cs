@@ -29,10 +29,10 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         ConfigurationManager.Instance.Get<AntiCheatMonitorOptions>();
 
     private readonly ILogger _logger;
-    private readonly IAntiCheatDetector _platformDetector;
+    private readonly System.Int32 _exitCode;
     private readonly System.Int32 _scanIntervalMs;
     private readonly System.Boolean _autoShutdown;
-    private readonly System.Int32 _exitCode;
+    private readonly IAntiCheatDetector _platformDetector;
 
     [System.Diagnostics.CodeAnalysis.AllowNull]
     private System.Threading.CancellationTokenSource _cts;
@@ -211,8 +211,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
 
         try
         {
-            using System.Threading.PeriodicTimer timer = new(
-                System.TimeSpan.FromMilliseconds(_scanIntervalMs));
+            using System.Threading.PeriodicTimer timer = new(System.TimeSpan.FromMilliseconds(_scanIntervalMs));
 
             System.Int32 scanCount = 0;
 

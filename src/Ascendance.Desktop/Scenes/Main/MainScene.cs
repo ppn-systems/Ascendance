@@ -17,7 +17,10 @@ public sealed class MainScene : BaseScene
 
     public MainScene() : base(ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene)
     {
-        _buttonView = new ButtonView();
+        _buttonView = new ButtonView
+        {
+            IsLoginButtonVisible = false
+        };
         _parallaxLayerView = new ParallaxLayerView();
     }
 
