@@ -1,0 +1,16 @@
+┌─────────────────────────────────────────────────────────────┐
+│                   MMO Database Stack                        │
+└─────────────────────────────────────────────────────────────┘
+
+Layer 1: Hot Data (In-Memory)
+├─ Redis (Primary)           - Session tokens, online players
+├─ Memory Cache              - Active player states
+└─ Refresh: Real-time
+
+Layer 2: Persistent Data (Relational)
+├─ PostgreSQL (Recommended)  - Player data, inventory, quests
+└─ MySQL/MariaDB (Alt)       - Good for read-heavy workloads
+
+Layer 3: Analytics (Optional)
+├─ MongoDB                   - Logs, events, analytics
+└─ ClickHouse               - Time-series data, metrics
