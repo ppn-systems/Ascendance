@@ -273,8 +273,8 @@ public class Button : RenderObject, IUpdatable
         }
 
         Vector2i mousePos = MouseManager.Instance.GetMousePosition();
-        System.Boolean isOver = _totalBounds.Contains(mousePos.X, mousePos.Y);
         System.Boolean isDown = Mouse.IsButtonPressed(Mouse.Button.Left);
+        System.Boolean isOver = _totalBounds.Contains(mousePos.X, mousePos.Y);
 
         // Hover
         if (_isHovered != (isOver && _isEnabled))

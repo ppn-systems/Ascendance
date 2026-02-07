@@ -21,7 +21,7 @@ public sealed class MessageBoxAction : MessageBox
     private const System.UInt32 DefaultButtonFontSize = 18;
     private const System.Single DefaultButtonWidth = 180f;
     private const System.Single DefaultButtonHeight = 32f;
-    private const System.Single DefaultButtonExtraOffset = 35f;
+    private const System.Single DefaultButtonExtraOffset = -50f;
     private const System.Int32 ButtonZIndexOffset = 1;
 
     #endregion Constants
@@ -29,8 +29,9 @@ public sealed class MessageBoxAction : MessageBox
     #region Fields
 
     private readonly Button _actionButton;
-    private System.Single _buttonExtraOffsetY;
+
     private System.Single _verticalGap;
+    private System.Single _buttonExtraOffsetY;
 
     #endregion Fields
 
