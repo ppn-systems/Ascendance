@@ -3,7 +3,7 @@
 using Ascendance.Shared.Enums;
 using Nalix.Common.Serialization;
 
-namespace Ascendance.Shared.Map;
+namespace Ascendance.Shared.Maps;
 
 /// <summary>
 /// Represents a tile on a tile-based map.

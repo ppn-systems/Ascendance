@@ -2,7 +2,7 @@
 
 using Nalix.Common.Serialization;
 
-namespace Ascendance.Shared.Map;
+namespace Ascendance.Shared.Maps;
 
 /// <summary>
 /// Represents a 2D tile-based map.
