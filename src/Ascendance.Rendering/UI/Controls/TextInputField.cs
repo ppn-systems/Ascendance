@@ -32,17 +32,20 @@ public class TextInputField : RenderObject, IFocusable
 
     private const System.Single DefaultPaddingX = 16f;
     private const System.Single DefaultPaddingY = 6f;
-
-    private const System.Single CaretBlinkPeriod = 0.5f; // (VN) Chu kỳ nháy caret
+    private const System.Single CaretBlinkPeriod = 0.5f;
     private const System.Single KeyRepeatNextDelay = 0.05f;
     private const System.Single KeyRepeatFirstDelay = 0.35f;
+    private const System.Single DefaultCaretWidth = 1f;
+    private const System.Single CaretYOffset = 2f;
+    private const System.Single MinCaretWidth = 0.5f;
+    private const System.Single MinSizeOffset = 1f;
 
     #endregion Constants
 
     #region Fields
 
-    private readonly Text _text;        // used for drawing
-    private readonly Text _measure;     // used for measuring width/pos exactly
+    private readonly Text _text;
+    private readonly Text _measure;
     private readonly RectangleShape _caret;
     private readonly NineSlicePanel _panel;
     private readonly System.UInt32 _fontSize;
@@ -51,9 +54,9 @@ public class TextInputField : RenderObject, IFocusable
     private readonly System.Text.StringBuilder _buffer = new();
 
     private Vector2f _padding;
-    private FloatRect _hitBox;          // cached for mouse hit-test
+    private FloatRect _hitBox;
     private System.Int32 _caretIndex;
-    private System.Int32 _scrollStart; // start index of visible window (inclusive)
+    private System.Int32 _scrollStart;
     private System.Single _caretTimer;
     private System.Single _caretWidth;
     private System.Boolean _caretVisible;
@@ -71,16 +74,6 @@ public class TextInputField : RenderObject, IFocusable
     /// Optional placeholder (shown when <see cref="Text"/> is empty and unfocused).
     /// </summary>
     public System.String Placeholder { get; set; } = System.String.Empty;
-
-    /// <summary>
-    /// Raised whenever <see cref="Text"/> changes.
-    /// </summary>
-    public event System.Action<System.String> TextChanged;
-
-    /// <summary>
-    /// Raised when user presses Enter while focused.
-    /// </summary>
-    public event System.Action<System.String> TextSubmitted;
 
     /// <summary>
     /// Validation rule for input text; can be <c>null</c> for no validation.
@@ -104,11 +97,12 @@ public class TextInputField : RenderObject, IFocusable
     }
 
     /// <summary>
-    /// Gets or sets whether the field is focused.
+    /// Gets whether the field is currently focused.
     /// </summary>
     public System.Boolean Focused { get; private set; }
 
     /// <summary>
+    /// Gets or sets the position of the text input field.
     /// Text position is derived from panel position + padding.
     /// </summary>
     public Vector2f Position
@@ -116,14 +110,18 @@ public class TextInputField : RenderObject, IFocusable
         get => _panel.Position;
         set
         {
-            _ = _panel.SetPosition(value);
-            this.RELAYOUT_TEXT();
-            this.UPDATE_HIT_BOX();
-            this.UPDATE_CARET_IMMEDIATE();
+            if (_panel.Position != value)
+            {
+                _ = _panel.SetPosition(value);
+                this.RELAYOUT_TEXT();
+                this.UPDATE_HIT_BOX();
+                this.UPDATE_CARET_IMMEDIATE();
+            }
         }
     }
 
     /// <summary>
+    /// Gets or sets the size of the text input field.
     /// Panel size; text area is inner size minus padding.
     /// </summary>
     public Vector2f Size
@@ -131,41 +129,87 @@ public class TextInputField : RenderObject, IFocusable
         get => _panel.Size;
         set
         {
-            _ = _panel.SetSize(ENSURE_MIN_SIZE(value, _panel.Border));
-            this.RELAYOUT_TEXT();
-            this.UPDATE_HIT_BOX();
-            this.RESET_SCROLL_AND_CARET();
+            Vector2f newSize = ENSURE_MIN_SIZE(value, _panel.Border);
+            if (_panel.Size != newSize)
+            {
+                _ = _panel.SetSize(newSize);
+                this.RELAYOUT_TEXT();
+                this.UPDATE_HIT_BOX();
+                this.RESET_SCROLL_AND_CARET();
+            }
         }
     }
 
     /// <summary>
-    /// Padding (x,y) inside the panel.
+    /// Gets or sets the padding (x,y) inside the panel.
     /// </summary>
     public Vector2f Padding
     {
         get => _padding;
         set
         {
-            _padding = value;
-            this.RELAYOUT_TEXT();
-            this.RESET_SCROLL_AND_CARET();
+            if (_padding != value)
+            {
+                _padding = value;
+                this.RELAYOUT_TEXT();
+                this.RESET_SCROLL_AND_CARET();
+            }
         }
     }
 
     /// <summary>
-    /// Width of the caret in pixels.
+    /// Gets or sets the width of the caret in pixels.
     /// </summary>
     public System.Single CaretWidth
     {
         get => _caretWidth;
         set
         {
-            _caretWidth = System.MathF.Max(0.5f, value);
-            this.UPDATE_CARET_IMMEDIATE();
+            System.Single newWidth = System.MathF.Max(MinCaretWidth, value);
+            if (_caretWidth != newWidth)
+            {
+                _caretWidth = newWidth;
+                this.UPDATE_CARET_IMMEDIATE();
+            }
         }
     }
 
+    /// <summary>
+    /// Gets or sets the text and caret color.
+    /// </summary>
+    public Color TextColor
+    {
+        get => _text.FillColor;
+        set
+        {
+            _text.FillColor = value;
+            _caret.FillColor = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the panel's tint color.
+    /// </summary>
+    public Color PanelColor
+    {
+        set => _panel.SetTintColor(value);
+    }
+
     #endregion Properties
+
+    #region Events
+
+    /// <summary>
+    /// Raised whenever <see cref="Text"/> changes.
+    /// </summary>
+    public event System.Action<System.String> TextChanged;
+
+    /// <summary>
+    /// Raised when user presses Enter while focused.
+    /// </summary>
+    public event System.Action<System.String> TextSubmitted;
+
+    #endregion Events
 
     #region Construction
 
@@ -179,34 +223,42 @@ public class TextInputField : RenderObject, IFocusable
     /// <param name="position">Top-left position.</param>
     /// <param name="font">SFML font to render text.</param>
     /// <param name="fontSize">Font size in points.</param>
-    public TextInputField(Texture panelTexture, Thickness border, IntRect sourceRect, Vector2f size, Vector2f position, Font font = null, System.UInt32 fontSize = 16)
+    public TextInputField(
+        Texture panelTexture,
+        Thickness border,
+        IntRect sourceRect,
+        Vector2f size,
+        Vector2f position,
+        Font font = null,
+        System.UInt32 fontSize = 16)
     {
-
-        _caretWidth = 1f;
+        _caretWidth = DefaultCaretWidth;
         _fontSize = fontSize;
         _deleteRepeat = new();
         _backspaceRepeat = new();
         font ??= EmbeddedAssets.JetBrainsMono.ToFont();
         _padding = new(DefaultPaddingX, DefaultPaddingY);
+
         _panel = new NineSlicePanel(panelTexture, border, sourceRect);
-        _ = _panel.SetPosition(position)
-                  .SetSize(ENSURE_MIN_SIZE(size, border));
+        _ = _panel.SetPosition(position).SetSize(ENSURE_MIN_SIZE(size, border));
+
+        Color textColor = new(30, 30, 30);
 
         _measure = new Text(System.String.Empty, font, _fontSize)
         {
-            FillColor = new Color(30, 30, 30)
+            FillColor = textColor
         };
 
         _text = new Text(System.String.Empty, font, _fontSize)
         {
-            FillColor = new Color(30, 30, 30)
+            FillColor = textColor
         };
 
         this.RELAYOUT_TEXT();
 
         _caret = new RectangleShape(new Vector2f(_caretWidth, _fontSize))
         {
-            FillColor = _text.FillColor
+            FillColor = textColor
         };
 
         this.ValidationRule = new UsernameValidationRule();
@@ -218,7 +270,7 @@ public class TextInputField : RenderObject, IFocusable
     }
 
     /// <summary>
-    /// Creates a new <see cref="TextInputField"/>.
+    /// Creates a new <see cref="TextInputField"/> with default border thickness.
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="sourceRect">Texture rect.</param>
@@ -226,54 +278,68 @@ public class TextInputField : RenderObject, IFocusable
     /// <param name="position">Top-left position.</param>
     /// <param name="font">SFML font to render text.</param>
     /// <param name="fontSize">Font size in points.</param>
-    public TextInputField(Texture panelTexture, IntRect sourceRect, Vector2f size, Vector2f position, Font font = null, System.UInt32 fontSize = 16)
+    public TextInputField(
+        Texture panelTexture,
+        IntRect sourceRect,
+        Vector2f size,
+        Vector2f position,
+        Font font = null,
+        System.UInt32 fontSize = 16)
         : this(panelTexture, new Thickness(32), sourceRect, size, position, font, fontSize)
-    { }
+    {
+    }
 
     /// <summary>
-    /// Creates a new <see cref="TextInputField"/>.
+    /// Creates a new <see cref="TextInputField"/> with default border and source rect.
     /// </summary>
     /// <param name="panelTexture">9-slice texture.</param>
     /// <param name="size">Panel size (will be clamped to minimal size by borders).</param>
     /// <param name="position">Top-left position.</param>
     /// <param name="font">SFML font to render text.</param>
     /// <param name="fontSize">Font size in points.</param>
-    public TextInputField(Texture panelTexture, Vector2f size, Vector2f position, Font font = null, System.UInt32 fontSize = 16)
+    public TextInputField(
+        Texture panelTexture,
+        Vector2f size,
+        Vector2f position,
+        Font font = null,
+        System.UInt32 fontSize = 16)
         : this(panelTexture, new Thickness(32), default, size, position, font, fontSize)
-    { }
+    {
+    }
 
     #endregion Construction
 
-    #region APIs
+    #region Overrides
+
+    /// <summary>
+    /// Not used by engine (we render explicitly in <see cref="Draw"/>), but must be provided.
+    /// </summary>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
+    protected override Drawable GetDrawable() => _text;
+
+    /// <inheritdoc/>
+    void IFocusable.OnFocusGained()
+    {
+        this.Focused = true;
+        _caretVisible = true;
+        _caretTimer = 0f;
+    }
+
+    /// <inheritdoc/>
+    void IFocusable.OnFocusLost()
+    {
+        this.Focused = false;
+        _caretVisible = false;
+    }
 
     /// <inheritdoc/>
     public override void Update(System.Single dt)
     {
-        if (MouseManager.Instance.IsMouseButtonPressed(Mouse.Button.Left))
-        {
-            Vector2i mp = MouseManager.Instance.GetMousePosition();
-
-            if (_hitBox.Contains(mp.X, mp.Y))
-            {
-                FocusManager.Instance.RequestFocus(this);
-            }
-            else
-            {
-                FocusManager.Instance.ClearFocus(this);
-            }
-        }
+        this.HANDLE_FOCUS_INPUT();
 
         if (this.Focused)
         {
-            // Caret blink
-            _caretTimer += dt;
-
-            if (_caretTimer >= CaretBlinkPeriod)
-            {
-                _caretTimer = 0f;
-                _caretVisible = !_caretVisible;
-            }
-
+            this.UPDATE_CARET_BLINK(dt);
             this.HANDLE_KEY_INPUT(dt);
         }
 
@@ -292,30 +358,10 @@ public class TextInputField : RenderObject, IFocusable
         _panel.Draw(target);
         target.Draw(_text);
 
-        if (Focused && _caretVisible)
+        if (this.Focused && _caretVisible)
         {
             target.Draw(_caret);
         }
-    }
-
-    /// <summary>
-    /// Not used by engine (we render explicitly in <see cref="Draw"/>), but must be provided.
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    protected override Drawable GetDrawable() => _text;
-
-    /// <summary>
-    /// Set the panel's tint color.
-    /// </summary>
-    public void SetPanelColor(Color color) => _panel.SetTintColor(color);
-
-    /// <summary>
-    /// Set the text/caret color together.
-    /// </summary>
-    public void SetTextColor(Color color)
-    {
-        _text.FillColor = color;
-        _caret.FillColor = color;
     }
 
     /// <summary>
@@ -323,57 +369,73 @@ public class TextInputField : RenderObject, IFocusable
     /// </summary>
     [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected virtual System.String GetRenderText()
-        => _buffer.Length == 0 && !this.Focused && !System.String.IsNullOrEmpty(this.Placeholder) ? this.Placeholder : _buffer.ToString();
+        => _buffer.Length == 0 && !this.Focused && !System.String.IsNullOrEmpty(this.Placeholder)
+            ? this.Placeholder
+            : _buffer.ToString();
 
-    /// <inheritdoc/>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    void IFocusable.OnFocusGained()
+    #endregion Overrides
+
+    #region Private Methods - Input Handling
+
+    /// <summary>
+    /// Handles mouse click for focus management.
+    /// </summary>
+    private void HANDLE_FOCUS_INPUT()
     {
-        this.Focused = true;
-        _caretVisible = true;
-        _caretTimer = 0f;
+        if (!MouseManager.Instance.IsMouseButtonPressed(Mouse.Button.Left))
+        {
+            return;
+        }
+
+        Vector2i mp = MouseManager.Instance.GetMousePosition();
+
+        if (_hitBox.Contains(mp.X, mp.Y))
+        {
+            FocusManager.Instance.RequestFocus(this);
+        }
+        else
+        {
+            FocusManager.Instance.ClearFocus(this);
+        }
     }
 
-    /// <inheritdoc/>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    void IFocusable.OnFocusLost()
+    /// <summary>
+    /// Updates caret blink animation.
+    /// </summary>
+    private void UPDATE_CARET_BLINK(System.Single dt)
     {
-        this.Focused = false;
-        _caretVisible = false;
+        _caretTimer += dt;
+
+        if (_caretTimer >= CaretBlinkPeriod)
+        {
+            _caretTimer = 0f;
+            _caretVisible = !_caretVisible;
+        }
     }
-
-    #endregion APIs
-
-    #region Private Methods
 
     /// <summary>
     /// Handles key presses and key repeats for Backspace/Delete.
     /// </summary>
     private void HANDLE_KEY_INPUT(System.Single dt)
     {
-        System.Boolean shift = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.LShift) || KeyboardManager.Instance.IsKeyDown(Keyboard.Key.RShift);
+        System.Boolean shift = KeyboardManager.Instance.IsKeyDown(Keyboard.Key.LShift)
+                             || KeyboardManager.Instance.IsKeyDown(Keyboard.Key.RShift);
 
         // Submit: Enter
         if (KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Enter))
         {
-            TextSubmitted?.Invoke(_buffer.ToString());
+            this.TextSubmitted?.Invoke(_buffer.ToString());
+            return;
         }
 
         // Letters A..Z
-        if (_buffer.Length < (MaxLength ?? System.Int32.MaxValue) && KeyboardCharMapper.Instance.TryMapKeyToChar(out System.Char ch, shift))
+        if (_buffer.Length < (this.MaxLength ?? System.Int32.MaxValue)
+            && KeyboardCharMapper.Instance.TryMapKeyToChar(out System.Char ch, shift))
         {
-            System.String preview = _buffer.ToString();
-            preview = preview.Insert(_caretIndex, ch.ToString());
-
-            if (this.ValidationRule?.IsValid(preview) == false)
-            {
-                return;
-            }
-
-            this.APPEND_CHAR(ch);
+            this.TRY_INSERT_CHAR(ch);
         }
 
-        // Backspace/Delete: edge + repeat
+        // Backspace with repeat
         if (_backspaceRepeat.Update(
                 KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Backspace),
                 dt,
@@ -383,7 +445,7 @@ public class TextInputField : RenderObject, IFocusable
             this.BACKSPACE();
         }
 
-        // Delete key (same as Backspace here)
+        // Delete with repeat
         if (_deleteRepeat.Update(
                 KeyboardManager.Instance.IsKeyDown(Keyboard.Key.Delete),
                 dt,
@@ -395,6 +457,86 @@ public class TextInputField : RenderObject, IFocusable
     }
 
     /// <summary>
+    /// Attempts to insert a character at the caret position if validation passes.
+    /// </summary>
+    private void TRY_INSERT_CHAR(System.Char ch)
+    {
+        System.String preview = _buffer.ToString().Insert(_caretIndex, ch.ToString());
+
+        if (this.ValidationRule?.IsValid(preview) == false)
+        {
+            return;
+        }
+
+        this.APPEND_CHAR(ch);
+    }
+
+    #endregion Private Methods - Input Handling
+
+    #region Private Methods - Text Manipulation
+
+    /// <summary>
+    /// Appends a character at the caret position with MaxLength enforcement and change notification.
+    /// </summary>
+    private void APPEND_CHAR(System.Char c)
+    {
+        if (this.MaxLength.HasValue && _buffer.Length >= this.MaxLength.Value)
+        {
+            return;
+        }
+
+        _ = _buffer.Insert(_caretIndex, c);
+        _caretIndex++;
+
+        this.TextChanged?.Invoke(_buffer.ToString());
+    }
+
+    /// <summary>
+    /// Removes the character before the caret position, if any; raises <see cref="TextChanged"/>.
+    /// </summary>
+    private void BACKSPACE()
+    {
+        if (_caretIndex <= 0)
+        {
+            return;
+        }
+
+        _ = _buffer.Remove(_caretIndex - 1, 1);
+        _caretIndex--;
+
+        this.TextChanged?.Invoke(_buffer.ToString());
+    }
+
+    /// <summary>
+    /// Deletes the character at the caret position, if any; raises <see cref="TextChanged"/>.
+    /// </summary>
+    private void DELETE()
+    {
+        if (_caretIndex >= _buffer.Length)
+        {
+            return;
+        }
+
+        _ = _buffer.Remove(_caretIndex, 1);
+        this.TextChanged?.Invoke(_buffer.ToString());
+    }
+
+    /// <summary>
+    /// Clamps the current text to <see cref="MaxLength"/> if needed.
+    /// </summary>
+    private void CLAMP_TO_MAX_LENGTH()
+    {
+        if (this.MaxLength.HasValue && _buffer.Length > this.MaxLength.Value)
+        {
+            _buffer.Length = this.MaxLength.Value;
+        }
+    }
+
+    #endregion Private Methods - Text Manipulation
+
+    #region Private Methods - Layout & Rendering
+
+    /// <summary>
     /// Updates caret position/size immediately to the end of visible text.
     /// </summary>
     private void UPDATE_CARET_IMMEDIATE()
@@ -404,7 +546,9 @@ public class TextInputField : RenderObject, IFocusable
         Vector2f caretPos = _measure.FindCharacterPos((System.UInt32)visibleCaret);
 
         _caret.Size = new Vector2f(_caretWidth, _fontSize);
-        _caret.Position = new Vector2f(_text.Position.X + caretPos.X - _measure.Position.X, _text.Position.Y + 2f);
+        _caret.Position = new Vector2f(
+            _text.Position.X + caretPos.X - _measure.Position.X,
+            _text.Position.Y + CaretYOffset);
     }
 
     /// <summary>
@@ -413,16 +557,12 @@ public class TextInputField : RenderObject, IFocusable
     /// </summary>
     private void UPDATE_VISIBLE_TEXT()
     {
-        System.String full = GetRenderText();
+        System.String full = this.GetRenderText();
         _measure.DisplayedString = full;
 
-        System.Single innerWidth = _panel.Size.X - (_padding.X * 2f) - _caretWidth; // leave space for caret
-
-        // Helper: width of substring [i..n)
-        System.Single Width(System.UInt32 i, System.UInt32 n)
-            => _measure.FindCharacterPos(n).X - _measure.FindCharacterPos(i).X;
-
+        System.Single innerWidth = _panel.Size.X - (_padding.X * 2f) - _caretWidth;
         System.UInt32 n = (System.UInt32)full.Length;
+
         if (n == 0)
         {
             _scrollStart = 0;
@@ -431,8 +571,8 @@ public class TextInputField : RenderObject, IFocusable
             return;
         }
 
-        // If full fits, reset scroll
-        if (Width(0, n) <= innerWidth)
+        // If full text fits, reset scroll
+        if (this.GET_TEXT_WIDTH(0, n) <= innerWidth)
         {
             _scrollStart = 0;
             _text.DisplayedString = full;
@@ -440,14 +580,14 @@ public class TextInputField : RenderObject, IFocusable
             return;
         }
 
-        // Ensure tail is visible: advance start until [start..n) fits
-        while (Width((System.UInt32)_scrollStart, n) > innerWidth && _scrollStart < full.Length)
+        // Ensure tail is visible
+        while (this.GET_TEXT_WIDTH((System.UInt32)_scrollStart, n) > innerWidth && _scrollStart < full.Length)
         {
             _scrollStart++;
         }
 
-        // After deletions, try reveal more head if space allows
-        while (_scrollStart > 0 && Width((System.UInt32)(_scrollStart - 1), n) <= innerWidth)
+        // Try to reveal more of the head if space allows
+        while (_scrollStart > 0 && this.GET_TEXT_WIDTH((System.UInt32)(_scrollStart - 1), n) <= innerWidth)
         {
             _scrollStart--;
         }
@@ -457,57 +597,31 @@ public class TextInputField : RenderObject, IFocusable
     }
 
     /// <summary>
-    /// Append a char with MaxLength enforcement and change notification.
+    /// Calculates the width of a substring from index <paramref name="start"/> to <paramref name="end"/>.
     /// </summary>
-    private void APPEND_CHAR(System.Char c)
+    private System.Single GET_TEXT_WIDTH(System.UInt32 start, System.UInt32 end)
+        => _measure.FindCharacterPos(end).X - _measure.FindCharacterPos(start).X;
+
+    /// <summary>
+    /// Repositions both measure and draw texts from panel position and padding.
+    /// </summary>
+    private void RELAYOUT_TEXT() => this.APPLY_TEXT_POSITION();
+
+    /// <summary>
+    /// Applies calculated text position based on panel position and padding.
+    /// </summary>
+    private void APPLY_TEXT_POSITION()
     {
-        if (this.MaxLength.HasValue && _buffer.Length >= this.MaxLength.Value)
-        {
-            return;
-        }
+        System.Single textY = _panel.Position.Y + ((_panel.Size.Y - _fontSize) / 2f) - CaretYOffset;
+        System.Single textX = _panel.Position.X + _padding.X;
 
-        _buffer.Insert(_caretIndex, c);
-        _caretIndex++;
-
-        this.TextChanged?.Invoke(_buffer.ToString());
+        _text.Position = new Vector2f(textX, textY);
+        _measure.Position = _text.Position;
     }
 
-    /// <summary>Remove char before caret position, if any; raises <see cref="TextChanged"/>.</summary>
-    private void BACKSPACE()
-    {
-        if (_caretIndex <= 0)
-        {
-            return;
-        }
-
-        _buffer.Remove(_caretIndex - 1, 1);
-        _caretIndex--;
-
-        this.TextChanged?.Invoke(_buffer.ToString());
-    }
-
-    /// <summary>Delete char at caret position, if any; raises <see cref="TextChanged"/>.</summary>
-    private void DELETE()
-    {
-        if (_caretIndex >= _buffer.Length)
-        {
-            return;
-        }
-
-        _buffer.Remove(_caretIndex, 1);
-        this.TextChanged?.Invoke(_buffer.ToString());
-    }
-
-    /// <summary>Clamp current text to <see cref="MaxLength"/> if needed.</summary>
-    private void CLAMP_TO_MAX_LENGTH()
-    {
-        if (this.MaxLength.HasValue && _buffer.Length > this.MaxLength.Value)
-        {
-            _buffer.Length = MaxLength.Value;
-        }
-    }
-
-    /// <summary>Recompute hit-box based on panel position &amp; size.</summary>
+    /// <summary>
+    /// Recomputes the hit-box based on panel position and size.
+    /// </summary>
     private void UPDATE_HIT_BOX()
     {
         Vector2f s = _panel.Size;
@@ -515,27 +629,9 @@ public class TextInputField : RenderObject, IFocusable
         _hitBox = new FloatRect(p.X, p.Y, s.X, s.Y);
     }
 
-    /// <summary>Ensure panel size never violates border minimums.</summary>
-    private static Vector2f ENSURE_MIN_SIZE(Vector2f size, Thickness b)
-    {
-        System.Single minW = b.Left + b.Right + 1f;
-        System.Single minH = b.Top + b.Bottom + 1f;
-        return new Vector2f(System.MathF.Max(size.X, minW), System.MathF.Max(size.Y, minH));
-    }
-
-    /// <summary>Reposition both measure/draw texts from panel position and padding.</summary>
-    private void RELAYOUT_TEXT() => this.APPLY_TEXT_POSITION();
-
-    private void APPLY_TEXT_POSITION()
-    {
-        System.Single textY = _panel.Position.Y + ((_panel.Size.Y - _fontSize) / 2f) - 2f;
-        System.Single textX = _panel.Position.X + _padding.X;
-
-        _text.Position = new Vector2f(textX, textY);
-        _measure.Position = _text.Position; // measure should share same anchor
-    }
-
-    /// <summary>Reset scrolling window and caret visibility after large layout changes.</summary>
+    /// <summary>
+    /// Resets scrolling window and caret visibility after large layout changes.
+    /// </summary>
     private void RESET_SCROLL_AND_CARET()
     {
         _caretTimer = 0f;
@@ -545,9 +641,19 @@ public class TextInputField : RenderObject, IFocusable
         this.UPDATE_CARET_IMMEDIATE();
     }
 
-    #endregion Private Methods
+    /// <summary>
+    /// Ensures panel size never violates border minimums.
+    /// </summary>
+    private static Vector2f ENSURE_MIN_SIZE(Vector2f size, Thickness border)
+    {
+        System.Single minW = border.Left + border.Right + MinSizeOffset;
+        System.Single minH = border.Top + border.Bottom + MinSizeOffset;
+        return new Vector2f(System.MathF.Max(size.X, minW), System.MathF.Max(size.Y, minH));
+    }
 
-    #region Class
+    #endregion Private Methods - Layout & Rendering
+
+    #region Nested Types
 
     /// <summary>
     /// Controls key repeat timing for keyboard input, supporting initial and repeated activation intervals.
@@ -580,7 +686,7 @@ public class TextInputField : RenderObject, IFocusable
             {
                 _repeating = true;
                 _timer = firstDelay;
-                return true; // First key press
+                return true;
             }
 
             _timer -= dt;
@@ -594,5 +700,5 @@ public class TextInputField : RenderObject, IFocusable
         }
     }
 
-    #endregion Class
+    #endregion Nested Types
 }

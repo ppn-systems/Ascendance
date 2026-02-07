@@ -56,6 +56,163 @@ public class Button : RenderObject, IUpdatable
 
     #endregion Fields
 
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets the position of the button in screen space.
+    /// </summary>
+    public Vector2f Position
+    {
+        get => _position;
+        set
+        {
+            if (_position != value)
+            {
+                _position = value;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the size (width and height) of the button.
+    /// </summary>
+    public Vector2f Size
+    {
+        get => new(_buttonWidth, _buttonHeight);
+        set
+        {
+            if (_buttonWidth != value.X || _buttonHeight != value.Y)
+            {
+                _buttonWidth = value.X;
+                _buttonHeight = value.Y;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the width of the button in pixels.
+    /// </summary>
+    public System.Single Width
+    {
+        get => _buttonWidth;
+        set
+        {
+            if (_buttonWidth != value)
+            {
+                _buttonWidth = value;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the height of the button in pixels.
+    /// </summary>
+    public System.Single Height
+    {
+        get => _buttonHeight;
+        set
+        {
+            if (_buttonHeight != value)
+            {
+                _buttonHeight = value;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the button label text.
+    /// </summary>
+    public System.String Text
+    {
+        get => _label.DisplayedString;
+        set
+        {
+            if (_label.DisplayedString != value)
+            {
+                _label.DisplayedString = value;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the font size of the button label.
+    /// </summary>
+    public System.UInt32 FontSize
+    {
+        get => _label.CharacterSize;
+        set
+        {
+            if (_label.CharacterSize != value)
+            {
+                _label.CharacterSize = value;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the horizontal padding inside the button in pixels.
+    /// </summary>
+    public System.Single HorizontalPadding
+    {
+        get => _horizontalPadding;
+        set
+        {
+            System.Single newValue = System.MathF.Max(0f, value);
+            if (_horizontalPadding != newValue)
+            {
+                _horizontalPadding = newValue;
+                this.UPDATE_LAYOUT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether the button is enabled for interaction.
+    /// </summary>
+    public new System.Boolean IsEnabled
+    {
+        get => _isEnabled;
+        set
+        {
+            if (_isEnabled != value)
+            {
+                _isEnabled = value;
+                this.APPLY_TINT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the text outline color.
+    /// </summary>
+    public Color TextOutlineColor
+    {
+        get => _label.OutlineColor;
+        set => _label.OutlineColor = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the text outline thickness in pixels.
+    /// </summary>
+    public System.Single TextOutlineThickness
+    {
+        get => _label.OutlineThickness;
+        set => _label.OutlineThickness = value;
+    }
+
+    /// <summary>
+    /// Gets the button's bounds in screen space.
+    /// </summary>
+    public FloatRect GlobalBounds => _totalBounds;
+
+    #endregion Properties
+
     #region Constructor
 
     /// <summary>
@@ -83,104 +240,7 @@ public class Button : RenderObject, IUpdatable
 
     #endregion Constructor
 
-    #region Public API (Fluent-Friendly)
-
-    /// <summary>
-    /// Sets button width (in pixels).
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public Button SetWidth(System.Single width)
-    {
-        _buttonWidth = width;
-        this.UPDATE_LAYOUT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets button height (in pixels).
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public Button SetHeight(System.Single height)
-    {
-        _buttonHeight = height;
-        this.UPDATE_LAYOUT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets both width and height of the button.
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public Button SetSize(System.Single width, System.Single height)
-    {
-        _buttonWidth = width;
-        _buttonHeight = height;
-        _needsLayout = true;
-        this.UPDATE_LAYOUT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets button label text.
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public Button SetText(System.String text)
-    {
-        _label.DisplayedString = text;
-        this.UPDATE_LAYOUT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets label font size.
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public Button SetFontSize(System.UInt32 size)
-    {
-        _label.CharacterSize = size;
-        this.UPDATE_LAYOUT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets horizontal padding inside button (pixels).
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public Button SetPadding(System.Single horizontalPadding)
-    {
-        _horizontalPadding = System.MathF.Max(0f, horizontalPadding);
-        this.UPDATE_LAYOUT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets screen-space position for button's top-left.
-    /// </summary>
-    public void SetPosition(Vector2f position)
-    {
-        _position = position;
-        this.UPDATE_LAYOUT();
-    }
-
-    /// <summary>
-    /// Enables or disables the button interactively and visually.
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public Button SetEnabled(System.Boolean enabled)
-    {
-        _isEnabled = enabled;
-        this.APPLY_TINT();
-        return this;
-    }
-
-    /// <summary>
-    /// Sets outline for the text with explicit color and thickness.
-    /// </summary>
-    public void SetTextOutline(Color outlineColor, System.Single thickness)
-    {
-        _label.OutlineColor = outlineColor;
-        _label.OutlineThickness = thickness;
-    }
+    #region APIs
 
     /// <summary>
     /// Register a callback for click event.
@@ -192,13 +252,7 @@ public class Button : RenderObject, IUpdatable
     /// </summary>
     public void UnregisterClickHandler(System.Action handler) => OnClick -= handler;
 
-    /// <summary>
-    /// Returns the button's bounds in screen space.
-    /// </summary>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public FloatRect GetGlobalBounds() => _totalBounds;
-
-    #endregion
+    #endregion APIs
 
     #region Main Loop
 
