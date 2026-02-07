@@ -4,7 +4,7 @@ using Ascendance.Security.AntiCheat.Abstractions;
 using Ascendance.Security.AntiCheat.Models;
 using System.Linq;
 
-namespace Ascendance.Desktop.Security.Platform;
+namespace Ascendance.Security.AntiCheat.Platform;
 
 /// <summary>
 /// Windows-specific anti-cheat detection implementation.

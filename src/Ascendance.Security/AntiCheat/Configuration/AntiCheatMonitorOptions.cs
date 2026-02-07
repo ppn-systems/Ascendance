@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Security.AntiCheat;
 using Nalix.Framework.Configuration.Binding;
 
 namespace Ascendance.Security.AntiCheat.Configuration;
