@@ -19,6 +19,6 @@ public sealed class MainScene : BaseScene
     protected override void LoadObjects()
     {
         base.AddObject(_parallaxLayerView);
-        base.AddObject(new ScrollingBanner("⚠ Chơi quá 180 phút mỗi ngày sẽ ảnh hưởng xấu đến sức khỏe ⚠", null, 200f));
+        base.AddObject(new ScrollingBanner("⚠ Playing games for more than 180 minutes a day can negatively impact your health ⚠", null, 200f));
     }
 }

@@ -70,6 +70,78 @@ public class DebugOverlay : RenderObject
         BottomRight
     }
 
+    /// <summary>
+    /// Flags enumeration for controlling which debug information to display.
+    /// </summary>
+    [System.Flags]
+    public enum DebugDisplayFlags
+    {
+        /// <summary>
+        /// Display nothing.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Display FPS information.
+        /// </summary>
+        Fps = 1 << 0,
+
+        /// <summary>
+        /// Display detailed FPS statistics (min/max/avg).
+        /// </summary>
+        FpsStats = 1 << 1,
+
+        /// <summary>
+        /// Display window resolution.
+        /// </summary>
+        Window = 1 << 2,
+
+        /// <summary>
+        /// Display VSync status.
+        /// </summary>
+        VSync = 1 << 3,
+
+        /// <summary>
+        /// Display managed memory usage.
+        /// </summary>
+        Memory = 1 << 4,
+
+        /// <summary>
+        /// Display performance metrics (logic/render time).
+        /// </summary>
+        Performance = 1 << 5,
+
+        /// <summary>
+        /// Display mouse input position.
+        /// </summary>
+        Input = 1 << 6,
+
+        /// <summary>
+        /// Display current scene name.
+        /// </summary>
+        Scene = 1 << 7,
+
+        /// <summary>
+        /// Display object count.
+        /// </summary>
+        ObjectsInfo = 1 << 8,
+
+        /// <summary>
+        /// Display current timestamp.
+        /// </summary>
+        Timestamp = 1 << 9,
+
+        /// <summary>
+        /// Display all available information.
+        /// </summary>
+        All = Fps | FpsStats | Window | VSync | Memory | Performance | Input | Scene | ObjectsInfo | Timestamp,
+
+        /// <summary>
+        /// Default display flags (common debug information).
+        /// </summary>
+        Default = Fps | Window | Memory | Performance | Input | Scene | ObjectsInfo | Timestamp
+    }
+
     #endregion Enums
 
     #region Properties
@@ -89,6 +161,11 @@ public class DebugOverlay : RenderObject
             }
         }
     }
+
+    /// <summary>
+    /// Gets or sets the display flags that control which debug information to show.
+    /// </summary>
+    public DebugDisplayFlags DisplayFlags { get; set; }
 
     /// <summary>
     /// Gets or sets the top-left origin for displaying the debug overlay.
@@ -154,56 +231,6 @@ public class DebugOverlay : RenderObject
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to show object count information in overlay.
-    /// </summary>
-    public System.Boolean ShowObjectsInfo { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show managed memory usage in overlay.
-    /// </summary>
-    public System.Boolean ShowMemory { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show input (mouse position) in overlay.
-    /// </summary>
-    public System.Boolean ShowInput { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show scene information in overlay.
-    /// </summary>
-    public System.Boolean ShowScene { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show VSync status in overlay.
-    /// </summary>
-    public System.Boolean ShowVSync { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show window resolution in overlay.
-    /// </summary>
-    public System.Boolean ShowWindow { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show FPS information in overlay.
-    /// </summary>
-    public System.Boolean ShowFps { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show FPS statistics (min/max/avg) in overlay.
-    /// </summary>
-    public System.Boolean ShowFpsStats { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show performance metrics in overlay.
-    /// </summary>
-    public System.Boolean ShowPerformance { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to show current timestamp.
-    /// </summary>
-    public System.Boolean ShowTimestamp { get; set; } = true;
-
-    /// <summary>
     /// Gets the current FPS value.
     /// </summary>
     public System.Single CurrentFps => _currentFps;
@@ -233,16 +260,19 @@ public class DebugOverlay : RenderObject
     /// <param name="font">Debug font. If null, uses default embedded font.</param>
     /// <param name="fontSize">Font size for debug text. Default is 15.</param>
     /// <param name="lineSpacing">Vertical spacing between lines of debug text. Default is 20.</param>
+    /// <param name="displayFlags">Initial display flags. Default is <see cref="DebugDisplayFlags.Default"/>.</param>
     public DebugOverlay(
         Font font = null,
         System.UInt32 fontSize = DefaultFontSize,
-        System.Single lineSpacing = DefaultLineSpacing)
+        System.Single lineSpacing = DefaultLineSpacing,
+        DebugDisplayFlags displayFlags = DebugDisplayFlags.Default)
     {
         _avgFpsSum = 0f;
         _avgFpsCount = 0;
         _fontSize = fontSize;
         _fpsClock = new Clock();
         _lineSpacing = lineSpacing;
+        this.DisplayFlags = displayFlags;
         _minFps = System.Single.MaxValue;
         _maxFps = System.Single.MinValue;
         _engine = GraphicsEngine.Instance;
@@ -266,6 +296,31 @@ public class DebugOverlay : RenderObject
     #endregion Constructor
 
     #region Public Methods
+
+    /// <summary>
+    /// Enables specific display flags.
+    /// </summary>
+    /// <param name="flags">The flags to enable.</param>
+    public void EnableFlags(DebugDisplayFlags flags) => this.DisplayFlags |= flags;
+
+    /// <summary>
+    /// Disables specific display flags.
+    /// </summary>
+    /// <param name="flags">The flags to disable.</param>
+    public void DisableFlags(DebugDisplayFlags flags) => this.DisplayFlags &= ~flags;
+
+    /// <summary>
+    /// Toggles specific display flags.
+    /// </summary>
+    /// <param name="flags">The flags to toggle.</param>
+    public void ToggleFlags(DebugDisplayFlags flags) => this.DisplayFlags ^= flags;
+
+    /// <summary>
+    /// Checks if specific display flags are enabled.
+    /// </summary>
+    /// <param name="flags">The flags to check.</param>
+    /// <returns>True if all specified flags are enabled; otherwise, false.</returns>
+    public System.Boolean HasFlags(DebugDisplayFlags flags) => (this.DisplayFlags & flags) == flags;
 
     /// <summary>
     /// Adds a custom debug line to be displayed in the current frame.
@@ -492,51 +547,54 @@ public class DebugOverlay : RenderObject
     {
         System.Collections.Generic.List<System.String> lines = [];
 
-        if (this.ShowWindow)
+        if (this.HasFlags(DebugDisplayFlags.Window))
         {
             lines.Add($"Window: {GraphicsEngine.ScreenSize.X} x {GraphicsEngine.ScreenSize.Y}   Debug: {_engine.IsDebugMode}");
         }
 
-        if (this.ShowVSync)
+        if (this.HasFlags(DebugDisplayFlags.VSync))
         {
             lines.Add($"VSync: {(GraphicsEngine.GraphicsConfig.VSync ? "On" : "Off")}");
         }
 
-        if (this.ShowFps)
+        if (this.HasFlags(DebugDisplayFlags.Fps))
         {
             System.String fpsLine = $"FPS: {_currentFps:00.0}   Frame: {_frameCount:00}";
-            if (this.ShowTimestamp)
+            if (this.HasFlags(DebugDisplayFlags.Timestamp))
             {
                 fpsLine += $"   Time: {System.DateTime.Now:HH:mm:ss}";
             }
             lines.Add(fpsLine);
         }
 
-        if (this.ShowFpsStats)
+        if (this.HasFlags(DebugDisplayFlags.FpsStats))
         {
             lines.Add($"FPS Stats - Min: {_minFps:00.0}   Max: {_maxFps:00.0}   Avg: {this.AverageFps:00.0}");
         }
 
-        if (this.ShowMemory)
+        if (this.HasFlags(DebugDisplayFlags.Memory))
         {
             lines.Add(GET_MEMORY_INFO());
         }
 
-        if (this.ShowPerformance)
+        if (this.HasFlags(DebugDisplayFlags.Performance))
         {
             lines.Add($"Logic: {_engine.LogicUpdateMilliseconds:00.00} ms   Render: {_engine.RenderFrameMilliseconds:00.00} ms");
         }
 
-        if (this.ShowInput)
+        if (this.HasFlags(DebugDisplayFlags.Input))
         {
             Vector2i mousePos = Mouse.GetPosition(_engine.RenderWindow);
             lines.Add($"Mouse: ({mousePos.X}, {mousePos.Y})");
         }
 
-        if (this.ShowScene || this.ShowObjectsInfo)
+        System.Boolean showScene = this.HasFlags(DebugDisplayFlags.Scene);
+        System.Boolean showObjects = this.HasFlags(DebugDisplayFlags.ObjectsInfo);
+
+        if (showScene || showObjects)
         {
-            System.String sceneName = this.ShowScene ? SceneManager.Instance.GetActiveSceneName() : System.String.Empty;
-            System.String objectCount = this.ShowObjectsInfo ? $"Objects: {_engine.ActiveObjectCount}" : System.String.Empty;
+            System.String sceneName = showScene ? SceneManager.Instance.GetActiveSceneName() : System.String.Empty;
+            System.String objectCount = showObjects ? $"Objects: {_engine.ActiveObjectCount}" : System.String.Empty;
 
             if (!System.String.IsNullOrEmpty(sceneName) && !System.String.IsNullOrEmpty(objectCount))
             {
@@ -553,7 +611,7 @@ public class DebugOverlay : RenderObject
         }
 
         // Add custom provider outputs
-        foreach (var provider in _customProviders.Values)
+        foreach (System.Func<System.String> provider in _customProviders.Values)
         {
             try
             {
