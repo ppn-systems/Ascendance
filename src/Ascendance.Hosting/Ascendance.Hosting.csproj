@@ -1,15 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
+	<PropertyGroup>
 		<IsTrimmable>true</IsTrimmable>
 		<Deterministic>true</Deterministic>
 		<TargetFramework>net10.0</TargetFramework>
-    </PropertyGroup>
-  
-    <ItemGroup>
-		<PackageReference Include="SFML.System" Version="2.6.1" />
-    </ItemGroup>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
+		<ProjectReference Include="..\Ascendance.Security\Ascendance.Security.csproj" />
 	</ItemGroup>
 </Project>

@@ -43,6 +43,8 @@ public static class Program
         GraphicsEngine.Instance.Launch();
         AntiCheatMonitor.Instance.Deactivate();
 
+        cts.Cancel();
+
         System.Console.WriteLine("Press Enter to exit...");
         System.Console.ReadLine();
     }
@@ -65,25 +67,6 @@ public static class Program
     #endregion Private Class
 
     #region Private Methods
-
-    private static void OnCheatDetected(System.Object sender, CheatDetectedEventArgs e)
-    {
-        const System.String title = "Error";
-        const System.String message =
-            "Third-party software is interfering with Ascendance.\n" +
-            "If you're using software for exploiting or reverse-engineering, " +
-            "you'll need to uninstall it.";
-
-        if (System.OperatingSystem.IsWindows())
-        {
-            GraphicsEngine.Instance.Dispose();
-            User32.MessageBox(title, message);
-        }
-        else
-        {
-            message.Error();
-        }
-    }
 
     private static void OnFrameUpdate(System.Single deltaTime)
     {
@@ -136,6 +119,25 @@ public static class Program
     }
 
     private static void OnFrameRender(RenderTarget target) => Debug.Overlay.Draw(target);
+
+    private static void OnCheatDetected(System.Object sender, CheatDetectedEventArgs e)
+    {
+        const System.String title = "Error";
+        const System.String message =
+            "Third-party software is interfering with Ascendance.\n" +
+            "If you're using software for exploiting or reverse-engineering, " +
+            "you'll need to uninstall it.";
+
+        if (System.OperatingSystem.IsWindows())
+        {
+            GraphicsEngine.Instance.Dispose();
+            User32.MessageBox(title, message);
+        }
+        else
+        {
+            message.Error();
+        }
+    }
 
     #endregion Private Methods
 

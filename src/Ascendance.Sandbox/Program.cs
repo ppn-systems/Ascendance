@@ -24,11 +24,6 @@ public static class Program
         NLogixFx.MinimumLevel = LogLevel.Debug;
         //ConfigurationManager.Instance.ConfigFilePath = System.IO.Path.Combine(Directories.ConfigurationDirectory, "configured.ini");
 
-        if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
-        {
-            Kernel32.Hide();
-        }
-
         // Create and set application icon
         Image icon = GetImageFromBase64(IconBase64);
 
