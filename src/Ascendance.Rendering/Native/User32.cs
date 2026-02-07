@@ -18,7 +18,7 @@ public static partial class User32
     private const System.Boolean SET_LAST_ERROR = false;
     private const System.String DLL_USER32 = "user32.dll";
 
-    private const System.String ENTRYPOINT_USER32_MESSAGE_BOX = "MessageBox";
+    private const System.String ENTRYPOINT_USER32_MESSAGE_BOX = "MessageBoxW";
     private const System.String ENTRYPOINT_USER32_SHOW_WINDOW = "ShowWindow";
     private const System.String ENTRYPOINT_USER32_IS_WINDOW_VISIBLE = "IsWindowVisible";
 

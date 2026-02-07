@@ -18,8 +18,8 @@ public static partial class Kernel32
     private const System.Int32 SW_SHOW = 5;
 
     private const System.Boolean SET_LAST_ERROR = false;
-    private const System.String DLL_KERNEL32 = "kernel32.dll";
 
+    private const System.String DLL_KERNEL32 = "kernel32.dll";
     private const System.String ENTRYPOINT_KERNEL32_GET_CONSOLE_WINDOW = "GetConsoleWindow";
 
     #endregion Constants
@@ -37,7 +37,6 @@ public static partial class Kernel32
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [return: System.Diagnostics.CodeAnalysis.NotNullIfNotNull(nameof(GET_CONSOLE_WINDOW))]
     private static partial System.IntPtr GET_CONSOLE_WINDOW();
-
 
     #endregion Invoke Declarations
 
