@@ -11,4 +11,6 @@ public static class SceneConstants
     /// Loading scene hiển thị khi trò chơi đang tải tài nguyên.
     /// </summary>
     public const System.String Login = "login";
+
+    public const System.String ServerInfo = "server_info";
 }
