@@ -318,7 +318,7 @@ public class TextInputField : RenderObject, IFocusable
     protected override Drawable GetDrawable() => _text;
 
     /// <inheritdoc/>
-    void IFocusable.OnFocusGained()
+    public void OnFocusGained()
     {
         this.Focused = true;
         _caretVisible = true;
@@ -326,7 +326,7 @@ public class TextInputField : RenderObject, IFocusable
     }
 
     /// <inheritdoc/>
-    void IFocusable.OnFocusLost()
+    public void OnFocusLost()
     {
         this.Focused = false;
         _caretVisible = false;
@@ -425,14 +425,17 @@ public class TextInputField : RenderObject, IFocusable
         if (KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Enter))
         {
             this.TextSubmitted?.Invoke(_buffer.ToString());
-            return;
         }
 
         // Letters A..Z
-        if (_buffer.Length < (this.MaxLength ?? System.Int32.MaxValue)
-            && KeyboardCharMapper.Instance.TryMapKeyToChar(out System.Char ch, shift))
+        if (_buffer.Length < (this.MaxLength ?? System.Int32.MaxValue))
         {
-            this.TRY_INSERT_CHAR(ch);
+            System.Boolean mapped = KeyboardCharMapper.Instance.TryMapKeyToChar(out System.Char ch, shift);
+
+            if (mapped)
+            {
+                this.TRY_INSERT_CHAR(ch);
+            }
         }
 
         // Backspace with repeat

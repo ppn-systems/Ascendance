@@ -90,8 +90,7 @@ public sealed class PasswordField : TextInputField
         Vector2f position,
         Font font = null,
         System.UInt32 fontSize = 16)
-        : base(panelTexture, new Thickness(32), sourceRect, size, position, font, fontSize)
-    { }
+        : base(panelTexture, new Thickness(32), sourceRect, size, position, font, fontSize) => base.ValidationRule = new PasswordValidationRule();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PasswordField"/> class
@@ -108,8 +107,7 @@ public sealed class PasswordField : TextInputField
         Vector2f position,
         Font font = null,
         System.UInt32 fontSize = 16)
-        : base(panelTexture, new Thickness(32), default, size, position, font, fontSize)
-    { }
+        : base(panelTexture, new Thickness(32), default, size, position, font, fontSize) => base.ValidationRule = new PasswordValidationRule();
 
     #endregion Constructor
 
