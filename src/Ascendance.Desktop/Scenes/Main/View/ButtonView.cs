@@ -89,7 +89,7 @@ public class ButtonView : RenderObject
     {
         _login = new Button("Login");
         _newGame = new Button("New game");
-        _serverInfo = new Button("Server: ");
+        _serverInfo = new Button("Server");
         _changeAccount = new Button("Change account");
 
         _buttons = [_login, _newGame, _changeAccount, _serverInfo];
