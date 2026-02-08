@@ -137,6 +137,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         this.RenderWindow.LostFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(false);
         this.RenderWindow.GainedFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(true);
         this.RenderWindow.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
+        SceneManager.Instance.SceneChanged += (sender, args) => _renderCacheDirty = true;
 
         // Prefer VSync if available
         if (GraphicsConfig.VSync)
@@ -282,8 +283,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         MouseManager.Instance.Update(RenderWindow);
 
         SceneManager.Instance.ProcessSceneChange();
-        SceneManager.Instance.ProcessPendingDestroy();
         SceneManager.Instance.ProcessPendingSpawn();
+        SceneManager.Instance.ProcessPendingDestroy();
         SceneManager.Instance.Update(deltaTime);
 
         sw.Stop();

@@ -81,7 +81,23 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
     /// <param name="name">The name of the scene to be loaded.</param>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void ScheduleSceneChange(System.String name) => _nextScene = name;
+    public void ScheduleSceneChange(System.String name)
+    {
+        if (System.String.IsNullOrEmpty(name))
+        {
+            NLogixFx.Warn(message: "Attempted to schedule empty scene change.", source: "SceneManager");
+            return;
+        }
+
+        if (name == _currentScene?.Name)
+        {
+            NLogixFx.Debug(message: $"Already in scene [{name}], ignoring change request.", source: "SceneManager");
+            return;
+        }
+
+        _nextScene = name;
+        NLogixFx.Debug(message: $"Scheduled scene change to [{name}]", source: "SceneManager");
+    }
 
     /// <summary>
     /// Queues a single object to be spawned in the scene.
@@ -203,17 +219,15 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessSceneChange()
     {
+        if (System.String.IsNullOrEmpty(_nextScene))
+        {
+            return;
+        }
+
         if (_nextScene == _currentScene?.Name)
         {
             _nextScene = "";
             NLogixFx.Debug(message: $"Requested scene change to the same scene [{_nextScene}], no action taken.", source: "SceneManager");
-
-            return;
-        }
-
-        if (_nextScene?.Length == 0)
-        {
-            NLogixFx.Debug(message: $"Empty scene change requested, no action taken.", source: "SceneManager");
 
             return;
         }
@@ -226,13 +240,15 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
 
             NLogixFx.Info(message: $"Scene changed from [{lastScene}] to [{_nextScene}].", source: "SceneManager");
             SceneChanged?.Invoke(this, new SceneChangedEventArgs(lastScene, _nextScene));
-
-            _nextScene = "";
         }
         catch (System.Exception ex)
         {
             NLogixFx.Error(message: $"Error occurred during scene change: {ex}", source: "SceneManager");
             throw;
+        }
+        finally
+        {
+            _nextScene = "";
         }
     }
 
@@ -363,23 +379,25 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     private void CLEAR_SCENE()
     {
-        foreach (SceneObject sceneObject in _activeSceneObjects)
-        {
-            if (!sceneObject.IsPersistent)
-            {
-                sceneObject.OnBeforeDestroy();
-            }
-        }
-        _ = _activeSceneObjects.RemoveWhere(o => !o.IsPersistent);
+        System.Collections.Generic.List<SceneObject> toDestroy =
+            System.Linq.Enumerable.ToList(
+                System.Linq.Enumerable.Where(_activeSceneObjects, o => !o.IsPersistent));
 
-        foreach (SceneObject queued in this.PendingSpawnObjects)
+        foreach (SceneObject sceneObject in toDestroy)
         {
-            if (!queued.IsPersistent)
-            {
-                queued.OnBeforeDestroy();
-            }
+            sceneObject.OnBeforeDestroy();
+            _ = _activeSceneObjects.Remove(sceneObject);
         }
-        _ = this.PendingSpawnObjects.RemoveWhere(o => !o.IsPersistent);
+
+        System.Collections.Generic.List<SceneObject> pendingToDestroy =
+            System.Linq.Enumerable.ToList(
+                System.Linq.Enumerable.Where(PendingSpawnObjects, o => !o.IsPersistent));
+
+        foreach (SceneObject queued in pendingToDestroy)
+        {
+            queued.OnBeforeDestroy();
+            _ = PendingSpawnObjects.Remove(queued);
+        }
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
@@ -395,6 +413,7 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
 
         _currentScene = found;
         _currentScene.InitializeScene();
+
         this.EnqueueSpawn(_currentScene.GetObjects());
     }
 
