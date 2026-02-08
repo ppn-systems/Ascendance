@@ -100,7 +100,6 @@ internal sealed class LoginView : RenderObject
     private readonly PasswordField _pass;
     private readonly TextInputField _user;
     private readonly NineSlicePanel _bgPanel;
-    private readonly RectangleShape _backdrop;
     private readonly Vector2f _actualPanelSize;
 
     #endregion Fields
@@ -144,12 +143,6 @@ internal sealed class LoginView : RenderObject
 
         _actualPanelSize = PanelSize * PanelScale;
         _panelPos = GET_CENTERED_POSITION(_actualPanelSize);
-
-        // Initialize backdrop (full screen overlay)
-        _backdrop = new RectangleShape((Vector2f)GraphicsEngine.ScreenSize)
-        {
-            FillColor = BackdropColor
-        };
 
         // Initialize background panel
         _bgPanel = new NineSlicePanel(_texture, Border, SrcRect).SetSize(_actualPanelSize)
@@ -335,8 +328,6 @@ internal sealed class LoginView : RenderObject
             return;
         }
 
-        target.Draw(_backdrop);
-
         _bgPanel.Draw(target);
         _user.Draw(target);
         _pass.Draw(target);
@@ -353,7 +344,7 @@ internal sealed class LoginView : RenderObject
     /// Returns the backdrop drawable (required by base class).
     /// </summary>
     [return: System.Diagnostics.CodeAnalysis.NotNull]
-    protected override Drawable GetDrawable() => _backdrop;
+    protected override Drawable GetDrawable() => throw new System.NotSupportedException("Use Draw() method for custom rendering.");
 
     #endregion Overrides
 

@@ -8,9 +8,12 @@ namespace Ascendance.Desktop.Scenes;
 public static class SceneConstants
 {
     /// <summary>
-    /// Loading scene hiển thị khi trò chơi đang tải tài nguyên.
+    /// Scene hiển thị khi trò chơi đang tải tài nguyên.
     /// </summary>
     public const System.String Login = "login";
 
+    /// <summary>
+    /// SScene hiển thị thông tin về máy chủ trò chơi.
+    /// </summary>
     public const System.String ServerInfo = "server_info";
 }

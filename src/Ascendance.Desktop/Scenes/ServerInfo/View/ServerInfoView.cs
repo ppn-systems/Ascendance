@@ -280,9 +280,17 @@ internal sealed class ServerInfoView : RenderObject
         target.Draw(_descriptionText);
 
         // Draw server buttons
-        foreach (Button btn in _serverButtons)
+        if (_currentServerType == ServerType.Domestic)
         {
-            btn.Draw(target);
+            // For Domestic, show both servers
+            foreach (Button btn in _serverButtons)
+            {
+                btn.Draw(target);
+            }
+        }
+        else
+        {
+            // For Global, only show the second server
         }
 
         // Draw back button

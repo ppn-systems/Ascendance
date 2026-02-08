@@ -76,31 +76,31 @@ public sealed class ParallaxLayerView : RenderObject
             [
                 new ParallaxPreset.Layer
                 {
-                    Speed = 00f,
+                    Speed = 5f,  // Slowest - background layer (furthest back)
                     Repeat = true,
                     TexturePath = "res/texture/wcp/1"
                 },
                 new ParallaxPreset.Layer
                 {
-                    Speed = 35f,
+                    Speed = 15f,  // Slow-medium
                     Repeat = true,
                     TexturePath = "res/texture/wcp/2"
                 },
                 new ParallaxPreset.Layer
                 {
-                    Speed = 40f,
+                    Speed = 25f,  // Medium
                     Repeat = true,
                     TexturePath = "res/texture/wcp/3"
                 },
                 new ParallaxPreset.Layer
                 {
-                    Speed = 45f,
+                    Speed = 35f,  // Medium-fast
                     Repeat = true,
                     TexturePath = "res/texture/wcp/4"
                 },
                 new ParallaxPreset.Layer
                 {
-                    Speed = 50f,
+                    Speed = 45f,  // Fastest - foreground layer (closest to camera)
                     Repeat = true,
                     TexturePath = "res/texture/wcp/5"
                 },
