@@ -47,6 +47,8 @@ public class Button : RenderObject, IUpdatable
 
     // Layout
     private FloatRect _totalBounds;
+    private Color _customTextColor;
+    private Color _customPanelColor;
     private System.Single _buttonWidth;
     private Vector2f _position = new(0, 0);
     private System.Single _buttonHeight = DefaultHeight;
@@ -204,6 +206,42 @@ public class Button : RenderObject, IUpdatable
     {
         get => _label.OutlineThickness;
         set => _label.OutlineThickness = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the custom text color. 
+    /// When set, overrides the theme-based text color for normal state.
+    /// Set to null to revert to theme colors.
+    /// </summary>
+    public Color TextColor
+    {
+        get => _customTextColor;
+        set
+        {
+            if (_customTextColor != value)
+            {
+                _customTextColor = value;
+                this.APPLY_TINT();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the custom panel color.
+    /// When set, overrides the theme-based color for normal state.
+    /// Set to null to revert to theme colors.
+    /// </summary>
+    public Color PanelColor
+    {
+        get => _customPanelColor;
+        set
+        {
+            if (_customPanelColor != value)
+            {
+                _customPanelColor = value;
+                this.APPLY_TINT();
+            }
+        }
     }
 
     /// <summary>
@@ -392,7 +430,37 @@ public class Button : RenderObject, IUpdatable
         }
 
         _label.FillColor = _isHovered ? Themes.TextTheme.Hover : Themes.TextTheme.Normal;
-        _panel.SetTintColor(_isHovered ? Themes.PanelTheme.Hover : Themes.PanelTheme.Normal);
+
+        _label.FillColor = _customTextColor != default
+            ? _isHovered ? this.BLEND_COLOR(_customTextColor, Themes.TextTheme.Hover) : _customTextColor
+            : _isHovered ? Themes.TextTheme.Hover : Themes.TextTheme.Normal;
+
+        if (_customPanelColor != default)
+        {
+            _panel.SetTintColor(_isHovered ? this.BLEND_COLOR(_customPanelColor, Themes.PanelTheme.Hover) : _customPanelColor);
+        }
+        else
+        {
+            _panel.SetTintColor(_isHovered ? Themes.PanelTheme.Hover : Themes.PanelTheme.Normal);
+        }
+    }
+
+    /// <summary>
+    /// Blends two colors for hover effect when using custom panel color.
+    /// </summary>
+    /// <param name="baseColor">The base custom color.</param>
+    /// <param name="hoverColor">The hover theme color.</param>
+    /// <returns>A blended color for hover state.</returns>
+    private Color BLEND_COLOR(Color baseColor, Color hoverColor)
+    {
+        const System.Single blendFactor = 0.3f;
+
+        return new Color(
+            (System.Byte)((baseColor.R * (1f - blendFactor)) + (hoverColor.R * blendFactor)),
+            (System.Byte)((baseColor.G * (1f - blendFactor)) + (hoverColor.G * blendFactor)),
+            (System.Byte)((baseColor.B * (1f - blendFactor)) + (hoverColor.B * blendFactor)),
+            baseColor.A
+        );
     }
 
     /// <summary>
