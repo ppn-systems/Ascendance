@@ -23,15 +23,15 @@ public static class Program
     public static void Main()
     {
         // Setup logging
-        NLogixFx.MinimumLevel = LogLevel.Information;
+        NLogixFx.MinimumLevel = LogLevel.Debug;
         System.Threading.CancellationTokenSource cts = new();
 
-        if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
-        {
-            Kernel32.Hide();
-        }
+        //if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
+        //{
+        //    Kernel32.Hide();
+        //}
 
-        AntiCheatMonitor.Instance.Activate(cts.Token);
+        //AntiCheatMonitor.Instance.Activate(cts.Token);
 
         // Create and set application icon
         Image icon = GetImageFromBase64(IconBase64);
@@ -41,7 +41,6 @@ public static class Program
 
         GraphicsEngine.Instance.SetIcon(icon);
         GraphicsEngine.Instance.Launch();
-        AntiCheatMonitor.Instance.Deactivate();
 
         cts.Cancel();
 
