@@ -2,6 +2,7 @@
 
 using Ascendance.Desktop.Scenes.Login.View;
 using Ascendance.Desktop.Scenes.ServerSelection.View;
+using Ascendance.Desktop.Services;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Scenes;
@@ -27,6 +28,11 @@ public sealed class LoginScene : BaseScene
         loginView.BackRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(
                 ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene);
+
+        loginView.SubmitRequested += () =>
+        {
+            Credentials.Save(loginView.Username, loginView.Password);
+        };
 
         base.AddObject(loginView);
         base.AddObject(background);
