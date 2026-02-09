@@ -18,20 +18,25 @@ public sealed class MainScene : BaseScene
 
     protected override void LoadObjects()
     {
+        VersionView versionView = new();
+        ParallaxView parallaxLayerView = new();
+        ScrollingBanner scrollingBannerView = new("⚠ Playing games for more than 180 minutes a day can negatively impact your health ⚠", null, 200f);
         ButtonView buttonView = new()
         {
             IsLoginButtonVisible = false
         };
+
         buttonView.ChangeAccountRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.Login);
+
+        buttonView.NewGameRequested += () =>
+            SceneManager.Instance.ScheduleSceneChange(SceneConstants.NewGame);
 
         buttonView.ServerInfoRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerSelection);
 
-        ParallaxView parallaxLayerView = new();
-        ScrollingBanner scrollingBannerView = new("⚠ Playing games for more than 180 minutes a day can negatively impact your health ⚠", null, 200f);
-
         base.AddObject(buttonView);
+        base.AddObject(versionView);
         base.AddObject(parallaxLayerView);
         base.AddObject(scrollingBannerView);
     }
