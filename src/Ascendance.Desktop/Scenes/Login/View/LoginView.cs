@@ -226,7 +226,7 @@ internal sealed class LoginView : RenderObject
     /// <param name="locked">
     /// <c>true</c> to disable all interactive elements; <c>false</c> to enable them.
     /// </param>
-    public void LockUi(System.Boolean locked)
+    public void SetInteractionEnabled(System.Boolean locked)
     {
         _user.IsEnabled = !locked;
         _pass.IsEnabled = !locked;
@@ -239,12 +239,7 @@ internal sealed class LoginView : RenderObject
     /// Displays a warning message below the password field.
     /// </summary>
     /// <param name="msg">The warning message to display.</param>
-    public void ShowWarning(System.String msg) => _warn.DisplayedString = msg ?? System.String.Empty;
-
-    /// <summary>
-    /// Clears the warning message.
-    /// </summary>
-    public void ClearWarning() => _warn.DisplayedString = System.String.Empty;
+    public void SetWarningMessage(System.String msg) => _warn.DisplayedString = msg ?? System.String.Empty;
 
     #endregion Public Methods
 
