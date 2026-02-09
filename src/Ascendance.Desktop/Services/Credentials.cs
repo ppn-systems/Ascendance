@@ -68,7 +68,7 @@ public static class Credentials
         System.Byte[] plaintext = System.Text.Encoding.UTF8.GetBytes(data);
 
         // Optional: Add AAD (Additional Authenticated Data) for extra context
-        System.Byte[] aad = System.Text.Encoding.UTF8.GetBytes("Ascendance.Desktop.Credentials.V1");
+        System.Byte[] aad = PREPARE_AAD();
 
         // Encrypt using EnvelopeCipher
         System.Byte[] envelope = EnvelopeCipher.Encrypt(
@@ -87,11 +87,12 @@ public static class Credentials
     /// Retrieves and decrypts credentials from local file.
     /// </summary>
     /// <returns>Tuple containing username and password, or null if not found or decryption failed.</returns>
-    public static (System.String Username, System.String Password)? Get()
+    [return: System.Diagnostics.CodeAnalysis.MaybeNull]
+    public static (System.String Username, System.String Password) Get()
     {
         if (!System.IO.File.Exists(CredentialFilePath))
         {
-            return null;
+            return default;
         }
 
         try
@@ -100,7 +101,7 @@ public static class Credentials
             System.Byte[] envelope = System.IO.File.ReadAllBytes(CredentialFilePath);
 
             // AAD must match what was used during encryption
-            System.Byte[] aad = System.Text.Encoding.UTF8.GetBytes("Ascendance.Desktop.Credentials.V1");
+            System.Byte[] aad = PREPARE_AAD();
 
             // Attempt to decrypt
             System.Boolean success = EnvelopeCipher.Decrypt(
@@ -113,7 +114,7 @@ public static class Credentials
             if (!success || plaintext == null)
             {
                 System.Diagnostics.Debug.WriteLine("Decryption failed - authentication or parsing error");
-                return null;
+                return default;
             }
 
             // Parse decrypted data
@@ -126,18 +127,42 @@ public static class Credentials
             }
 
             System.Diagnostics.Debug.WriteLine("Invalid credential format after decryption");
-            return null;
+            return default;
         }
         catch (System.Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Failed to get credentials: {ex.Message}");
-            return null;
+            return default;
         }
     }
+
+    /// <summary>
+    /// Retrieves and decrypts credentials from local file.
+    /// </summary>
+    /// <returns>Username, or null if not found or decryption failed.</returns>
+    [return: System.Diagnostics.CodeAnalysis.MaybeNull]
+    public static System.String GetUsername() => Get().Username ?? null;
+
+    /// <summary>
+    /// Retrieves and decrypts credentials from local file.
+    /// </summary>
+    /// <returns>Password, or null if not found or decryption failed.</returns>
+    [return: System.Diagnostics.CodeAnalysis.MaybeNull]
+    public static System.String GetPassword() => Get().Password ?? null;
 
     #endregion APIs
 
     #region Key Derivation
+
+    /// <summary>
+    /// Prepares Additional Authenticated Data (AAD) for binding encryption context.
+    /// </summary>
+    private static System.Byte[] PREPARE_AAD()
+    {
+        // Include version and purpose for context binding
+        System.String aadString = $"Ascendance.Desktop.Credentials|Version:1.0|Machine:{System.Environment.MachineName}";
+        return System.Text.Encoding.UTF8.GetBytes(aadString);
+    }
 
     /// <summary>
     /// Derives a unique 256-bit key based on machine and user identity.
@@ -146,23 +171,37 @@ public static class Credentials
     /// <returns>32-byte key suitable for CHACHA20.</returns>
     private static System.Byte[] DERIVE_KEY()
     {
-        // Combine multiple machine/user-specific values
-        System.String seed = $"{System.Environment.MachineName}-{System.Environment.UserName}-{System.Environment.OSVersion.Platform}-Ascendance-Key-V1";
-        System.Byte[] seedBytes = System.Text.Encoding.UTF8.GetBytes(seed);
+        // Gather machine/user-specific entropy
+        System.String entropy = $"{System.Environment.MachineName}|{System.Environment.UserName}|{System.Environment.OSVersion.Platform}|Ascendance-V1";
+        System.Byte[] entropyBytes = System.Text.Encoding.UTF8.GetBytes(entropy);
 
-        // Simple deterministic key derivation (32 bytes for CHACHA20)
-        // Using XOR folding to create a 32-byte key from variable-length seed
+        // Initialize key with entropy
         System.Byte[] key = new System.Byte[32];
 
-        for (System.Int32 i = 0; i < seedBytes.Length; i++)
+        // Seed key with entropy using XOR folding
+        for (System.Int32 i = 0; i < entropyBytes.Length; i++)
         {
-            key[i % 32] ^= seedBytes[i];
+            key[i % 32] ^= entropyBytes[i];
         }
 
-        // Additional mixing for better distribution
-        for (System.Int32 i = 0; i < 32; i++)
+        // Iterative mixing (simplified PBKDF concept)
+        const System.Int32 iterations = 1000;
+
+        for (System.Int32 iter = 0; iter < iterations; iter++)
         {
-            key[i] = (System.Byte)(((key[i] * 131) + (i * 17)) & 0xFF);
+            // Mix each byte with neighbors and iteration count
+            for (System.Int32 i = 0; i < 32; i++)
+            {
+                System.Int32 prev = key[(i + 31) % 32];
+                System.Int32 curr = key[i];
+                System.Int32 next = key[(i + 1) % 32];
+
+                // Simple mixing function
+                key[i] = (System.Byte)((prev ^ curr ^ next ^ (iter & 0xFF)) & 0xFF);
+
+                // Additional non-linear mixing
+                key[i] = (System.Byte)(((key[i] * 131) + (i * 17) + (iter % 256)) & 0xFF);
+            }
         }
 
         return key;
