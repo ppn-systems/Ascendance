@@ -49,8 +49,8 @@ public static class Credentials
     /// </summary>
     /// <param name="username">Username to save.</param>
     /// <param name="password">Password to save.</param>
-    /// <exception cref="System.ArgumentNullException">Thrown when username or password is null.</exception>
     /// <exception cref="System.IO.IOException">Thrown when file operation fails.</exception>
+    /// <exception cref="System.ArgumentNullException">Thrown when username or password is null.</exception>
     public static void Save(System.String username, System.String password)
     {
         if (System.String.IsNullOrWhiteSpace(username))
