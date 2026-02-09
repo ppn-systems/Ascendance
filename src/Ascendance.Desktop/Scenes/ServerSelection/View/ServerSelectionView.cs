@@ -178,7 +178,7 @@ internal sealed class ServerSelectionView : RenderObject
             System.Single btnY = serverBtnStartY + (row * (ServerBtnHeight + ServerBtnSpacingY));
 
             System.Int32 serverNum = i + 1;
-            _serverButtons[i] = new Button($"Máy chủ {serverNum}", null, ServerBtnWidth)
+            _serverButtons[i] = new Button($"Server {serverNum}", null, ServerBtnWidth)
             {
                 FontSize = 20,
                 Height = ServerBtnHeight,
