@@ -360,23 +360,14 @@ internal sealed class LoginView : RenderObject
     private void LAYOUT()
     {
         // Position title
-        _title.Position = new Vector2f(
-            _panelPos.X + TitleOffsetX,
-            _panelPos.Y + TitleOffsetY);
+        _title.Position = new Vector2f(_panelPos.X + TitleOffsetX, _panelPos.Y + TitleOffsetY);
 
         // Position labels
-        _uLabel.Position = new Vector2f(
-            _panelPos.X + TitleOffsetX,
-            _panelPos.Y + LabelUserY);
-
-        _pLabel.Position = new Vector2f(
-            _panelPos.X + TitleOffsetX,
-            _panelPos.Y + LabelPassY);
+        _uLabel.Position = new Vector2f(_panelPos.X + TitleOffsetX, _panelPos.Y + LabelUserY);
+        _pLabel.Position = new Vector2f(_panelPos.X + TitleOffsetX, _panelPos.Y + LabelPassY);
 
         // Position warning text
-        _warn.Position = new Vector2f(
-            _panelPos.X + TitleOffsetX,
-            _panelPos.Y + WarnOffsetY);
+        _warn.Position = new Vector2f(_panelPos.X + TitleOffsetX, _panelPos.Y + WarnOffsetY);
 
         // Calculate button row position (centered horizontally, near bottom)
         const System.Single totalBtnWidth = (BtnWidth * 2f) + BtnSpacing;
