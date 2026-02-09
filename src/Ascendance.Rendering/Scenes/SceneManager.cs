@@ -20,6 +20,11 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
     #region Events
 
     /// <summary>
+    /// Invoked when objects are spawned or destroyed, requiring render cache update.
+    /// </summary>
+    public event System.EventHandler ObjectsModified;
+
+    /// <summary>
     /// This event is invoked at the beginning of the next frame after all non-persisting objects have been queued to be destroyed
     /// and after the new objects have been queued to spawn, but before they are initialized.
     /// </summary>
@@ -47,9 +52,11 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void Update(System.Single deltaTime)
     {
-        System.Threading.Tasks.Parallel.ForEach(_activeSceneObjects, o =>
+        SceneObject[] snapshot = [.. _activeSceneObjects];
+
+        System.Threading.Tasks.Parallel.ForEach(snapshot, o =>
         {
-            if (o.IsEnabled)
+            if (o.IsEnabled && _activeSceneObjects.Contains(o)) // Check still active
             {
                 o.Update(deltaTime);
             }
@@ -224,19 +231,15 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
             return;
         }
 
-        if (_nextScene == _currentScene?.Name)
-        {
-            _nextScene = "";
-            NLogixFx.Debug(message: $"Requested scene change to the same scene [{_nextScene}], no action taken.", source: "SceneManager");
-
-            return;
-        }
+        System.String targetScene = _nextScene;
+        System.String lastScene = _currentScene?.Name ?? "";
 
         try
         {
             CLEAR_SCENE();
-            System.String lastScene = _currentScene?.Name ?? "";
-            LOAD_SCENE(_nextScene);
+            LOAD_SCENE(targetScene);
+
+            _nextScene = "";
 
             NLogixFx.Info(message: $"Scene changed from [{lastScene}] to [{_nextScene}].", source: "SceneManager");
             SceneChanged?.Invoke(this, new SceneChangedEventArgs(lastScene, _nextScene));
@@ -244,11 +247,22 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
         catch (System.Exception ex)
         {
             NLogixFx.Error(message: $"Error occurred during scene change: {ex}", source: "SceneManager");
+
+            if (!System.String.IsNullOrEmpty(lastScene))
+            {
+                try
+                {
+                    LOAD_SCENE(lastScene);
+                    _nextScene = "";
+                    NLogixFx.Warn(message: $"Rolled back to scene [{lastScene}]", source: "SceneManager");
+                }
+                catch (System.Exception rollbackEx)
+                {
+                    NLogixFx.Error(message: $"Rollback also failed: {rollbackEx}", source: "SceneManager");
+                }
+            }
+
             throw;
-        }
-        finally
-        {
-            _nextScene = "";
         }
     }
 
@@ -256,6 +270,8 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessPendingSpawn()
     {
+        System.Boolean hasChanges = this.PendingSpawnObjects.Count > 0;
+
         foreach (SceneObject q in this.PendingSpawnObjects)
         {
             if (!_activeSceneObjects.Add(q))
@@ -273,12 +289,19 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
                 o.InternalInitialize();
             }
         }
+
+        if (hasChanges)
+        {
+            ObjectsModified?.Invoke(this, System.EventArgs.Empty);
+        }
     }
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal void ProcessPendingDestroy()
     {
+        System.Boolean hasChanges = this.PendingDestroyObjects.Count > 0;
+
         foreach (SceneObject o in this.PendingDestroyObjects)
         {
             if (!_activeSceneObjects.Remove(o))
@@ -290,6 +313,11 @@ public class SceneManager : SingletonBase<SceneManager>, IUpdatable
         }
 
         this.PendingDestroyObjects.Clear();
+
+        if (hasChanges)
+        {
+            ObjectsModified?.Invoke(this, System.EventArgs.Empty);
+        }
     }
 
     /// <summary>
