@@ -11,7 +11,7 @@ namespace Ascendance.Desktop.Services;
 /// Uses CHACHA20-Poly1305 AEAD for authenticated encryption.
 /// No external dependencies beyond Nalix.Shared.Security.
 /// </summary>
-public static class Credentials
+public static class CredentialService
 {
     #region Fields
 
@@ -27,7 +27,7 @@ public static class Credentials
 
     #region Constructor
 
-    static Credentials() => CredentialFilePath = System.IO.Path.Combine(Directories.DataDirectory, "credentials.dat");
+    static CredentialService() => CredentialFilePath = System.IO.Path.Combine(Directories.DataDirectory, "credentials.dat");
 
     #endregion Constructor
 

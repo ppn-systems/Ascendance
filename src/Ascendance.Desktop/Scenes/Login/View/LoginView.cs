@@ -170,7 +170,7 @@ internal sealed class LoginView : RenderObject
             FillColor = WarnColor
         };
 
-        (System.String username, System.String password) = Credentials.Get();
+        (System.String username, System.String password) = CredentialService.Get();
 
         // Initialize username input field
         _user = new TextInputField(

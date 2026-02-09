@@ -37,7 +37,7 @@ public sealed class LoginScene : BaseScene
 
             if (loginView.Username != System.String.Empty && loginView.Password != System.String.Empty)
             {
-                Credentials.Save(loginView.Username, loginView.Password);
+                CredentialService.Save(loginView.Username, loginView.Password);
             }
         };
 
@@ -46,7 +46,7 @@ public sealed class LoginScene : BaseScene
             // Open the password recovery webpage
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                FileName = "https://www.ascendancegame.com/recover-password",
+                FileName = "https://www.ascendance.com/recover-password",
                 UseShellExecute = true
             });
         };

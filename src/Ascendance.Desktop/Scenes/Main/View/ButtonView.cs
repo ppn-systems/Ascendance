@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Desktop.Services;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.UI.Controls;
@@ -58,31 +59,6 @@ public class ButtonView : RenderObject
 
     #endregion Events
 
-    #region Properties
-
-    /// <summary>
-    /// Login button visibility property.
-    /// </summary>
-    public System.Boolean IsLoginButtonVisible
-    {
-        get => _login.IsVisible;
-        set
-        {
-            if (value)
-            {
-                _login.Show();
-            }
-            else if (!value)
-            {
-                _login.Hide();
-            }
-
-            LAYOUT_BUTTONS();
-        }
-    }
-
-    #endregion Properties
-
     #region Constructor
 
     /// <summary>
@@ -91,7 +67,13 @@ public class ButtonView : RenderObject
     /// </summary>
     public ButtonView()
     {
-        _login = new Button("Login");
+        System.String user = CredentialService.GetUsername();
+        if (user != null)
+        {
+            _login = new Button($"Login: {user}");
+            _login.Show();
+        }
+
         _newGame = new Button("New game");
         _serverInfo = new Button("Server");
         _changeAccount = new Button("Change account");
