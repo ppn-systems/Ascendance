@@ -13,7 +13,12 @@ public static class SceneConstants
     public const System.String Login = "login";
 
     /// <summary>
-    /// SScene hiển thị thông tin về máy chủ trò chơi.
+    /// Scene bắt đầu trò chơi mới.
+    /// </summary>
+    public const System.String NewGame = "new_game";
+
+    /// <summary>
+    /// Scene hiển thị thông tin về máy chủ trò chơi.
     /// </summary>
     public const System.String ServerSelection = "server_selection";
 }

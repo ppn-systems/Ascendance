@@ -53,7 +53,6 @@ internal sealed class LoginView : RenderObject
     private static readonly Color FieldPanel = new(180, 180, 180);
     private static readonly Color LabelColor = new(240, 240, 240);
     private static readonly Color BgPanelColor = new(20, 20, 20, 235);
-    private static readonly Color BackdropColor = new(100, 100, 100, 110);
 
     // Font sizes (kích thước chữ)
     private const System.Single WarnFont = 14f;           // Giữ warning nhỏ
@@ -75,8 +74,8 @@ internal sealed class LoginView : RenderObject
     private const System.Single FieldPassTop = 155f;      // Điều chỉnh field Password xuống
 
     // Button layout (vị trí nút)
-    private const System.Single BtnWidth = 160f;          // Tăng width button lên
-    private const System.Single BtnSpacing = 120f;         // Tăng khoảng cách giữa 2 button
+    private const System.Single BtnWidth = 170f;          // Tăng width button lên
+    private const System.Single BtnSpacing = 100f;         // Tăng khoảng cách giữa 2 button
     private const System.Single BtnRowOffsetFromBottom = 90f;  // Đẩy buttons lên gần panel hơn
 
     // Warning message (thông báo lỗi)
@@ -380,12 +379,12 @@ internal sealed class LoginView : RenderObject
             _panelPos.Y + WarnOffsetY);
 
         // Calculate button row position (centered horizontally, near bottom)
-        System.Single totalBtnWidth = (BtnWidth * 2f) + BtnSpacing;
+        const System.Single totalBtnWidth = (BtnWidth * 2f) + BtnSpacing;
         System.Single btnStartX = _panelPos.X + ((_actualPanelSize.X - totalBtnWidth) * 0.5f);
         System.Single btnY = _panelPos.Y + _actualPanelSize.Y - BtnRowOffsetFromBottom;
 
         _backBtn.Position = new Vector2f(btnStartX, btnY);
-        _loginBtn.Position = new Vector2f(btnStartX + BtnWidth + BtnSpacing, btnY);
+        _loginBtn.Position = new Vector2f(btnStartX + BtnWidth + BtnSpacing - 20f, btnY);
     }
 
     /// <summary>
