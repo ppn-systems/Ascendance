@@ -30,7 +30,7 @@ public sealed class MainScene : BaseScene
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.CharCreation);
 
         buttonView.ServerInfoRequested += () =>
-            SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerSelection);
+            SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerSelect);
 
         base.AddObject(buttonView);
         base.AddObject(versionView);

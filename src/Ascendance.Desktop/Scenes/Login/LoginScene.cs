@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Desktop.Scenes.Login.View;
-using Ascendance.Desktop.Scenes.ServerSelection.View;
+using Ascendance.Desktop.Scenes.ServerSelect.View;
 using Ascendance.Desktop.Services;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;

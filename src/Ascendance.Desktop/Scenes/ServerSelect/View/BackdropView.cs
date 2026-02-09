@@ -6,7 +6,7 @@ using Ascendance.Rendering.Managers;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Desktop.Scenes.ServerSelection.View;
+namespace Ascendance.Desktop.Scenes.ServerSelect.View;
 
 /// <summary>
 /// Manages the background image and dark overlay for the server selection screen.

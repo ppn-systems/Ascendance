@@ -8,7 +8,7 @@ using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Desktop.Scenes.ServerSelection.View;
+namespace Ascendance.Desktop.Scenes.ServerSelect.View;
 
 /// <summary>
 /// Represents the title panel at the top of the server selection screen.

@@ -1,17 +1,17 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Desktop.Scenes.ServerSelection.View;
+using Ascendance.Desktop.Scenes.ServerSelect.View;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Scenes;
 using Nalix.Framework.Configuration;
 
-namespace Ascendance.Desktop.Scenes.ServerSelection;
+namespace Ascendance.Desktop.Scenes.ServerSelect;
 
 [DynamicLoad]
-public sealed class ServerSelectionScene : BaseScene
+public sealed class ServerSelectScene : BaseScene
 {
-    public ServerSelectionScene() : base(SceneConstants.ServerSelection)
+    public ServerSelectScene() : base(SceneConstants.ServerSelect)
     {
     }
 
@@ -19,7 +19,7 @@ public sealed class ServerSelectionScene : BaseScene
     {
         HeaderView title = new();
         BackdropView background = new();
-        ServerSelectionView serverInfo = new();
+        ServerSelectView serverInfo = new();
 
         serverInfo.BackRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(

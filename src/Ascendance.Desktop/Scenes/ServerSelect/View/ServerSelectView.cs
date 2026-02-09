@@ -12,12 +12,12 @@ using Nalix.Framework.Configuration;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Desktop.Scenes.ServerSelection.View;
+namespace Ascendance.Desktop.Scenes.ServerSelect.View;
 
 /// <summary>
 /// Represents the server selection screen where players choose which game server to join.
 /// </summary>
-internal sealed class ServerSelectionView : RenderObject
+internal sealed class ServerSelectView : RenderObject
 {
     #region Events
 
@@ -109,9 +109,9 @@ internal sealed class ServerSelectionView : RenderObject
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ServerSelectionView"/> class.
+    /// Initializes a new instance of the <see cref="ServerSelectView"/> class.
     /// </summary>
-    public ServerSelectionView()
+    public ServerSelectView()
     {
         this.SetZIndex(1);
         this.IsEnabled = true;
