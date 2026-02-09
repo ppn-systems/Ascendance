@@ -17,26 +17,42 @@ public sealed class LoginScene : BaseScene
     {
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Roslynator", "RCS1021:Convert lambda expression body to expression body", Justification = "<Pending>")]
     protected override void LoadObjects()
     {
         LoginView loginView = new();
         BackdropView background = new();
+        BackButtonView backButtonView = new();
 
         loginView.SetZIndex(1);
         background.SetZIndex(0);
+        backButtonView.SetZIndex(1);
 
-        loginView.BackRequested += () =>
+        backButtonView.BackRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(
                 ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene);
 
         loginView.SubmitRequested += () =>
         {
-            Credentials.Save(loginView.Username, loginView.Password);
+            System.Console.WriteLine($"Login submitted with username: {loginView.Username}");
+
+            if (loginView.Username != System.String.Empty && loginView.Password != System.String.Empty)
+            {
+                Credentials.Save(loginView.Username, loginView.Password);
+            }
+        };
+
+        loginView.ForgetPasswordRequested += () =>
+        {
+            // Open the password recovery webpage
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "https://www.ascendancegame.com/recover-password",
+                UseShellExecute = true
+            });
         };
 
         base.AddObject(loginView);
         base.AddObject(background);
+        base.AddObject(backButtonView);
     }
 }

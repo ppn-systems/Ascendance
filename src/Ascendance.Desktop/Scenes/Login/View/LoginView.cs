@@ -22,14 +22,14 @@ internal sealed class LoginView : RenderObject
     #region Events
 
     /// <summary>
-    /// Raised when the user requests to navigate back.
-    /// </summary>
-    public event System.Action BackRequested;
-
-    /// <summary>
     /// Raised when the user requests to submit the login form.
     /// </summary>
     public event System.Action SubmitRequested;
+
+    /// <summary>
+    /// Raised when the user requests to recover their password.
+    /// </summary>
+    public event System.Action ForgetPasswordRequested;
 
     /// <summary>
     /// Raised when the user toggles between username and password fields using Tab.
@@ -93,8 +93,8 @@ internal sealed class LoginView : RenderObject
     private readonly Text _title;
     private readonly Text _uLabel;
     private readonly Text _pLabel;
-    private readonly Button _backBtn;
     private readonly Button _loginBtn;
+    private readonly Button _forgetpassBtn;
     private readonly Texture _texture;
     private readonly Vector2f _panelPos;
     private readonly PasswordField _pass;
@@ -205,13 +205,15 @@ internal sealed class LoginView : RenderObject
         };
 
         // Initialize buttons
+        _forgetpassBtn = new Button("Forgot?", null, BtnWidth);
+        _forgetpassBtn.SetZIndex(2);
+        _forgetpassBtn.FontSize = 14;
+        _forgetpassBtn.RegisterClickHandler(this.ON_FORGETPASS_CLICKED);
+
         _loginBtn = new Button("Login", null, BtnWidth);
         _loginBtn.SetZIndex(2);
+        _loginBtn.FontSize = 14;
         _loginBtn.RegisterClickHandler(this.ON_LOGIN_CLICKED);
-
-        _backBtn = new Button("Back", null, BtnWidth);
-        _backBtn.SetZIndex(2);
-        _backBtn.RegisterClickHandler(this.ON_BACK_CLICKED);
 
         this.LAYOUT();
     }
@@ -230,9 +232,9 @@ internal sealed class LoginView : RenderObject
     {
         _user.IsEnabled = !locked;
         _pass.IsEnabled = !locked;
-        _backBtn.IsEnabled = !locked;
         _loginBtn.IsEnabled = !locked;
-        _loginBtn.Text = locked ? "Signing in..." : "Sign in";
+        _forgetpassBtn.IsEnabled = !locked;
+        _loginBtn.Text = locked ? "Signing in..." : "Login";
     }
 
     /// <summary>
@@ -261,11 +263,6 @@ internal sealed class LoginView : RenderObject
             this.SubmitRequested?.Invoke();
         }
     }
-
-    /// <summary>
-    /// Handles the Escape key press: triggers back navigation.
-    /// </summary>
-    public void OnEscape() => this.BackRequested?.Invoke();
 
     /// <summary>
     /// Handles the Tab key press: toggles focus between username and password fields.
@@ -312,8 +309,8 @@ internal sealed class LoginView : RenderObject
 
         _user.Update(dt);
         _pass.Update(dt);
-        _backBtn.Update(dt);
         _loginBtn.Update(dt);
+        _forgetpassBtn.Update(dt);
     }
 
     /// <summary>
@@ -330,8 +327,8 @@ internal sealed class LoginView : RenderObject
         _bgPanel.Draw(target);
         _user.Draw(target);
         _pass.Draw(target);
-        _backBtn.Draw(target);
         _loginBtn.Draw(target);
+        _forgetpassBtn.Draw(target);
 
         target.Draw(_title);
         target.Draw(_uLabel);
@@ -369,7 +366,7 @@ internal sealed class LoginView : RenderObject
         System.Single btnStartX = _panelPos.X + ((_actualPanelSize.X - totalBtnWidth) * 0.5f);
         System.Single btnY = _panelPos.Y + _actualPanelSize.Y - BtnRowOffsetFromBottom;
 
-        _backBtn.Position = new Vector2f(btnStartX, btnY);
+        _forgetpassBtn.Position = new Vector2f(btnStartX, btnY);
         _loginBtn.Position = new Vector2f(btnStartX + BtnWidth + BtnSpacing - 20f, btnY);
     }
 
@@ -391,9 +388,9 @@ internal sealed class LoginView : RenderObject
     private void ON_LOGIN_CLICKED() => this.SubmitRequested?.Invoke();
 
     /// <summary>
-    /// Handles the back button click event.
+    /// Handles the forget password button click event.
     /// </summary>
-    private void ON_BACK_CLICKED() => this.BackRequested?.Invoke();
+    private void ON_FORGETPASS_CLICKED() => this.ForgetPasswordRequested?.Invoke();
 
     /// <summary>
     /// Handles keyboard input for Tab, Enter, and Escape keys.
@@ -410,12 +407,6 @@ internal sealed class LoginView : RenderObject
         if (KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Enter))
         {
             this.OnEnter();
-        }
-
-        // Escape: Go back
-        if (KeyboardManager.Instance.IsKeyPressed(Keyboard.Key.Escape))
-        {
-            this.OnEscape();
         }
 
         // Optional: Ctrl+H to toggle password visibility
