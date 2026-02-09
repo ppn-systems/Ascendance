@@ -35,7 +35,7 @@ public class TextInputField : RenderObject, IFocusable
     private const System.Single CaretBlinkPeriod = 0.5f;
     private const System.Single KeyRepeatNextDelay = 0.05f;
     private const System.Single KeyRepeatFirstDelay = 0.35f;
-    private const System.Single DefaultCaretWidth = 1f;
+    private const System.Single DefaultCaretWidth = 3f;
     private const System.Single CaretYOffset = 2f;
     private const System.Single MinCaretWidth = 0.5f;
     private const System.Single MinSizeOffset = 1f;
@@ -391,7 +391,14 @@ public class TextInputField : RenderObject, IFocusable
 
         if (_hitBox.Contains(mp.X, mp.Y))
         {
+            System.Boolean wasFocused = this.Focused;
             FocusManager.Instance.RequestFocus(this);
+
+            if (!wasFocused || this.Focused)
+            {
+                _caretTimer = 0f;
+                _caretVisible = true;
+            }
         }
         else
         {
@@ -546,12 +553,11 @@ public class TextInputField : RenderObject, IFocusable
     {
         System.String visible = _text.DisplayedString;
         System.Int32 visibleCaret = System.Math.Clamp(_caretIndex - _scrollStart, 0, visible.Length);
-        Vector2f caretPos = _measure.FindCharacterPos((System.UInt32)visibleCaret);
+        _measure.DisplayedString = visible;
+        Vector2f caretLocalPos = _measure.FindCharacterPos((System.UInt32)visibleCaret);
 
         _caret.Size = new Vector2f(_caretWidth, _fontSize);
-        _caret.Position = new Vector2f(
-            _text.Position.X + caretPos.X - _measure.Position.X,
-            _text.Position.Y + CaretYOffset);
+        _caret.Position = new Vector2f(_text.Position.X + caretLocalPos.X, _text.Position.Y + CaretYOffset);
     }
 
     /// <summary>
