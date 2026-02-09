@@ -145,9 +145,10 @@ internal sealed class LoginView : RenderObject
         _panelPos = GET_CENTERED_POSITION(_actualPanelSize);
 
         // Initialize background panel
-        _bgPanel = new NineSlicePanel(_texture, Border, SrcRect).SetSize(_actualPanelSize)
-                                                                .SetPosition(_panelPos)
-                                                                .SetTintColor(BgPanelColor);
+        _bgPanel = new NineSlicePanel(_texture, Border, SrcRect)
+            .SetSize(_actualPanelSize)
+            .SetPosition(_panelPos)
+            .SetTintColor(BgPanelColor);
 
         // Initialize text labels
         _title = new Text("LOGIN", _font, (System.UInt32)TitleFont)
@@ -174,46 +175,38 @@ internal sealed class LoginView : RenderObject
 
         // Initialize username input field
         _user = new TextInputField(
-            _texture,
-            Border,
-            SrcRect,
-            new Vector2f(FieldWidth, FieldHeight),
-            new Vector2f(_panelPos.X + FieldLeft, _panelPos.Y + FieldUserTop),
-            _font,
-            (System.UInt32)FieldFont)
+            _texture, Border, SrcRect, new Vector2f(FieldWidth, FieldHeight),
+            new Vector2f(_panelPos.X + FieldLeft, _panelPos.Y + FieldUserTop), _font, (System.UInt32)FieldFont)
         {
             Text = username,
-            PanelColor = FieldPanel,
             TextColor = FieldText,
+            PanelColor = FieldPanel,
             Placeholder = "Enter username"
         };
 
         // Initialize password input field
         _pass = new PasswordField(
-            _texture,
-            Border,
-            SrcRect,
-            new Vector2f(FieldWidth, FieldHeight),
-            new Vector2f(_panelPos.X + FieldLeft, _panelPos.Y + FieldPassTop),
-            _font,
-            (System.UInt32)FieldFont)
+            _texture, Border, SrcRect, new Vector2f(FieldWidth, FieldHeight),
+            new Vector2f(_panelPos.X + FieldLeft, _panelPos.Y + FieldPassTop), _font, (System.UInt32)FieldFont)
         {
             Text = password,
-            PanelColor = FieldPanel,
             TextColor = FieldText,
+            PanelColor = FieldPanel,
             Placeholder = "Enter password"
         };
 
         // Initialize buttons
-        _forgetpassBtn = new Button("Forgot?", null, BtnWidth);
-        _forgetpassBtn.SetZIndex(2);
-        _forgetpassBtn.FontSize = 14;
-        _forgetpassBtn.RegisterClickHandler(this.ON_FORGETPASS_CLICKED);
-
         _loginBtn = new Button("Login", null, BtnWidth);
+        _forgetpassBtn = new Button("Forgot?", null, BtnWidth);
+
         _loginBtn.SetZIndex(2);
+        _forgetpassBtn.SetZIndex(2);
+
         _loginBtn.FontSize = 14;
+        _forgetpassBtn.FontSize = 14;
+
         _loginBtn.RegisterClickHandler(this.ON_LOGIN_CLICKED);
+        _forgetpassBtn.RegisterClickHandler(this.ON_FORGETPASS_CLICKED);
 
         this.LAYOUT();
     }
@@ -273,13 +266,13 @@ internal sealed class LoginView : RenderObject
 
         if (movingToPassword)
         {
-            _pass.OnFocusGained();
             _user.OnFocusLost();
+            _pass.OnFocusGained();
         }
         else
         {
-            _user.OnFocusGained();
             _pass.OnFocusLost();
+            _user.OnFocusGained();
         }
 
         this.TabToggled?.Invoke(movingToPassword);

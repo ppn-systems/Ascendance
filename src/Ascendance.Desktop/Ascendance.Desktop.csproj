@@ -26,7 +26,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Nalix.Logging" Version="9.9.0" />
 		<PackageReference Include="Nalix.Framework" Version="9.9.0" />
 		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
 		<ProjectReference Include="..\Ascendance.Physics\Ascendance.Physics.csproj" />

@@ -26,8 +26,7 @@ public static class Program
         NLogixFx.MinimumLevel = LogLevel.Debug;
         System.Threading.CancellationTokenSource cts = new();
 
-        if (!GraphicsEngine.Instance.IsDebugMode &&
-             System.OperatingSystem.IsWindows())
+        if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
         {
             Kernel32.Hide();
         }
