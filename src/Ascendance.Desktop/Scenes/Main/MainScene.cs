@@ -27,7 +27,7 @@ public sealed class MainScene : BaseScene
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.Login);
 
         buttonView.NewGameRequested += () =>
-            SceneManager.Instance.ScheduleSceneChange(SceneConstants.NewGame);
+            SceneManager.Instance.ScheduleSceneChange(SceneConstants.CharCreation);
 
         buttonView.ServerInfoRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerSelection);

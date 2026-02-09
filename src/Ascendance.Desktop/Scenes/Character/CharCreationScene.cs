@@ -3,12 +3,12 @@
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Scenes;
 
-namespace Ascendance.Desktop.Scenes.NewGame;
+namespace Ascendance.Desktop.Scenes.Character;
 
 [DynamicLoad]
-public class NewGameScene : BaseScene
+public class CharCreationScene : BaseScene
 {
-    public NewGameScene() : base(SceneConstants.NewGame)
+    public CharCreationScene() : base(SceneConstants.CharCreation)
     {
     }
 

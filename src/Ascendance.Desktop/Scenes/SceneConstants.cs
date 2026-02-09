@@ -15,7 +15,7 @@ public static class SceneConstants
     /// <summary>
     /// Scene bắt đầu trò chơi mới.
     /// </summary>
-    public const System.String NewGame = "new_game";
+    public const System.String CharCreation = "charactor_creation";
 
     /// <summary>
     /// Scene hiển thị thông tin về máy chủ trò chơi.

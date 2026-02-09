@@ -33,4 +33,8 @@
 		<ProjectReference Include="..\Ascendance.Security\Ascendance.Security.csproj" />
 		<ProjectReference Include="..\Ascendance.Rendering\Ascendance.Rendering.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Scenes\Game\" />
+	</ItemGroup>
 </Project>
