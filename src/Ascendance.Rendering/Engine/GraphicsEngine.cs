@@ -183,11 +183,14 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
     public void Launch(System.String[] strings = null)
     {
+        const System.Single MAX_ACCUMULATOR = 0.25f;
+        const System.Int32 MAX_UPDATES_PER_FRAME = 5;
         System.Single accumulator = 0f;
         TimeService time = InstanceManager.Instance.GetOrCreateInstance<TimeService>();
 
         SceneManager.Instance.InitializeScenes();
         SceneManager.Instance.SceneChanged += (sender, args) => _renderCacheDirty = true;
+        SceneManager.Instance.ObjectsModified += (sender, args) => _renderCacheDirty = true;
 
         System.Threading.Thread.Sleep(INITIAL_SLEEP_MS);
 
@@ -200,11 +203,22 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
 
                 time.Update();
 
-                accumulator += time.Current.DeltaTime;
-                while (accumulator >= time.FixedDeltaTime)
+                System.Int32 updateIterations = 0;
+                accumulator += System.Math.Min(time.Current.DeltaTime, MAX_ACCUMULATOR);
+
+                while (accumulator >= time.FixedDeltaTime &&
+                       updateIterations < MAX_UPDATES_PER_FRAME)
                 {
                     this.Update(time.FixedDeltaTime);
                     accumulator -= time.FixedDeltaTime;
+                    updateIterations++;
+                }
+
+                // If we hit the max, reset accumulator
+                if (updateIterations >= MAX_UPDATES_PER_FRAME)
+                {
+                    NLogixFx.Warn(message: "Frame took too long, resetting accumulator", source: "GraphicsEngine");
+                    accumulator = 0f;
                 }
 
                 this.RenderWindow.Clear();
