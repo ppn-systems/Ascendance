@@ -97,7 +97,14 @@ public abstract class RenderObject : SceneObject, IRenderable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     [return: System.Diagnostics.CodeAnalysis.NotNull]
     public static System.Int32 CompareZIndex(RenderObject r1, RenderObject r2)
-        => r1 == null && r2 == null ? 0 : r1 == null ? -1 : r2 == null ? 1 : r1._zIndex - r2._zIndex;
+    {
+        if (ReferenceEquals(r1, r2))
+        {
+            return 0;
+        }
+
+        return r1 is null ? -1 : r2 is null ? 1 : r1._zIndex.CompareTo(r2._zIndex);
+    }
 
     #endregion APIs
 }
