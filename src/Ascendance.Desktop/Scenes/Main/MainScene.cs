@@ -26,9 +26,9 @@ public sealed class MainScene : BaseScene
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.Login);
 
         buttonView.ServerInfoRequested += () =>
-            SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerInfo);
+            SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerSelection);
 
-        ParallaxLayerView parallaxLayerView = new();
+        ParallaxView parallaxLayerView = new();
         ScrollingBanner scrollingBannerView = new("⚠ Playing games for more than 180 minutes a day can negatively impact your health ⚠", null, 200f);
 
         base.AddObject(buttonView);

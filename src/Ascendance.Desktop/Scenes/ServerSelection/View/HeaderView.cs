@@ -8,12 +8,12 @@ using Ascendance.Rendering.Layout;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Desktop.Scenes.ServerInfo.View;
+namespace Ascendance.Desktop.Scenes.ServerSelection.View;
 
 /// <summary>
 /// Represents the title panel at the top of the server selection screen.
 /// </summary>
-internal sealed class TitleView : RenderObject
+internal sealed class HeaderView : RenderObject
 {
     #region Constants
 
@@ -37,9 +37,9 @@ internal sealed class TitleView : RenderObject
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TitleView"/> class.
+    /// Initializes a new instance of the <see cref="HeaderView"/> class.
     /// </summary>
-    public TitleView()
+    public HeaderView()
     {
         this.SetZIndex(1);
         Font font = EmbeddedAssets.JetBrainsMono.ToFont();

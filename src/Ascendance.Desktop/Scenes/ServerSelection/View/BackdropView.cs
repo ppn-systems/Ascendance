@@ -6,12 +6,12 @@ using Ascendance.Rendering.Managers;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Desktop.Scenes.ServerInfo.View;
+namespace Ascendance.Desktop.Scenes.ServerSelection.View;
 
 /// <summary>
 /// Manages the background image and dark overlay for the server selection screen.
 /// </summary>
-public sealed class BackgroundView : RenderObject
+public sealed class BackdropView : RenderObject
 {
     #region Constants
 
@@ -29,9 +29,9 @@ public sealed class BackgroundView : RenderObject
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BackgroundView"/> class.
+    /// Initializes a new instance of the <see cref="BackdropView"/> class.
     /// </summary>
-    public BackgroundView()
+    public BackdropView()
     {
         this.SetZIndex(0);
         // Load and setup background

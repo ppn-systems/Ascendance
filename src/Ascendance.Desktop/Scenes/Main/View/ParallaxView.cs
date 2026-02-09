@@ -11,7 +11,7 @@ namespace Ascendance.Desktop.Scenes.Main.View;
 /// <summary>
 /// View component for rendering a parallax background, commonly used in the main menu.
 /// </summary>
-public sealed class ParallaxLayerView : RenderObject
+public sealed class ParallaxView : RenderObject
 {
     #region Classes
 
@@ -63,11 +63,11 @@ public sealed class ParallaxLayerView : RenderObject
     #region Constructors
 
     /// <summary>
-    /// Initializes a new <see cref="ParallaxLayerView"/> with the specified parallax configuration and z-index.
+    /// Initializes a new <see cref="ParallaxView"/> with the specified parallax configuration and z-index.
     /// </summary>
     /// <param name="preset">Parallax background preset.</param>
     /// <param name="zIndex">Z-index for sorting the render order.</param>
-    public ParallaxLayerView(ParallaxPreset preset = null, System.Int32 zIndex = -1)
+    public ParallaxView(ParallaxPreset preset = null, System.Int32 zIndex = -1)
     {
         preset ??= new ParallaxPreset()
         {

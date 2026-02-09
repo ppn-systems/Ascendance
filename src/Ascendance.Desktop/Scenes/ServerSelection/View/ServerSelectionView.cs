@@ -10,12 +10,12 @@ using Ascendance.Shared.Enums;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Desktop.Scenes.ServerInfo.View;
+namespace Ascendance.Desktop.Scenes.ServerSelection.View;
 
 /// <summary>
 /// Represents the server selection screen where players choose which game server to join.
 /// </summary>
-internal sealed class ServerInfoView : RenderObject
+internal sealed class ServerSelectionView : RenderObject
 {
     #region Events
 
@@ -107,9 +107,9 @@ internal sealed class ServerInfoView : RenderObject
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ServerInfoView"/> class.
+    /// Initializes a new instance of the <see cref="ServerSelectionView"/> class.
     /// </summary>
-    public ServerInfoView()
+    public ServerSelectionView()
     {
         this.SetZIndex(1);
         this.IsEnabled = true;

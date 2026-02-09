@@ -15,5 +15,5 @@ public static class SceneConstants
     /// <summary>
     /// SScene hiển thị thông tin về máy chủ trò chơi.
     /// </summary>
-    public const System.String ServerInfo = "server_info";
+    public const System.String ServerSelection = "server_selection";
 }

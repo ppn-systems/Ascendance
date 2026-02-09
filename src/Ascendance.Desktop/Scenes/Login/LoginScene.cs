@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Desktop.Scenes.Login.View;
-using Ascendance.Desktop.Scenes.ServerInfo.View;
+using Ascendance.Desktop.Scenes.ServerSelection.View;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Scenes;
@@ -19,7 +19,7 @@ public sealed class LoginScene : BaseScene
     protected override void LoadObjects()
     {
         LoginView loginView = new();
-        BackgroundView background = new();
+        BackdropView background = new();
 
         loginView.SetZIndex(1);
         background.SetZIndex(0);
