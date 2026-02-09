@@ -5,6 +5,7 @@ using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Banners;
+using Ascendance.Rendering.UI.Indicators;
 using Nalix.Framework.Configuration;
 
 namespace Ascendance.Desktop.Scenes.Main;
@@ -31,6 +32,9 @@ public sealed class MainScene : BaseScene
 
         buttonView.ServerInfoRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerSelect);
+
+        buttonView.LoginRequested += () =>
+            SceneManager.Instance.EnqueueSpawn(new LoadingOverlay());
 
         base.AddObject(buttonView);
         base.AddObject(versionView);

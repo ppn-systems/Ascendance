@@ -299,6 +299,23 @@ internal sealed class ServerSelectView : RenderObject
         _backBtn.Draw(target);
     }
 
+    /// <inheritdoc/>
+    public override void OnBeforeDestroy()
+    {
+        // Clear all event subscribers
+        this.BackRequested = null;
+        this.ServerSelected = null;
+        this.ServerTypeChanged = null;
+        this.LanguageDropdownClicked = null;
+
+        for (System.Int32 i = 0; i < _serverButtons.Length; i++)
+        {
+            _serverButtons[i] = null;
+        }
+
+        base.OnBeforeDestroy();
+    }
+
     /// <summary>
     /// Returns the background sprite.
     /// </summary>

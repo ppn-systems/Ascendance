@@ -101,6 +101,15 @@ public sealed class BackButtonView : RenderObject
         _backButton.Draw(target);
     }
 
+    /// <inheritdoc/>
+    public override void OnBeforeDestroy()
+    {
+        // Clear all event subscribers
+        this.BackRequested = null;
+
+        base.OnBeforeDestroy();
+    }
+
     /// <summary>
     /// Throws NotSupportedException. Use <see cref="Draw(RenderTarget)"/> for custom drawing logic.
     /// </summary>

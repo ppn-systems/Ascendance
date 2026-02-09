@@ -329,6 +329,17 @@ internal sealed class LoginView : RenderObject
         target.Draw(_warn);
     }
 
+    /// <inheritdoc/>
+    public override void OnBeforeDestroy()
+    {
+        // Clear all event subscribers
+        this.TabToggled = null;
+        this.SubmitRequested = null;
+        this.ForgetPasswordRequested = null;
+
+        base.OnBeforeDestroy();
+    }
+
     /// <summary>
     /// Returns the backdrop drawable (required by base class).
     /// </summary>

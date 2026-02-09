@@ -113,6 +113,18 @@ public class ButtonView : RenderObject
     }
 
     /// <inheritdoc/>
+    public override void OnBeforeDestroy()
+    {
+        // Clear all event subscribers
+        this.LoginRequested = null;
+        this.NewGameRequested = null;
+        this.ServerInfoRequested = null;
+        this.ChangeAccountRequested = null;
+
+        base.OnBeforeDestroy();
+    }
+
+    /// <inheritdoc/>
     protected override Drawable GetDrawable() => throw new System.NotSupportedException();
 
     #endregion Overrides
