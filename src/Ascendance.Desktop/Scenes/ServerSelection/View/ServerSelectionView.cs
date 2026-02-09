@@ -5,8 +5,10 @@ using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Layout;
+using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
 using Ascendance.Shared.Enums;
+using Nalix.Framework.Configuration;
 using SFML.Graphics;
 using SFML.System;
 
@@ -155,10 +157,10 @@ internal sealed class ServerSelectionView : RenderObject
 
         _descriptionText = new Text("", _font, 15)
         {
+            LineSpacing = 1.4f,
+            OutlineThickness = 1f,
             FillColor = DescTextColor,
             OutlineColor = new Color(80, 60, 40),
-            OutlineThickness = 1f,
-            LineSpacing = 1.4f,
             Position = new Vector2f(tabX + 15f, descY + 15f)
         };
 
@@ -178,28 +180,28 @@ internal sealed class ServerSelectionView : RenderObject
             System.Int32 serverNum = i + 1;
             _serverButtons[i] = new Button($"Máy chủ {serverNum}", null, ServerBtnWidth)
             {
-                Position = new Vector2f(btnX, btnY),
+                FontSize = 20,
                 Height = ServerBtnHeight,
-                FontSize = 20
+                Position = new Vector2f(btnX, btnY)
             };
 
             // Apply custom colors
             APPLY_SERVER_BUTTON_STYLE(_serverButtons[i]);
 
             System.Int32 capturedNum = serverNum;
+
+            _serverButtons[i].RegisterClickHandler(BACK_MAIN);
             _serverButtons[i].RegisterClickHandler(() => this.ON_SERVER_SELECTED(capturedNum));
         }
 
         // Back button
         _backBtn = new Button("Back", null, 160f)
         {
-            Position = new Vector2f(
-                GraphicsEngine.ScreenSize.X - 210f,
-                GraphicsEngine.ScreenSize.Y - 80f),
             Height = 50f,
             FontSize = 18,
             PanelColor = BackBtnBg,
-            TextColor = BackBtnText
+            TextColor = BackBtnText,
+            Position = new Vector2f(GraphicsEngine.ScreenSize.X - 210f, GraphicsEngine.ScreenSize.Y - 80f)
         };
         _backBtn.RegisterClickHandler(this.ON_BACK_CLICKED);
 
@@ -306,6 +308,8 @@ internal sealed class ServerSelectionView : RenderObject
     #endregion Overrides
 
     #region Private Methods
+
+    private static void BACK_MAIN() => SceneManager.Instance.ScheduleSceneChange(ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene);
 
     /// <summary>
     /// Applies custom styling to server button.
