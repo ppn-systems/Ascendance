@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Desktop.Services;
 using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
@@ -21,14 +22,14 @@ internal sealed class LoginView : RenderObject
     #region Events
 
     /// <summary>
-    /// Raised when the user requests to submit the login form.
-    /// </summary>
-    public event System.Action SubmitRequested;
-
-    /// <summary>
     /// Raised when the user requests to navigate back.
     /// </summary>
     public event System.Action BackRequested;
+
+    /// <summary>
+    /// Raised when the user requests to submit the login form.
+    /// </summary>
+    public event System.Action SubmitRequested;
 
     /// <summary>
     /// Raised when the user toggles between username and password fields using Tab.
@@ -170,6 +171,8 @@ internal sealed class LoginView : RenderObject
             FillColor = WarnColor
         };
 
+        (System.String username, System.String password) = Credentials.Get();
+
         // Initialize username input field
         _user = new TextInputField(
             _texture,
@@ -180,6 +183,7 @@ internal sealed class LoginView : RenderObject
             _font,
             (System.UInt32)FieldFont)
         {
+            Text = username,
             PanelColor = FieldPanel,
             TextColor = FieldText,
             Placeholder = "Enter username"
@@ -195,6 +199,7 @@ internal sealed class LoginView : RenderObject
             _font,
             (System.UInt32)FieldFont)
         {
+            Text = password,
             PanelColor = FieldPanel,
             TextColor = FieldText,
             Placeholder = "Enter password"
