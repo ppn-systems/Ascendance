@@ -34,7 +34,7 @@ public class ButtonView : RenderObject
 
     #endregion Fields
 
-    #region Properties
+    #region Events
 
     /// <summary>
     /// Raised when the login button is clicked.
@@ -44,7 +44,7 @@ public class ButtonView : RenderObject
     /// <summary>
     /// Raised when the new game button is clicked.
     /// </summary>
-    public event System.Action NewGamesRequested;
+    public event System.Action NewGameRequested;
 
     /// <summary>
     /// Raised when the server info button is clicked.
@@ -55,6 +55,10 @@ public class ButtonView : RenderObject
     /// Raised when the change account button is clicked.
     /// </summary>
     public event System.Action ChangeAccountRequested;
+
+    #endregion Events
+
+    #region Properties
 
     /// <summary>
     /// Login button visibility property.
@@ -145,7 +149,7 @@ public class ButtonView : RenderObject
     private void WIRE_HANDLERS()
     {
         _login.RegisterClickHandler(() => LoginRequested?.Invoke());
-        _newGame.RegisterClickHandler(() => NewGamesRequested?.Invoke());
+        _newGame.RegisterClickHandler(() => NewGameRequested?.Invoke());
         _serverInfo.RegisterClickHandler(() => ServerInfoRequested?.Invoke());
         _changeAccount.RegisterClickHandler(() => ChangeAccountRequested?.Invoke());
     }

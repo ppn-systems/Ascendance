@@ -17,7 +17,8 @@ public sealed class LoginScene : BaseScene
     {
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1021:Convert lambda expression body to expression body", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Roslynator", "RCS1021:Convert lambda expression body to expression body", Justification = "<Pending>")]
     protected override void LoadObjects()
     {
         LoginView loginView = new();
