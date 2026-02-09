@@ -137,7 +137,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         this.RenderWindow.LostFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(false);
         this.RenderWindow.GainedFocus += (_, _) => this.HANDLE_FOCUS_CHANGED(true);
         this.RenderWindow.Resized += (_, e) => ScreenSize = new Vector2u(e.Width, e.Height);
-        SceneManager.Instance.SceneChanged += (sender, args) => _renderCacheDirty = true;
 
         // Prefer VSync if available
         if (GraphicsConfig.VSync)
@@ -185,8 +184,10 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     public void Launch(System.String[] strings = null)
     {
         System.Single accumulator = 0f;
-        SceneManager.Instance.InitializeScenes();
         TimeService time = InstanceManager.Instance.GetOrCreateInstance<TimeService>();
+
+        SceneManager.Instance.InitializeScenes();
+        SceneManager.Instance.SceneChanged += (sender, args) => _renderCacheDirty = true;
 
         System.Threading.Thread.Sleep(INITIAL_SLEEP_MS);
 
