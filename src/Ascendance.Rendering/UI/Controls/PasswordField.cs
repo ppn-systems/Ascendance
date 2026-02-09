@@ -125,15 +125,28 @@ public sealed class PasswordField : TextInputField
     [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override System.String GetRenderText()
     {
-        // Nếu đang “show”, hiển thị text thường
+        System.Int32 len = base.Text?.Length ?? 0;
+
+        // Nếu text rỗng, unfocused, và có placeholder -> hiển thị placeholder
+        if (len == 0 && !this.Focused && !System.String.IsNullOrEmpty(this.Placeholder))
+        {
+            return this.Placeholder;
+        }
+
+        // Nếu text rỗng và không có placeholder
+        if (len == 0)
+        {
+            return System.String.Empty;
+        }
+
+        // Nếu đang "show password", hiển thị text thật
         if (this.IsPasswordVisible)
         {
             return base.Text;
         }
 
-        // Khi ẩn, trả về chuỗi mask có độ dài bằng số ký tự thực
-        System.Int32 len = base.Text?.Length ?? 0;
-        return len == 0 ? System.String.Empty : new System.String(this.MaskCharacter, len);
+        // Mặc định: mask với bullet characters
+        return new System.String(this.MaskCharacter, len);
     }
 
     #endregion APIs
