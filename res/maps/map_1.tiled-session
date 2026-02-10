@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "1.tmx",
+    "activeFile": "2.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -18,8 +18,8 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 316,
-                "y": 174
+                "x": 355,
+                "y": 97
             }
         },
         "1.tmx#2": {
@@ -33,8 +33,11 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 673.3333333333334,
-                "y": 785.3333333333333
+                "y": 974.6666666666666
             }
+        },
+        "2.tmx#1": {
+            "scaleInDock": 1
         },
         "2.tmx#summer_outdoorsTileSheet.es-ES": {
             "scaleInDock": 1
@@ -52,8 +55,8 @@
     ],
     "project": "map_1.tiled-project",
     "recentFiles": [
-        "2.tmx",
-        "1.tmx"
+        "1.tmx",
+        "2.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {

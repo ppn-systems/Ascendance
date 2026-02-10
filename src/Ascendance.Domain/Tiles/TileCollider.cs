@@ -29,7 +29,7 @@ public static class TileCollider
     public static System.Boolean CheckCollision(TileMap tileMap, System.String layerName, FloatRect bounds)
     {
         TileLayer layer = tileMap.GetLayer(layerName);
-        if (layer is null || !layer.Visible)
+        if (layer?.Visible != true)
         {
             return false;
         }

@@ -20,6 +20,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
     private readonly System.Collections.Generic.List<TileLayer> _layers;
     private readonly System.Collections.Generic.List<Tileset> _tilesets;
     private readonly System.Collections.Generic.Dictionary<System.String, TileLayer> _layerCache;
+
     private System.Boolean _disposed;
     private System.Boolean _layersDirty = true;
 
@@ -158,8 +159,8 @@ public sealed class TileMap : RenderObject, System.IDisposable
         }
 
         _layers.Add(layer);
-        _layerCache[layer.Name] = layer;
         _layersDirty = true;
+        _layerCache[layer.Name] = layer;
     }
 
     /// <summary>
@@ -278,12 +279,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
     /// <returns>The tile coordinates.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public Vector2i WorldToTile(Vector2f worldPos)
-    {
-        return new Vector2i(
-            (System.Int32)(worldPos.X / TileWidth),
-            (System.Int32)(worldPos.Y / TileHeight));
-    }
+    public Vector2i WorldToTile(Vector2f worldPos) => new((System.Int32)(worldPos.X / TileWidth), (System.Int32)(worldPos.Y / TileHeight));
 
     /// <summary>
     /// Converts tile coordinates to the world position of the tile's top-left corner.
@@ -292,12 +288,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
     /// <returns>The world position in pixels.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public Vector2f TileToWorld(Vector2i tilePos)
-    {
-        return new Vector2f(
-            tilePos.X * TileWidth,
-            tilePos.Y * TileHeight);
-    }
+    public Vector2f TileToWorld(Vector2i tilePos) => new(tilePos.X * TileWidth, tilePos.Y * TileHeight);
 
     /// <summary>
     /// Converts tile coordinates to the world position of the tile's center point.
@@ -306,12 +297,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
     /// <returns>The center position in pixels.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public Vector2f TileToWorldCenter(Vector2i tilePos)
-    {
-        return new Vector2f(
-            (tilePos.X * TileWidth) + (TileWidth * 0.5f),
-            (tilePos.Y * TileHeight) + (TileHeight * 0.5f));
-    }
+    public Vector2f TileToWorldCenter(Vector2i tilePos) => new((tilePos.X * TileWidth) + (TileWidth * 0.5f), (tilePos.Y * TileHeight) + (TileHeight * 0.5f));
 
     /// <summary>
     /// Determines whether the specified tile coordinates are within valid map bounds.
@@ -321,11 +307,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
     /// <returns><c>true</c> if within bounds; otherwise, <c>false</c>.</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public System.Boolean IsValidTileCoord(System.Int32 x, System.Int32 y)
-    {
-        return (System.UInt32)x < (System.UInt32)Width &&
-               (System.UInt32)y < (System.UInt32)Height;
-    }
+    public System.Boolean IsValidTileCoord(System.Int32 x, System.Int32 y) => (System.UInt32)x < (System.UInt32)Width && (System.UInt32)y < (System.UInt32)Height;
 
     #endregion Coordinate Conversion
 
@@ -372,8 +354,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
     {
         ref readonly Tile tile = ref GetTileAtWorldPos(layerName, worldPos);
         return !System.Runtime.CompilerServices.Unsafe.IsNullRef(ref System.Runtime.CompilerServices.Unsafe.AsRef(in tile)) &&
-               !tile.IsEmpty() &&
-               tile.IsCollidable;
+               !tile.IsEmpty() && tile.IsCollidable;
     }
 
     #endregion Tile Queries
