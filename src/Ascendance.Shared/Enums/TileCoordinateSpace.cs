@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Domain.Enums;
+namespace Ascendance.Shared.Enums;
 
 /// <summary>
 /// Specifies the tile coordinate system or space used for position calculations.
@@ -8,7 +8,7 @@ namespace Ascendance.Domain.Enums;
 /// <remarks>
 /// Clarifies whether coordinates are in tile units or pixel units to prevent conversion errors.
 /// </remarks>
-public enum TileCoordinateSpace
+public enum TileCoordinateSpace : System.Byte
 {
     /// <summary>
     /// Tile-based coordinates (grid indices). Integer values represent tile positions.

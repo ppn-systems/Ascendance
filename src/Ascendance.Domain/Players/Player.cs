@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Domain.Enums;
 using Ascendance.Domain.Tiles;
 using Ascendance.Physics.Colliders;
 using Ascendance.Physics.Movement;
@@ -329,26 +328,56 @@ public sealed class Player : AnimatedSprite
         System.Single x = 0f;
         System.Single y = 0f;
 
-        // Horizontal input
-        if (_keyboard.IsKeyDown(Keyboard.Key.A) || _keyboard.IsKeyDown(Keyboard.Key.Left))
-        {
-            x--;
-        }
+        // Cache key states (WASD only)
+        System.Boolean keyA = _keyboard.IsKeyDown(Keyboard.Key.A);
+        System.Boolean keyD = _keyboard.IsKeyDown(Keyboard.Key.D);
+        System.Boolean keyW = _keyboard.IsKeyDown(Keyboard.Key.W);
+        System.Boolean keyS = _keyboard.IsKeyDown(Keyboard.Key.S);
 
-        if (_keyboard.IsKeyDown(Keyboard.Key.D) || _keyboard.IsKeyDown(Keyboard.Key.Right))
+        // Explicit combination handling (makes intent clear).
+        // Diagonal combinations are allowed and will be normalized later.
+        if (keyA && keyW)
         {
-            x++;
+            x = -1f;
+            y = -1f;
         }
-
-        // Vertical input (note: positive Y is downward in SFML)
-        if (_keyboard.IsKeyDown(Keyboard.Key.W) || _keyboard.IsKeyDown(Keyboard.Key.Up))
+        else if (keyD && keyW)
         {
-            y--;
+            x = 1f;
+            y = -1f;
         }
-
-        if (_keyboard.IsKeyDown(Keyboard.Key.S) || _keyboard.IsKeyDown(Keyboard.Key.Down))
+        else if (keyA && keyS)
         {
-            y++;
+            x = -1f;
+            y = 1f;
+        }
+        else if (keyD && keyS)
+        {
+            x = 1f;
+            y = 1f;
+        }
+        else
+        {
+            // Single-axis inputs
+            if (keyA)
+            {
+                x--;
+            }
+
+            if (keyD)
+            {
+                x++;
+            }
+
+            if (keyW)
+            {
+                y--;
+            }
+
+            if (keyS)
+            {
+                y++;
+            }
         }
 
         // Normalize diagonal movement to prevent faster diagonal speed
@@ -388,9 +417,6 @@ public sealed class Player : AnimatedSprite
     {
         System.Boolean isMoving = inputDirection.X != 0f || inputDirection.Y != 0f;
         System.Boolean isRunning = _keyboard.IsKeyDown(Keyboard.Key.LShift) || _keyboard.IsKeyDown(Keyboard.Key.RShift);
-
-        // Update state
-        _state = !isMoving ? PlayerState.Idle : isRunning ? PlayerState.Running : PlayerState.Walking;
 
         // Update state
         _state = !isMoving ? PlayerState.Idle : isRunning ? PlayerState.Running : PlayerState.Walking;

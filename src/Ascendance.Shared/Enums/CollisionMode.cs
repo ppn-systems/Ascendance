@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Domain.Enums;
+namespace Ascendance.Shared.Enums;
 
 /// <summary>
 /// Specifies the collision resolution strategy for tile-based collision detection.
@@ -8,7 +8,7 @@ namespace Ascendance.Domain.Enums;
 /// <remarks>
 /// Defines how the collision system should respond when an entity collides with tiles.
 /// </remarks>
-public enum CollisionMode
+public enum CollisionMode : System.Byte
 {
     /// <summary>
     /// No collision resolution (detection only). Returns collision state without modifying position.

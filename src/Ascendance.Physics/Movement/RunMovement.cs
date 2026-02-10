@@ -19,7 +19,7 @@ public class RunMovement(System.Single speed) : IMovement
     /// <summary>
     /// Initializes a new instance of the <see cref="RunMovement"/> class with default speed.
     /// </summary>
-    public RunMovement() : this(200f)
+    public RunMovement() : this(500f)
     {
     }
 

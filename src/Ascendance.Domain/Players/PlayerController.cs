@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Domain.Enums;
 using Ascendance.Rendering.Animation;
 using Ascendance.Rendering.Utilities;
+using Ascendance.Shared.Enums;
 using SFML.Graphics;
 
 namespace Ascendance.Domain.Players;
@@ -18,9 +18,9 @@ namespace Ascendance.Domain.Players;
 /// Expected sprite sheet layout (15x31 pixels per frame, 4 frames per direction):
 /// <code>
 /// Row 0: Down  [Idle] [Walk1] [Walk2] [Walk3]
-/// Row 1: Up    [Idle] [Walk1] [Walk2] [Walk3]
-/// Row 2: Left  [Idle] [Walk1] [Walk2] [Walk3]
-/// Row 3: Right [Idle] [Walk1] [Walk2] [Walk3]
+/// Row 2: Right [Idle] [Walk1] [Walk2] [Walk3]
+/// Row 3: Up    [Idle] [Walk1] [Walk2] [Walk3]
+/// Row 4: Left  [Idle] [Walk1] [Walk2] [Walk3]
 /// </code>
 /// </para>
 /// </remarks>

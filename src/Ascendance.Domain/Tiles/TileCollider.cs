@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Domain.Enums;
+using Ascendance.Shared.Enums;
 using SFML.Graphics;
 using SFML.System;
 
@@ -36,8 +36,7 @@ public static class TileCollider
 
         // Convert bounds to tile coordinates
         Vector2i topLeft = tileMap.WorldToTile(new Vector2f(bounds.Left, bounds.Top));
-        Vector2i bottomRight = tileMap.WorldToTile(
-            new Vector2f(bounds.Left + bounds.Width, bounds.Top + bounds.Height));
+        Vector2i bottomRight = tileMap.WorldToTile(new Vector2f(bounds.Left + bounds.Width, bounds.Top + bounds.Height));
 
         // Clamp to valid tile range
         System.Int32 startX = System.Math.Max(0, topLeft.X);
@@ -128,8 +127,8 @@ public static class TileCollider
         {
             CollisionMode.None => targetPos,
             CollisionMode.Stop => RESOLVE_STOP(tileMap, layerName, currentPos, targetPos, size),
-            CollisionMode.Slide => RESOLVE_SLIDE(tileMap, layerName, currentPos, targetPos, size),
             CollisionMode.Push => RESOLVE_PUSH(tileMap, layerName, currentPos, targetPos, size),
+            CollisionMode.Slide => RESOLVE_SLIDE(tileMap, layerName, currentPos, targetPos, size),
             _ => currentPos
         };
     }

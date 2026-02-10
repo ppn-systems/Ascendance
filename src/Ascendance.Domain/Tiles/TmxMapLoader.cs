@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Domain.Enums;
 using Ascendance.Rendering.Managers;
+using Ascendance.Shared.Enums;
 using Nalix.Logging.Extensions;
 using SFML.System;
 using System.Xml.Linq;

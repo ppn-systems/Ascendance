@@ -19,7 +19,7 @@ public class WalkMovement(System.Single speed) : IMovement
     /// <summary>
     /// Initializes a new instance of the <see cref="WalkMovement"/> class with default speed.
     /// </summary>
-    public WalkMovement() : this(150f)
+    public WalkMovement() : this(200f)
     {
     }
 

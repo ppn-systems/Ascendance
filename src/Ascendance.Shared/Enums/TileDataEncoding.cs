@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Domain.Enums;
+namespace Ascendance.Shared.Enums;
 
 /// <summary>
 /// Specifies the encoding format used for tile data in TMX files.
@@ -9,7 +9,7 @@ namespace Ascendance.Domain.Enums;
 /// Tiled Map Editor supports multiple encoding formats for tile layer data.
 /// Different formats offer trade-offs between file size, readability, and parsing performance.
 /// </remarks>
-public enum TileDataEncoding
+public enum TileDataEncoding : System.Byte
 {
     /// <summary>
     /// XML tile elements format (default). Each tile is represented as a &lt;tile gid="..."&gt; element.
