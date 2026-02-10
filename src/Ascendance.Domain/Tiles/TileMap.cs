@@ -30,22 +30,22 @@ public sealed class TileMap : RenderObject, System.IDisposable
     /// <summary>
     /// Gets the width of the map in tiles.
     /// </summary>
-    public System.Int32 Width { get; }
+    public System.Int16 Width { get; }
 
     /// <summary>
     /// Gets the height of the map in tiles.
     /// </summary>
-    public System.Int32 Height { get; }
+    public System.Int16 Height { get; }
 
     /// <summary>
     /// Gets the width of each tile in pixels.
     /// </summary>
-    public System.Int32 TileWidth { get; }
+    public System.Int16 TileWidth { get; }
 
     /// <summary>
     /// Gets the height of each tile in pixels.
     /// </summary>
-    public System.Int32 TileHeight { get; }
+    public System.Int16 TileHeight { get; }
 
     /// <summary>
     /// Gets the total width of the map in pixels.
@@ -106,7 +106,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
     /// <exception cref="System.ArgumentOutOfRangeException">
     /// Thrown when any parameter is less than or equal to zero.
     /// </exception>
-    public TileMap(System.Int32 width, System.Int32 height, System.Int32 tileWidth, System.Int32 tileHeight)
+    public TileMap(System.Int16 width, System.Int16 height, System.Int16 tileWidth, System.Int16 tileHeight)
     {
         if (width <= 0)
         {
@@ -466,14 +466,6 @@ public sealed class TileMap : RenderObject, System.IDisposable
             layer.Draw(target);
         }
     }
-
-    /// <summary>
-    /// Gets the primary tileset texture (currently uses first tileset).
-    /// </summary>
-    /// <returns>The tileset texture, or <c>null</c> if no tilesets exist.</returns>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private Texture GetTilesetTexture() => _tilesets.Count > 0 ? _tilesets[0].Texture : null;
 
     /// <inheritdoc/>
     protected override Drawable GetDrawable() =>

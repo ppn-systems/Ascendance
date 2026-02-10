@@ -36,12 +36,12 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     /// <summary>
     /// Gets the width of the layer in tiles.
     /// </summary>
-    public System.Int32 Width { get; }
+    public System.Int16 Width { get; }
 
     /// <summary>
     /// Gets the height of the layer in tiles.
     /// </summary>
-    public System.Int32 Height { get; }
+    public System.Int16 Height { get; }
 
     /// <summary>
     /// Gets or sets whether this layer is visible.
@@ -61,7 +61,7 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     /// <summary>
     /// Gets the render order based on layer type.
     /// </summary>
-    public System.Int32 RenderOrder => LayerType.GetRenderOrder();
+    public System.Int16 RenderOrder => LayerType.GetRenderOrder();
 
     #endregion Properties
 
@@ -72,7 +72,7 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     /// </summary>
     /// <param name="width">The width of the layer in tiles.</param>
     /// <param name="height">The height of the layer in tiles.</param>
-    public TileLayer(System.Int32 width, System.Int32 height)
+    public TileLayer(System.Int16 width, System.Int16 height)
     {
         Width = width;
         Height = height;

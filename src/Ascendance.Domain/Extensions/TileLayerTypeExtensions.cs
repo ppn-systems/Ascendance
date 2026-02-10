@@ -16,7 +16,7 @@ public static class TileLayerTypeExtensions
     /// <returns>The render order value (lower values render first).</returns>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public static System.Int32 GetRenderOrder(this TileLayerType layerType) => (System.Int32)layerType;
+    public static System.Int16 GetRenderOrder(this TileLayerType layerType) => (System.Int16)layerType;
 
     /// <summary>
     /// Determines whether this layer type should be rendered by default.

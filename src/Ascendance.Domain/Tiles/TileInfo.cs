@@ -8,4 +8,4 @@ namespace Ascendance.Domain.Tiles;
 /// <param name="Tile">The tile data.</param>
 /// <param name="X">The X coordinate in tile grid.</param>
 /// <param name="Y">The Y coordinate in tile grid.</param>
-public readonly record struct TileInfo(Tile Tile, System.Int32 X, System.Int32 Y);
+public readonly record struct TileInfo(Tile Tile, System.Int16 X, System.Int16 Y);

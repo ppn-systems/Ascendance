@@ -20,12 +20,12 @@ public struct Tile : System.IEquatable<Tile>
     /// <summary>
     /// The global tile ID from the tileset.
     /// </summary>
-    public System.Int32 Gid;
+    public System.Int16 Gid;
 
     /// <summary>
     /// The local tile ID within the tileset (0-based).
     /// </summary>
-    public System.Int32 LocalId;
+    public System.Int16 LocalId;
 
     /// <summary>
     /// The texture rectangle for this tile in the tileset.
@@ -100,8 +100,8 @@ public struct Tile : System.IEquatable<Tile>
     /// <param name="isCollidable">Whether the tile is collidable.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public Tile(
-        System.Int32 gid,
-        System.Int32 localId,
+        System.Int16 gid,
+        System.Int16 localId,
         IntRect textureRect,
         Vector2f worldPosition,
         System.Boolean isCollidable = false)
