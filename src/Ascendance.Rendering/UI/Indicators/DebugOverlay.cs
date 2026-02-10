@@ -399,19 +399,39 @@ public class DebugOverlay : RenderObject
             return;
         }
 
-        this.UPDATE_FPS();
-        System.Collections.Generic.List<System.String> lines = this.COMPOSE_DEBUG_LINES();
-
-        if (this.ShowBackground)
+        // If possible, switch to the window's default view so overlay is drawn in screen space.
+        RenderWindow window = target as RenderWindow;
+        View previousView = null;
+        if (window is not null)
         {
-            this.UPDATE_BACKGROUND_SIZE(lines.Count);
-            target.Draw(_background);
+            previousView = window.GetView();
+            window.SetView(window.DefaultView);
         }
 
-        this.ENSURE_TEXT_POOL_SIZE(lines.Count);
-        this.RENDER_DEBUG_LINES(target, lines);
+        try
+        {
+            this.UPDATE_FPS();
+            System.Collections.Generic.List<System.String> lines = this.COMPOSE_DEBUG_LINES();
 
-        _customDebugLines.Clear();
+            if (this.ShowBackground)
+            {
+                this.UPDATE_BACKGROUND_SIZE(lines.Count);
+                target.Draw(_background);
+            }
+
+            this.ENSURE_TEXT_POOL_SIZE(lines.Count);
+            this.RENDER_DEBUG_LINES(target, lines);
+
+            _customDebugLines.Clear();
+        }
+        finally
+        {
+            // Restore the previous view so subsequent drawing (world objects) is unaffected.
+            if (window is not null && previousView is not null)
+            {
+                window.SetView(previousView);
+            }
+        }
     }
 
     /// <inheritdoc/>
