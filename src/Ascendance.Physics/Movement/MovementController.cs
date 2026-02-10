@@ -35,7 +35,8 @@ public class MovementController
         Velocity = new Vector2f(0, 0);
         _strategies = new System.Collections.Generic.Dictionary<MovementType, IMovement>
         {
-            { MovementType.Walk, new WalkMovement() },
+            { MovementType.Run, new RunMovement() },
+            { MovementType.Walk, new WalkMovement() }
         };
     }
 
@@ -55,19 +56,19 @@ public class MovementController
         Vector2f position = Position;
         Vector2f velocity = Velocity;
 
+        // Apply movement strategy if one is active
         if (_strategies.TryGetValue(_currentType, out IMovement strategy))
         {
             strategy.Move(ref position, ref velocity, _direction, deltaTime);
         }
-
-        position += velocity * deltaTime;
-
-        // Giả lập tiếp đất
-        if (position.Y > 0)
+        else
         {
-            position = new Vector2f(position.X, 0);
-            velocity = new Vector2f(velocity.X, 0);
+            // No movement type set - stop movement
+            velocity = new Vector2f(0, 0);
         }
+
+        // Apply velocity to position (top-down 2D - no gravity)
+        position += velocity * deltaTime;
 
         // Assign back to properties
         Position = position;
