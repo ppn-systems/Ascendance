@@ -302,10 +302,7 @@ public static class SpriteSheetCutter
         System.Int32 spacing = 0,
         System.Int32 margin = 0)
     {
-        if (indices is null)
-        {
-            throw new System.ArgumentNullException(nameof(indices));
-        }
+        System.ArgumentNullException.ThrowIfNull(indices);
 
         if (cellWidth <= 0)
         {

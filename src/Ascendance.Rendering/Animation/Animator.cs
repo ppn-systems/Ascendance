@@ -12,9 +12,8 @@ namespace Ascendance.Rendering.Animation;
 /// </summary>
 public sealed class Animator : IUpdatable, System.IDisposable
 {
-    #region Fields
 
-    private readonly Sprite _sprite;
+    #region Fields
     private readonly System.Collections.Generic.List<IntRect> _frames = [];
 
     private System.Int32 _index;
@@ -48,7 +47,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
     /// <summary>
     /// Gets the sprite being animated.
     /// </summary>
-    public Sprite Sprite => _sprite;
+    public Sprite Sprite { get; }
 
     /// <summary>
     /// Gets the current animation state.
@@ -111,7 +110,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="sprite"/> is null.</exception>
     public Animator(Sprite sprite, System.Single frameTime = 0.1f)
     {
-        _sprite = sprite ?? throw new System.ArgumentNullException(nameof(sprite));
+        this.Sprite = sprite ?? throw new System.ArgumentNullException(nameof(sprite));
 
         _frameTime = 0.1f;
         this.FrameTime = frameTime;
@@ -406,7 +405,7 @@ public sealed class Animator : IUpdatable, System.IDisposable
             return;
         }
 
-        _sprite.TextureRect = _frames[_index];
+        this.Sprite.TextureRect = _frames[_index];
     }
 
     #endregion Private Helpers
