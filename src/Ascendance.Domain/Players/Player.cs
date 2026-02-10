@@ -278,6 +278,32 @@ public sealed class Player : AnimatedSprite
 
     #endregion Public Methods
 
+    #region Event Handlers
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Called when a looping animation wraps from the last frame to the first.
+    /// Override this in derived classes to add footstep sounds, particle effects, etc.
+    /// </remarks>
+    protected override void OnAnimationLooped()
+    {
+        // TODO: Add footstep sound effect here
+        // Example: AudioManager.Instance.PlaySound("footstep");
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Called when a non-looping animation reaches its end and stops.
+    /// Override this in derived classes to handle tool use completion, action end, etc.
+    /// </remarks>
+    protected override void OnAnimationCompleted()
+    {
+        // TODO: Handle tool use completion, return to idle state, etc.
+        // Example: if (_state == PlayerState.UsingTool) { _state = PlayerState.Idle; }
+    }
+
+    #endregion Event Handlers
+
     #region Private Methods - Input
 
     /// <summary>
@@ -401,6 +427,41 @@ public sealed class Player : AnimatedSprite
 
     #endregion Private Methods - State
 
+    #region Private Methods - Camera
+
+    /// <summary>
+    /// Updates camera to follow player position.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Centers the camera on the player's collider position using <see cref="Camera2D.SetCenter"/>.
+    /// </para>
+    /// <para>
+    /// Does nothing if <see cref="Camera"/> is null.
+    /// </para>
+    /// <para>
+    /// For smooth camera following, consider using <see cref="Camera2D.Follow"/> instead
+    /// with a smoothing factor (e.g., 0.1f).
+    /// </para>
+    /// </remarks>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private void UPDATE_CAMERA()
+    {
+        if (this.Camera is null)
+        {
+            return;
+        }
+
+        // Option 1: Hard follow (instant centering)
+        this.Camera.SetCenter(this.Collider.Position);
+
+        // Option 2: Smooth follow (uncomment if you prefer smooth camera)
+        // _camera.Follow(_collider.Position, smooth: 0.1f);
+    }
+
+    #endregion Private Methods - Camera
+
     #region Private Methods - Movement
 
     /// <summary>
@@ -489,65 +550,4 @@ public sealed class Player : AnimatedSprite
     }
 
     #endregion Private Methods - Collision
-
-    #region Private Methods - Camera
-
-    /// <summary>
-    /// Updates camera to follow player position.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Centers the camera on the player's collider position using <see cref="Camera2D.SetCenter"/>.
-    /// </para>
-    /// <para>
-    /// Does nothing if <see cref="Camera"/> is null.
-    /// </para>
-    /// <para>
-    /// For smooth camera following, consider using <see cref="Camera2D.Follow"/> instead
-    /// with a smoothing factor (e.g., 0.1f).
-    /// </para>
-    /// </remarks>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private void UPDATE_CAMERA()
-    {
-        if (this.Camera is null)
-        {
-            return;
-        }
-
-        // Option 1: Hard follow (instant centering)
-        this.Camera.SetCenter(this.Collider.Position);
-
-        // Option 2: Smooth follow (uncomment if you prefer smooth camera)
-        // _camera.Follow(_collider.Position, smooth: 0.1f);
-    }
-
-    #endregion Private Methods - Camera
-
-    #region Event Handlers
-
-    /// <inheritdoc/>
-    /// <remarks>
-    /// Called when a looping animation wraps from the last frame to the first.
-    /// Override this in derived classes to add footstep sounds, particle effects, etc.
-    /// </remarks>
-    protected override void OnAnimationLooped()
-    {
-        // TODO: Add footstep sound effect here
-        // Example: AudioManager.Instance.PlaySound("footstep");
-    }
-
-    /// <inheritdoc/>
-    /// <remarks>
-    /// Called when a non-looping animation reaches its end and stops.
-    /// Override this in derived classes to handle tool use completion, action end, etc.
-    /// </remarks>
-    protected override void OnAnimationCompleted()
-    {
-        // TODO: Handle tool use completion, return to idle state, etc.
-        // Example: if (_state == PlayerState.UsingTool) { _state = PlayerState.Idle; }
-    }
-
-    #endregion Event Handlers
 }
