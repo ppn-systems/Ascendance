@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="15" tileheight="15" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" name="summer_outdoorsTileSheet.es-ES" tilewidth="15" tileheight="15" tilecount="2184" columns="26">
-  <image source="../texture/tileset/summer_outdoorsTileSheet.es-ES.png" width="400" height="1264"/>
+ <tileset firstgid="1" name="1" tilewidth="15" tileheight="15" tilecount="2184" columns="26">
+  <image source="../texture/tileset/1.png" width="400" height="1264"/>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="100" height="100">
   <data encoding="csv">

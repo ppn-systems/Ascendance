@@ -37,7 +37,7 @@ public sealed class MainScene : BaseScene
         player.CollisionLayerName = "Collision";
 
         // 4. Setup camera
-        Camera2D.Instance.Reset(new Vector2f(400, 300), new Vector2f(800, 600));
+        Camera2D.Instance.Reset(new Vector2f(400, 300), new Vector2f(600, 400));
         player.Camera = Camera2D.Instance;
         player.SetZIndex(10);
 
