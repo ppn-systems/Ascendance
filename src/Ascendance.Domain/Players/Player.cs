@@ -52,7 +52,7 @@ public sealed class Player : AnimatedSprite
 
     private readonly KeyboardManager _keyboard;
     private readonly MovementController _movementController;
-    private readonly PlayerAnimationController _animationController;
+    private readonly PlayerController _animationController;
 
     private PlayerState _state;
     private Direction2D _direction;
@@ -156,7 +156,7 @@ public sealed class Player : AnimatedSprite
         _movementController = new MovementController(startPosition);
 
         // Initialize animation controller
-        _animationController = new PlayerAnimationController(this.SpriteAnimator);
+        _animationController = new PlayerController(this.SpriteAnimator);
 
         // Set default state
         _state = PlayerState.Idle;
@@ -392,6 +392,9 @@ public sealed class Player : AnimatedSprite
         // Update state
         _state = !isMoving ? PlayerState.Idle : isRunning ? PlayerState.Running : PlayerState.Walking;
 
+        // Update state
+        _state = !isMoving ? PlayerState.Idle : isRunning ? PlayerState.Running : PlayerState.Walking;
+
         // Update facing direction (only if moving)
         if (isMoving)
         {
@@ -487,6 +490,10 @@ public sealed class Player : AnimatedSprite
         if (_state == PlayerState.Idle)
         {
             _movementController.SetMovement(MovementType.None, new Vector2f(0, 0));
+        }
+        else if (_state == PlayerState.Running)  // ← Kiểm tra Running state
+        {
+            _movementController.SetMovement(MovementType.Run, direction);  // ← Dùng Run type
         }
         else
         {

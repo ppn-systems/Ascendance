@@ -24,7 +24,7 @@ namespace Ascendance.Domain.Players;
 /// </code>
 /// </para>
 /// </remarks>
-public sealed class PlayerAnimationController
+public sealed class PlayerController
 {
     #region Constants
 
@@ -67,11 +67,11 @@ public sealed class PlayerAnimationController
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PlayerAnimationController"/> class.
+    /// Initializes a new instance of the <see cref="PlayerController"/> class.
     /// </summary>
     /// <param name="animator">The animator component to control.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="animator"/> is null.</exception>
-    public PlayerAnimationController(Animator animator)
+    public PlayerController(Animator animator)
     {
         _animator = animator ?? throw new System.ArgumentNullException(nameof(animator));
 
