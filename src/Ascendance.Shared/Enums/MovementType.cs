@@ -18,12 +18,7 @@ public enum MovementType : System.Byte
     Walk = 1,
 
     /// <summary>
-    /// Vertical impulse movement initiated from the ground.
+    /// Rapid movement, typically faster than walking.
     /// </summary>
-    Jump = 2,
-
-    /// <summary>
-    /// Free-form movement without gravity constraints.
-    /// </summary>
-    Fly = 3
+    Run = 2
 }

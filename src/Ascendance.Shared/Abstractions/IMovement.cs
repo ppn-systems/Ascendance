@@ -25,13 +25,9 @@ public interface IMovement
     /// <param name="direction">
     /// The normalized movement direction input (e.g. from player or AI).
     /// </param>
-    /// <param name="isGrounded">
-    /// Indicates whether the entity is currently grounded.
-    /// Passed by reference to allow state updates (e.g. landing after a jump).
-    /// </param>
     /// <param name="deltaTime">
     /// The elapsed time since the last update, in seconds.
     /// Used to ensure frame-rate independent movement.
     /// </param>
-    void Move(ref Vector2f position, ref Vector2f velocity, Vector2f direction, ref System.Boolean isGrounded, System.Single deltaTime);
+    void Move(ref Vector2f position, ref Vector2f velocity, Vector2f direction, System.Single deltaTime);
 }
