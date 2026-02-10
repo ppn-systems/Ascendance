@@ -1,0 +1,63 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "1.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "#tile": {
+            "scaleInDock": 2
+        },
+        "1.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 316,
+                "y": 174
+            }
+        },
+        "1.tmx#2": {
+            "scaleInDock": 1
+        },
+        "1.tmx#tile": {
+            "scaleInDock": 1
+        },
+        "2.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 673.3333333333334,
+                "y": 785.3333333333333
+            }
+        },
+        "2.tmx#summer_outdoorsTileSheet.es-ES": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "E:/Cs/Ascendance/res/texture/tileset",
+    "map.height": 100,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 15,
+    "map.tileWidth": 15,
+    "map.width": 100,
+    "openFiles": [
+        "1.tmx",
+        "2.tmx"
+    ],
+    "project": "map_1.tiled-project",
+    "recentFiles": [
+        "2.tmx",
+        "1.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 15,
+        "width": 15
+    }
+}
