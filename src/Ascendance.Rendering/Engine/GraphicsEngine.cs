@@ -4,7 +4,6 @@ using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Managers;
-using Ascendance.Rendering.Native;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.Time;
 using Ascendance.Shared.Abstractions;
@@ -15,7 +14,6 @@ using Nalix.Logging.Extensions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using System;
 
 namespace Ascendance.Rendering.Engine;
 
@@ -42,7 +40,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     private System.Single _lastLogicMs;
     private System.Single _lastRenderMs;
     private System.Boolean _renderCacheDirty;
-    private System.IntPtr _previousImeContext;
     private System.Collections.Generic.IReadOnlyList<RenderObject> _renderObjectCache;
 
     #endregion Fields
@@ -120,7 +117,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         _lastRenderMs = 0f;
         _renderObjectCache = [];
         _renderCacheDirty = true;
-        _previousImeContext = System.IntPtr.Zero;
         _backgroundFps = DEFAULT_BACKGROUND_FPS;
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
@@ -369,30 +365,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         }
 
         NLogixFx.Info(message: $"Window focus changed: {(focused ? "Gained" : "Lost")}", source: "GraphicsEngine");
-
-        // Disable IME while the game window is focused to avoid composition popup.
-        // Save previous context to restore it later.
-        try
-        {
-            if (focused)
-            {
-                // Disable IME on focus (game will capture raw keyboard).
-                _previousImeContext = Imm32.DisableIme(this.RenderWindow);
-            }
-            else
-            {
-                // Restore previous IME when unfocused.
-                if (_previousImeContext != IntPtr.Zero)
-                {
-                    Imm32.RestoreIme(this.RenderWindow, _previousImeContext);
-                    _previousImeContext = IntPtr.Zero;
-                }
-            }
-        }
-        catch
-        {
-            // Ignore platform-specific errors.
-        }
     }
 
     #endregion Private Methods
