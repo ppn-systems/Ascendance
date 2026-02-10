@@ -20,7 +20,7 @@ public abstract class AnimatedSprite : SpriteObject, System.IDisposable
     /// <summary>
     /// Gets the <see cref="Animator"/> used to handle sprite animations for this object.
     /// </summary>
-    protected readonly Animator SpriteAnimator;
+    public readonly Animator SpriteAnimator;
 
     /// <summary>
     /// Gets a value indicating whether the animation is currently playing.

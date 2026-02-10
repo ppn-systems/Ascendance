@@ -46,6 +46,11 @@ public sealed class Animator : IUpdatable, System.IDisposable
     #region Properties
 
     /// <summary>
+    /// Gets the sprite being animated.
+    /// </summary>
+    public Sprite Sprite => _sprite;
+
+    /// <summary>
     /// Gets the current animation state.
     /// </summary>
     public AnimationState State { get; private set; } = AnimationState.Idle;
