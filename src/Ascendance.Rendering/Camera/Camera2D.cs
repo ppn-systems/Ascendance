@@ -93,6 +93,8 @@ public class Camera2D
 
     #region Public Methods
 
+    public View GetView() => this.SFMLView;
+
     /// <summary>
     /// Clamps the camera center so that it stays entirely within <see cref="Bounds"/>.
     /// </summary>
