@@ -491,9 +491,9 @@ public sealed class Player : AnimatedSprite
         {
             _movementController.SetMovement(MovementType.None, new Vector2f(0, 0));
         }
-        else if (_state == PlayerState.Running)  // ← Kiểm tra Running state
+        else if (_state == PlayerState.Running)
         {
-            _movementController.SetMovement(MovementType.Run, direction);  // ← Dùng Run type
+            _movementController.SetMovement(MovementType.Run, direction);
         }
         else
         {
@@ -532,28 +532,51 @@ public sealed class Player : AnimatedSprite
     {
         if (this.TileMap is null || System.String.IsNullOrEmpty(this.CollisionLayerName))
         {
-            // No collision handling - free movement
             this.Collider.Position = _movementController.Position;
             return;
         }
 
-        Vector2f targetPosition = _movementController.Position;
         Vector2f currentPosition = this.Collider.Position;
-
-        // Create collision bounds for target position (circular collider as square bounds)
+        Vector2f targetPosition = _movementController.Position;
         Vector2f colliderSize = new(this.Collider.Radius * 2f, this.Collider.Radius * 2f);
+        Vector2f resolvedPosition = this.RESOLVE_COLLISION_SEPARATELY(currentPosition, targetPosition, colliderSize);
 
-        // Check collision and resolve using TileCollider utility
-        Vector2f resolvedPosition = TileCollider.ResolveCollision(
-            this.TileMap,
-            this.CollisionLayerName,
-            currentPosition,
-            targetPosition,
-            colliderSize,
-            CollisionMode.Stop); // Stop mode: cannot move if collision detected
-
-        // Update collider position with resolved position
         this.Collider.Position = resolvedPosition;
+
+        _movementController.Position = resolvedPosition;
+    }
+
+    /// <summary>
+    /// Resolves collision by testing X and Y axes separately.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private Vector2f RESOLVE_COLLISION_SEPARATELY(
+        Vector2f currentPos,
+        Vector2f targetPos,
+        Vector2f size)
+    {
+        Vector2f resolvedPos = currentPos;
+
+        // Test X-axis movement first
+        Vector2f testX = new(targetPos.X, currentPos.Y);
+        FloatRect boundsX = new(testX.X - (size.X * 0.5f), testX.Y - (size.Y * 0.5f), size.X, size.Y);
+
+        if (!TileCollider.CheckCollision(this.TileMap, this.CollisionLayerName, boundsX))
+        {
+            resolvedPos.X = testX.X; // X-axis is clear
+        }
+
+        // Test Y-axis movement
+        Vector2f testY = new(resolvedPos.X, targetPos.Y);
+        FloatRect boundsY = new(testY.X - (size.X * 0.5f), testY.Y - (size.Y * 0.5f), size.X, size.Y);
+
+        if (!TileCollider.CheckCollision(this.TileMap, this.CollisionLayerName, boundsY))
+        {
+            resolvedPos.Y = testY.Y; // Y-axis is clear
+        }
+
+        return resolvedPos;
     }
 
     #endregion Private Methods - Collision

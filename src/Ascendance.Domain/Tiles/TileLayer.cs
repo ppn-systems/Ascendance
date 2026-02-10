@@ -16,12 +16,18 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     #region Fields
 
     private readonly Tile[] _tiles;
+
     private VertexArray _vertexArray;
     private System.Boolean _disposed;
 
     #endregion Fields
 
     #region Properties
+
+    /// <summary>
+    /// The texture atlas used for this tile layer.
+    /// </summary>
+    public Texture Texture { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the layer.
@@ -74,9 +80,10 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     /// <param name="height">The height of the layer in tiles.</param>
     public TileLayer(System.Int16 width, System.Int16 height)
     {
+        _tiles = new Tile[width * height];
+
         Width = width;
         Height = height;
-        _tiles = new Tile[width * height];
         Properties = [];
         Visible = LayerType.IsVisibleByDefault();
     }
@@ -198,7 +205,8 @@ public sealed class TileLayer : RenderObject, System.IDisposable
             return;
         }
 
-        target.Draw(_vertexArray);
+        RenderStates states = new(texture: Texture);
+        target.Draw(_vertexArray, states);
     }
 
     /// <inheritdoc/>

@@ -7,6 +7,7 @@ using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
+using Ascendance.Rendering.UI.Indicators;
 using Nalix.Framework.Configuration;
 using SFML.Graphics;
 using SFML.System;
@@ -16,9 +17,11 @@ namespace Ascendance.Sandbox.Scenes;
 [DynamicLoad]
 public sealed class MainScene : BaseScene
 {
-    public MainScene() : base(ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene)
-    {
-    }
+    public static readonly DebugOverlay Overlay = new();
+
+    private static void OnFrameRender(RenderTarget target) => Overlay.Draw(target);
+
+    public MainScene() : base(ConfigurationManager.Instance.Get<GraphicsConfig>().MainScene) => GraphicsEngine.Instance.FrameRender += OnFrameRender;
 
     protected override void LoadObjects()
     {
@@ -29,13 +32,14 @@ public sealed class MainScene : BaseScene
         Player player = new(playerTexture, new Vector2f(400, 300));
 
         // 3. Setup tile map collision
-        TileMap tileMap = TmxMapLoader.Load("res/maps/1.tmx");
+        TileMap tileMap = TmxMapLoader.Load("res/maps/2.tmx");
         player.TileMap = tileMap;
         player.CollisionLayerName = "Collision";
 
         // 4. Setup camera
         Camera2D.Instance.Reset(new Vector2f(400, 300), new Vector2f(800, 600));
         player.Camera = Camera2D.Instance;
+        player.SetZIndex(10);
 
         base.AddObject(player);
         base.AddObject(tileMap);

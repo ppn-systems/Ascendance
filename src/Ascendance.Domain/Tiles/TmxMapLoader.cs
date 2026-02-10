@@ -5,7 +5,6 @@ using Ascendance.Rendering.Managers;
 using Nalix.Logging.Extensions;
 using SFML.System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace Ascendance.Domain.Tiles;
@@ -53,10 +52,10 @@ public static class TmxMapLoader
             }
 
             // Parse map properties
-            System.Int16 width = ParseInt(mapElement.Attribute("width"), 0);
-            System.Int16 height = ParseInt(mapElement.Attribute("height"), 0);
-            System.Int16 tileWidth = ParseInt(mapElement.Attribute("tilewidth"), 0);
-            System.Int16 tileHeight = ParseInt(mapElement.Attribute("tileheight"), 0);
+            System.Int16 width = PARSE_INT(mapElement.Attribute("width"), 0);
+            System.Int16 height = PARSE_INT(mapElement.Attribute("height"), 0);
+            System.Int16 tileWidth = PARSE_INT(mapElement.Attribute("tilewidth"), 0);
+            System.Int16 tileHeight = PARSE_INT(mapElement.Attribute("tileheight"), 0);
 
             if (width <= 0 || height <= 0 || tileWidth <= 0 || tileHeight <= 0)
             {
@@ -89,7 +88,7 @@ public static class TmxMapLoader
             System.Int32 layerCount = 0;
             foreach (XElement layerElement in mapElement.Elements("layer"))
             {
-                TileLayer layer = LoadLayer(layerElement, tileMap);
+                TileLayer layer = LOAD_LAYER(layerElement, tileMap);
                 if (layer is not null)
                 {
                     tileMap.AddLayer(layer);
@@ -163,7 +162,7 @@ public static class TmxMapLoader
         Tileset tileset = LoadEmbeddedTileset(tilesetElement, baseDirectory);
 
         // Override FirstGid from map's tileset reference
-        tileset?.FirstGid = ParseInt(mapTilesetElement.Attribute("firstgid"), 1);
+        tileset?.FirstGid = PARSE_INT(mapTilesetElement.Attribute("firstgid"), 1);
 
         return tileset;
     }
@@ -173,13 +172,13 @@ public static class TmxMapLoader
         Tileset tileset = new()
         {
             Name = tilesetElement.Attribute("name")?.Value ?? "Unnamed",
-            FirstGid = ParseInt(tilesetElement.Attribute("firstgid"), 1),
-            TileWidth = ParseInt(tilesetElement.Attribute("tilewidth"), 0),
-            TileHeight = ParseInt(tilesetElement.Attribute("tileheight"), 0),
-            TileCount = ParseInt(tilesetElement.Attribute("tilecount"), 0),
-            Columns = ParseInt(tilesetElement.Attribute("columns"), 0),
-            Spacing = ParseInt(tilesetElement.Attribute("spacing"), 0),
-            Margin = ParseInt(tilesetElement.Attribute("margin"), 0)
+            FirstGid = PARSE_INT(tilesetElement.Attribute("firstgid"), 1),
+            TileWidth = PARSE_INT(tilesetElement.Attribute("tilewidth"), 0),
+            TileHeight = PARSE_INT(tilesetElement.Attribute("tileheight"), 0),
+            TileCount = PARSE_INT(tilesetElement.Attribute("tilecount"), 0),
+            Columns = PARSE_INT(tilesetElement.Attribute("columns"), 0),
+            Spacing = PARSE_INT(tilesetElement.Attribute("spacing"), 0),
+            Margin = PARSE_INT(tilesetElement.Attribute("margin"), 0)
         };
 
         // Load image
@@ -203,7 +202,7 @@ public static class TmxMapLoader
         // Load tile properties
         foreach (XElement tileElement in tilesetElement.Elements("tile"))
         {
-            System.Int32 tileId = ParseInt(tileElement.Attribute("id"), -1);
+            System.Int32 tileId = PARSE_INT(tileElement.Attribute("id"), -1);
             if (tileId < 0)
             {
                 continue;
@@ -221,15 +220,15 @@ public static class TmxMapLoader
 
     #region Layer Loading
 
-    private static TileLayer LoadLayer(XElement layerElement, TileMap tileMap)
+    private static TileLayer LOAD_LAYER(XElement layerElement, TileMap tileMap)
     {
         try
         {
             System.String name = layerElement.Attribute("name")?.Value ?? "Unnamed";
-            System.Int16 width = ParseInt(layerElement.Attribute("width"), 0);
-            System.Int16 height = ParseInt(layerElement.Attribute("height"), 0);
-            System.Single opacity = ParseFloat(layerElement.Attribute("opacity"), 1.0f);
-            System.Boolean visible = ParseInt(layerElement.Attribute("visible"), 1) != 0;
+            System.Int16 width = PARSE_INT(layerElement.Attribute("width"), 0);
+            System.Int16 height = PARSE_INT(layerElement.Attribute("height"), 0);
+            System.Single opacity = PARSE_FLOAT(layerElement.Attribute("opacity"), 1.0f);
+            System.Boolean visible = PARSE_INT(layerElement.Attribute("visible"), 1) != 0;
 
             if (width <= 0 || height <= 0)
             {
@@ -274,11 +273,11 @@ public static class TmxMapLoader
                 switch (encoding)
                 {
                     case TileDataEncoding.Csv:
-                        LoadCsvData(dataElement, layer, tileMap);
+                        LOAD_CSV_DATA(dataElement, layer, tileMap);
                         break;
 
                     case TileDataEncoding.Xml:
-                        LoadXmlData(dataElement, layer, tileMap);
+                        LOAD_XML_DATA(dataElement, layer, tileMap);
                         break;
 
                     case TileDataEncoding.Base64:
@@ -286,6 +285,22 @@ public static class TmxMapLoader
                         $"Base64 encoding not yet supported for layer '{name}'".Warn(source: "TmxMapLoader");
                         break;
                 }
+            }
+
+            System.Int16 firstNonEmptyGid = 0;
+            foreach (Tile tile in layer.GetTilesSpan())
+            {
+                if (!tile.IsEmpty())
+                {
+                    firstNonEmptyGid = tile.Gid;
+                    break;
+                }
+            }
+
+            if (firstNonEmptyGid > 0)
+            {
+                Tileset tileset = tileMap.GetTilesetForGid(firstNonEmptyGid);
+                layer.Texture = tileset?.Texture;
             }
 
             return layer;
@@ -301,8 +316,9 @@ public static class TmxMapLoader
 
     #region Tile Data Loading
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static void LoadCsvData(XElement dataElement, TileLayer layer, TileMap tileMap)
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
+    private static void LOAD_CSV_DATA(XElement dataElement, TileLayer layer, TileMap tileMap)
     {
         System.String csvData = dataElement.Value.Trim();
         System.String[] values = csvData.Split([',', '\n', '\r'], System.StringSplitOptions.RemoveEmptyEntries);
@@ -323,14 +339,15 @@ public static class TmxMapLoader
                     continue;
                 }
 
-                Tile tile = CreateTileFromGid(rawGid, x, y, tileMap);
+                Tile tile = CREATE_TILE_FROM_GID(rawGid, x, y, tileMap);
                 layer.SetTile(x, y, tile);
             }
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static void LoadXmlData(XElement dataElement, TileLayer layer, TileMap tileMap)
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
+    private static void LOAD_XML_DATA(XElement dataElement, TileLayer layer, TileMap tileMap)
     {
         System.Collections.Generic.IEnumerable<XElement> tileElements = dataElement.Elements("tile");
 
@@ -346,14 +363,15 @@ public static class TmxMapLoader
             System.Int32 y = index / layer.Width;
             index++;
 
-            System.UInt32 rawGid = ParseUInt(tileElement.Attribute("gid"), 0);
-            Tile tile = CreateTileFromGid(rawGid, x, y, tileMap);
+            System.UInt32 rawGid = PARSE_UINT(tileElement.Attribute("gid"), 0);
+            Tile tile = CREATE_TILE_FROM_GID(rawGid, x, y, tileMap);
             layer.SetTile(x, y, tile);
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Tile CreateTileFromGid(System.UInt32 rawGid, System.Int32 x, System.Int32 y, TileMap tileMap)
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
+    private static Tile CREATE_TILE_FROM_GID(System.UInt32 rawGid, System.Int32 x, System.Int32 y, TileMap tileMap)
     {
         // Extract flip flags
         System.Boolean flipH = (rawGid & FLIPPED_HORIZONTALLY_FLAG) != 0;
@@ -382,12 +400,7 @@ public static class TmxMapLoader
 
         Vector2f worldPos = new(x * tileMap.TileWidth, y * tileMap.TileHeight);
 
-        Tile tile = new(
-            gid,
-            localId,
-            tileset.GetTileRect(localId),
-            worldPos,
-            false);
+        Tile tile = new(gid, localId, tileset.GetTileRect(localId), worldPos, false);
 
         // Apply flip flags
         if (flipH)
@@ -442,7 +455,8 @@ public static class TmxMapLoader
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
     private static TileDataEncoding PARSE_ENCODING(System.String encodingString)
     {
         return System.String.IsNullOrWhiteSpace(encodingString)
@@ -455,7 +469,8 @@ public static class TmxMapLoader
             };
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
     private static TileLayerType PARSE_LAYER_TYPE(System.String typeString)
     {
         return typeString?.ToLowerInvariant() switch
@@ -470,24 +485,27 @@ public static class TmxMapLoader
         };
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static System.Int16 ParseInt(XAttribute attribute, System.Int16 defaultValue)
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
+    private static System.Int16 PARSE_INT(XAttribute attribute, System.Int16 defaultValue)
     {
         return attribute is not null && System.Int16.TryParse(attribute.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out System.Int16 result)
             ? result
             : defaultValue;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static System.UInt16 ParseUInt(XAttribute attribute, System.UInt16 defaultValue)
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
+    private static System.UInt16 PARSE_UINT(XAttribute attribute, System.UInt16 defaultValue)
     {
         return attribute is not null && System.UInt16.TryParse(attribute.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out System.UInt16 result)
             ? result
             : defaultValue;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static System.Single ParseFloat(XAttribute attribute, System.Single defaultValue)
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization)]
+    private static System.Single PARSE_FLOAT(XAttribute attribute, System.Single defaultValue)
     {
         return attribute is not null && System.Single.TryParse(attribute.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out System.Single result)
             ? result
