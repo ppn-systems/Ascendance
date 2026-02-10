@@ -30,15 +30,15 @@ public class TextInputField : RenderObject, IFocusable
 {
     #region Constants
 
-    private const System.Single DefaultPaddingX = 16f;
+    private const System.Single CaretYOffset = 2f;
+    private const System.Single MinSizeOffset = 1f;
     private const System.Single DefaultPaddingY = 6f;
+    private const System.Single MinCaretWidth = 0.5f;
+    private const System.Single DefaultPaddingX = 16f;
+    private const System.Single DefaultCaretWidth = 2f;
     private const System.Single CaretBlinkPeriod = 0.5f;
     private const System.Single KeyRepeatNextDelay = 0.05f;
     private const System.Single KeyRepeatFirstDelay = 0.35f;
-    private const System.Single DefaultCaretWidth = 3f;
-    private const System.Single CaretYOffset = 2f;
-    private const System.Single MinCaretWidth = 0.5f;
-    private const System.Single MinSizeOffset = 1f;
 
     #endregion Constants
 

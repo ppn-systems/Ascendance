@@ -22,9 +22,9 @@ internal sealed class ServerSelectView : RenderObject
     #region Events
 
     /// <summary>
-    /// Raised when a server is selected.
+    /// Raised when "Back" button is clicked.
     /// </summary>
-    public event System.Action<System.Int32> ServerSelected;
+    public event System.Action BackRequested;
 
     /// <summary>
     /// Raised when the language dropdown is clicked.
@@ -32,9 +32,9 @@ internal sealed class ServerSelectView : RenderObject
     public event System.Action LanguageDropdownClicked;
 
     /// <summary>
-    /// Raised when "Back" button is clicked.
+    /// Raised when a server is selected.
     /// </summary>
-    public event System.Action BackRequested;
+    public event System.Action<System.Int32> ServerSelected;
 
     /// <summary>
     /// Raised when server type tab is changed (Domestic/Global).
@@ -122,11 +122,10 @@ internal sealed class ServerSelectView : RenderObject
 
         // Main panel - Dark wood
         Vector2f mainPanelPos = new(_centerPos.X - (MainPanelWidth * 0.5f), TitleHeight * 2.5f);
-
         _mainPanel = new NineSlicePanel(_panelTexture, PanelBorder, default)
+            .SetTintColor(MainPanelBg)
             .SetPosition(mainPanelPos)
-            .SetSize(new Vector2f(MainPanelWidth, MainPanelHeight))
-            .SetTintColor(MainPanelBg);
+            .SetSize(new Vector2f(MainPanelWidth, MainPanelHeight));
 
         // Tab buttons
         System.Single tabX = mainPanelPos.X + 25f;
@@ -134,26 +133,34 @@ internal sealed class ServerSelectView : RenderObject
 
         _domesticTabBtn = new Button("DOMESTIC SERVER", null, LeftPanelWidth - 30f)
         {
-            Position = new Vector2f(tabX, tabY),
+            FontSize = 16,
             Height = TabHeight,
-            FontSize = 16
+            Position = new Vector2f(tabX, tabY)
         };
-        _domesticTabBtn.RegisterClickHandler(() => this.SWITCH_TAB(ServerType.Domestic));
 
         _globalTabBtn = new Button("GLOBAL SERVER", null, LeftPanelWidth - 30f)
         {
-            Position = new Vector2f(tabX, tabY + TabHeight + TabSpacing),
+            FontSize = 16,
             Height = TabHeight,
-            FontSize = 16
+            Position = new Vector2f(tabX, tabY + TabHeight + TabSpacing)
         };
-        _globalTabBtn.RegisterClickHandler(() => this.SWITCH_TAB(ServerType.Global));
+
+        // Back button
+        _backBtn = new Button("Back", null, 160f)
+        {
+            Height = 50f,
+            FontSize = 18,
+            PanelColor = BackBtnBg,
+            TextColor = BackBtnText,
+            Position = new Vector2f(GraphicsEngine.ScreenSize.X - 210f, GraphicsEngine.ScreenSize.Y - 80f)
+        };
 
         // Description panel - Parchment style
         System.Single descY = tabY + ((TabHeight + TabSpacing) * 2) + 20f;
         _descriptionPanel = new NineSlicePanel(_panelTexture, DescBorder, default)
+            .SetTintColor(DescPanelBg)
             .SetPosition(new Vector2f(tabX, descY))
-            .SetSize(new Vector2f(LeftPanelWidth - 30f, 170f))
-            .SetTintColor(DescPanelBg);
+            .SetSize(new Vector2f(LeftPanelWidth - 30f, 170f));
 
         _descriptionText = new Text("", _font, 15)
         {
@@ -166,8 +173,9 @@ internal sealed class ServerSelectView : RenderObject
 
         // Server buttons (2 columns)
         _serverButtons = new Button[2];
-        System.Single serverBtnStartX = mainPanelPos.X + LeftPanelWidth + 45f;
+
         System.Single serverBtnStartY = mainPanelPos.Y + 30f;
+        System.Single serverBtnStartX = mainPanelPos.X + LeftPanelWidth + 45f;
 
         for (System.Int32 i = 0; i < 2; i++)
         {
@@ -194,16 +202,9 @@ internal sealed class ServerSelectView : RenderObject
             _serverButtons[i].RegisterClickHandler(() => this.ON_SERVER_SELECTED(capturedNum));
         }
 
-        // Back button
-        _backBtn = new Button("Back", null, 160f)
-        {
-            Height = 50f,
-            FontSize = 18,
-            PanelColor = BackBtnBg,
-            TextColor = BackBtnText,
-            Position = new Vector2f(GraphicsEngine.ScreenSize.X - 210f, GraphicsEngine.ScreenSize.Y - 80f)
-        };
         _backBtn.RegisterClickHandler(this.ON_BACK_CLICKED);
+        _globalTabBtn.RegisterClickHandler(() => this.SWITCH_TAB(ServerType.Global));
+        _domesticTabBtn.RegisterClickHandler(() => this.SWITCH_TAB(ServerType.Domestic));
 
         // Set initial tab state
         this.UPDATE_TAB_VISUALS();
