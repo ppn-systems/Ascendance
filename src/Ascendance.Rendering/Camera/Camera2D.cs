@@ -76,6 +76,16 @@ public class Camera2D : SingletonBase<Camera2D>
     #region Constructor
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="Camera2D"/> class with default settings.
+    /// </summary>
+    /// <remarks>
+    /// Creates a view with center at (0, 0) and size of (800, 600).
+    /// </remarks>
+    public Camera2D() : this(new Vector2f(0f, 0f), new Vector2f(800f, 600f))
+    {
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Camera2D"/> class.
     /// </summary>
     /// <param name="center">
@@ -85,9 +95,7 @@ public class Camera2D : SingletonBase<Camera2D>
     /// Initial viewport size, typically matching the window resolution (in pixels).
     /// </param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Style",
-        "IDE0290:Use primary constructor",
-        Justification = "<Pending>")]
+        "Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public Camera2D(Vector2f center, Vector2f size) => this.SFMLView = new View(center, size);
 
     #endregion Constructor

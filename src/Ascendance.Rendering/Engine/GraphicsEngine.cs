@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Managers;
@@ -202,6 +203,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
                 this.RenderWindow.DispatchEvents();
 
                 time.Update();
+                Camera2D.Instance.Apply(RenderWindow);
 
                 System.Int32 updateIterations = 0;
                 accumulator += System.Math.Min(time.Current.DeltaTime, MAX_ACCUMULATOR);
