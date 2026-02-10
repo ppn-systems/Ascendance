@@ -162,7 +162,7 @@ public sealed class MessageBoxAction : MessageBox
     public MessageBoxAction(
         Texture buttonTexture = null,
         System.String initialMessage = "",
-        Direction2D side = Direction2D.Down,
+        MessageBoxPlacement side = MessageBoxPlacement.Bottom,
         System.String buttonText = "OK",
         Font font = null)
         : base(buttonTexture, initialMessage, side, font)

@@ -2,7 +2,7 @@
 
 using Ascendance.Shared.Enums;
 
-namespace Ascendance.Domain.Extensions;
+namespace Ascendance.Shared.Extensions;
 
 /// <summary>
 /// Extension methods for <see cref="TileLayerType"/>.

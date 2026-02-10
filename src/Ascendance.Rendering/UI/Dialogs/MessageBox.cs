@@ -152,7 +152,7 @@ public class MessageBox : RenderObject
     public MessageBox(
         Texture frameTexture = null,
         System.String initialMessage = "",
-        Direction2D side = Direction2D.Up,
+        MessageBoxPlacement side = MessageBoxPlacement.Top,
         Font font = null)
     {
         font ??= EmbeddedAssets.JetBrainsMono.ToFont();
@@ -223,12 +223,12 @@ public class MessageBox : RenderObject
     /// <param name="panelWidth">Width of panel.</param>
     /// <param name="panelX">X position of panel.</param>
     private void COMPUTE_LAYOUT(
-        Direction2D side,
+        MessageBoxPlacement side,
         out System.Single panelY,
         out System.Single panelWidth,
         out System.Single panelX)
     {
-        System.Single ratio = side == Direction2D.Down ? BottomYRatio : TopYRatio;
+        System.Single ratio = side == MessageBoxPlacement.Bottom ? BottomYRatio : TopYRatio;
         System.Single screenW = GraphicsEngine.ScreenSize.X;
 
         System.Single rawWidth = screenW * MaxWidthFraction;

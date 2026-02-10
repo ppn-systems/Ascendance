@@ -5,17 +5,17 @@ namespace Ascendance.Rendering.Enums;
 /// <summary>
 /// Represents a 2D directional orientation in game space.
 /// </summary>
-public enum Direction2D : System.Byte
+public enum MessageBoxPlacement : System.Byte
 {
     /// <summary>
     /// Represents the upward direction.
     /// </summary>
-    Up = 0,
+    Top = 0,
 
     /// <summary>
     /// Represents the downward direction.
     /// </summary>
-    Down = 1,
+    Bottom = 1,
 
     /// <summary>
     /// Represents the left direction.
