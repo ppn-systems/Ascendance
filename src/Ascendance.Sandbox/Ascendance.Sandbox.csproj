@@ -35,6 +35,5 @@
 
 	<ItemGroup>
 	  <Folder Include="Entities\" />
-	  <Folder Include="Scenes\" />
 	</ItemGroup>
 </Project>
