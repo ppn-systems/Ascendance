@@ -231,7 +231,7 @@ public sealed class Tileset
     /// </remarks>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public System.Int32 GidToLocalId(System.Int32 gid) => gid < FirstGid || gid >= FirstGid + TileCount ? -1 : gid - FirstGid;
+    public System.Int16 GidToLocalId(System.Int16 gid) => (System.Int16)(gid < FirstGid || gid >= FirstGid + TileCount ? -1 : gid - FirstGid);
 
     /// <summary>
     /// Determines whether a global tile ID (GID) belongs to this tileset.

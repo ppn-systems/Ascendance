@@ -75,7 +75,7 @@ public static class TileCollider
         System.Collections.Generic.List<TileInfo> result = [];
 
         TileLayer layer = tileMap.GetLayer(layerName);
-        if (layer is null || !layer.Visible)
+        if (layer?.Visible != true)
         {
             return result;
         }
@@ -84,14 +84,14 @@ public static class TileCollider
         Vector2i bottomRight = tileMap.WorldToTile(
             new Vector2f(bounds.Left + bounds.Width, bounds.Top + bounds.Height));
 
-        System.Int32 startX = System.Math.Max(0, topLeft.X);
-        System.Int32 startY = System.Math.Max(0, topLeft.Y);
-        System.Int32 endX = System.Math.Min(layer.Width - 1, bottomRight.X);
-        System.Int32 endY = System.Math.Min(layer.Height - 1, bottomRight.Y);
+        System.Int16 startX = (System.Int16)System.Math.Max(0, topLeft.X);
+        System.Int16 startY = (System.Int16)System.Math.Max(0, topLeft.Y);
+        System.Int16 endX = (System.Int16)System.Math.Min(layer.Width - 1, bottomRight.X);
+        System.Int16 endY = (System.Int16)System.Math.Min(layer.Height - 1, bottomRight.Y);
 
-        for (System.Int32 y = startY; y <= endY; y++)
+        for (System.Int16 y = startY; y <= endY; y++)
         {
-            for (System.Int32 x = startX; x <= endX; x++)
+            for (System.Int16 x = startX; x <= endX; x++)
             {
                 ref readonly Tile tile = ref layer.GetTileRef(x, y);
                 if (!tile.IsEmpty() && tile.IsCollidable)

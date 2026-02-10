@@ -53,10 +53,10 @@ public static class TmxMapLoader
             }
 
             // Parse map properties
-            System.Int32 width = ParseInt(mapElement.Attribute("width"), 0);
-            System.Int32 height = ParseInt(mapElement.Attribute("height"), 0);
-            System.Int32 tileWidth = ParseInt(mapElement.Attribute("tilewidth"), 0);
-            System.Int32 tileHeight = ParseInt(mapElement.Attribute("tileheight"), 0);
+            System.Int16 width = ParseInt(mapElement.Attribute("width"), 0);
+            System.Int16 height = ParseInt(mapElement.Attribute("height"), 0);
+            System.Int16 tileWidth = ParseInt(mapElement.Attribute("tilewidth"), 0);
+            System.Int16 tileHeight = ParseInt(mapElement.Attribute("tileheight"), 0);
 
             if (width <= 0 || height <= 0 || tileWidth <= 0 || tileHeight <= 0)
             {
@@ -226,8 +226,8 @@ public static class TmxMapLoader
         try
         {
             System.String name = layerElement.Attribute("name")?.Value ?? "Unnamed";
-            System.Int32 width = ParseInt(layerElement.Attribute("width"), 0);
-            System.Int32 height = ParseInt(layerElement.Attribute("height"), 0);
+            System.Int16 width = ParseInt(layerElement.Attribute("width"), 0);
+            System.Int16 height = ParseInt(layerElement.Attribute("height"), 0);
             System.Single opacity = ParseFloat(layerElement.Attribute("opacity"), 1.0f);
             System.Boolean visible = ParseInt(layerElement.Attribute("visible"), 1) != 0;
 
@@ -361,7 +361,7 @@ public static class TmxMapLoader
         System.Boolean flipD = (rawGid & FLIPPED_DIAGONALLY_FLAG) != 0;
 
         // Clear flags to get actual GID
-        System.Int32 gid = (System.Int32)(rawGid & TILE_GID_MASK);
+        System.Int16 gid = (System.Int16)(rawGid & TILE_GID_MASK);
 
         if (gid == 0)
         {
@@ -374,7 +374,7 @@ public static class TmxMapLoader
             return Tile.CreateEmpty(new Vector2f(x * tileMap.TileWidth, y * tileMap.TileHeight));
         }
 
-        System.Int32 localId = tileset.GidToLocalId(gid);
+        System.Int16 localId = tileset.GidToLocalId(gid);
         if (localId < 0)
         {
             return Tile.CreateEmpty(new Vector2f(x * tileMap.TileWidth, y * tileMap.TileHeight));
