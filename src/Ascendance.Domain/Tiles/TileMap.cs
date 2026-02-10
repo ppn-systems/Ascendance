@@ -135,8 +135,7 @@ public sealed class TileMap : RenderObject, System.IDisposable
 
         _layers = [];
         _tilesets = [];
-        _layerCache = new System.Collections.Generic.Dictionary<System.String, TileLayer>(
-            System.StringComparer.Ordinal);
+        _layerCache = new System.Collections.Generic.Dictionary<System.String, TileLayer>(System.StringComparer.Ordinal);
     }
 
     #endregion Constructor

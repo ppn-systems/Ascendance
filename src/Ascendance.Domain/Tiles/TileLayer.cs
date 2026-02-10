@@ -15,7 +15,7 @@ public sealed class TileLayer : RenderObject, System.IDisposable
 {
     #region Fields
 
-    private Tile[] _tiles;
+    private readonly Tile[] _tiles;
     private VertexArray _vertexArray;
     private System.Boolean _disposed;
 

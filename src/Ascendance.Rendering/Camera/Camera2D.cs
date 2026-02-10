@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Nalix.Framework.Injection.DI;
 using Nalix.Framework.Random;
 using SFML.Graphics;
 using SFML.System;
@@ -25,7 +26,7 @@ namespace Ascendance.Rendering.Camera;
 /// Designed to minimize per-frame allocations and be safe for real-time usage.
 /// </para>
 /// </remarks>
-public class Camera2D
+public class Camera2D : SingletonBase<Camera2D>
 {
     #region Fields
 
