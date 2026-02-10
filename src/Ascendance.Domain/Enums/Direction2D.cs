@@ -6,8 +6,16 @@ namespace Ascendance.Domain.Enums;
 /// Defines the four cardinal directions a player can face in 2.5D top-down perspective.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Used for animation frame selection and sprite rendering.
-/// Order matches standard tileset convention (Down, Up, Left, Right).
+/// Order matches your sprite sheet layout:
+/// </para>
+/// <code>
+/// Row 0: Down
+/// Row 1: Right
+/// Row 2: Up
+/// Row 3: Left
+/// </code>
 /// </remarks>
 public enum Direction2D : System.Byte
 {
@@ -15,31 +23,31 @@ public enum Direction2D : System.Byte
     /// Player is facing downward (toward the camera/screen bottom).
     /// </summary>
     /// <remarks>
-    /// Typically corresponds to row 0 in sprite sheets.
+    /// Corresponds to row 0 in the sprite sheet.
     /// </remarks>
     Down = 0,
-
-    /// <summary>
-    /// Player is facing upward (away from camera/screen top).
-    /// </summary>
-    /// <remarks>
-    /// Typically corresponds to row 1 in sprite sheets.
-    /// </remarks>
-    Up = 1,
-
-    /// <summary>
-    /// Player is facing left.
-    /// </summary>
-    /// <remarks>
-    /// Typically corresponds to row 2 in sprite sheets.
-    /// </remarks>
-    Left = 2,
 
     /// <summary>
     /// Player is facing right.
     /// </summary>
     /// <remarks>
-    /// Typically corresponds to row 3 in sprite sheets.
+    /// Corresponds to row 1 in the sprite sheet.
     /// </remarks>
-    Right = 3
+    Right = 1,
+
+    /// <summary>
+    /// Player is facing upward (away from camera/screen top).
+    /// </summary>
+    /// <remarks>
+    /// Corresponds to row 2 in the sprite sheet.
+    /// </remarks>
+    Up = 2,
+
+    /// <summary>
+    /// Player is facing left.
+    /// </summary>
+    /// <remarks>
+    /// Corresponds to row 3 in the sprite sheet.
+    /// </remarks>
+    Left = 3
 }

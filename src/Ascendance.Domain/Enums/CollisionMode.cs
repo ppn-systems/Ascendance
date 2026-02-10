@@ -8,7 +8,7 @@ namespace Ascendance.Domain.Enums;
 /// <remarks>
 /// Defines how the collision system should respond when an entity collides with tiles.
 /// </remarks>
-public enum CollisionResolutionMode
+public enum CollisionMode
 {
     /// <summary>
     /// No collision resolution (detection only). Returns collision state without modifying position.

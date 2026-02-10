@@ -28,13 +28,13 @@ public sealed class PlayerAnimationController
 {
     #region Constants
 
-    private const System.Int32 SPRITE_WIDTH = 15;
-    private const System.Int32 SPRITE_HEIGHT = 31;
-    private const System.Int32 FRAMES_PER_DIRECTION = 4;
+    private const System.Int32 SPRITE_WIDTH = 16;
+    private const System.Int32 SPRITE_HEIGHT = 32;
     private const System.Int32 DIRECTION_COUNT = 4;
+    private const System.Int32 FRAMES_PER_DIRECTION = 4;
 
-    private const System.Single WALK_FRAME_TIME = 0.15f;  // 150ms per frame
     private const System.Single RUN_FRAME_TIME = 0.10f;   // 100ms per frame (faster animation)
+    private const System.Single WALK_FRAME_TIME = 0.15f;  // 150ms per frame
     private const System.Single IDLE_FRAME_TIME = 0.25f;  // 250ms per frame (slower for idle bob)
 
     #endregion Constants

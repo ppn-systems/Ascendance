@@ -122,14 +122,14 @@ public static class TileCollider
         Vector2f currentPos,
         Vector2f targetPos,
         Vector2f size,
-        CollisionResolutionMode mode = CollisionResolutionMode.Slide)
+        CollisionMode mode = CollisionMode.Slide)
     {
         return mode switch
         {
-            CollisionResolutionMode.None => targetPos,
-            CollisionResolutionMode.Stop => RESOLVE_STOP(tileMap, layerName, currentPos, targetPos, size),
-            CollisionResolutionMode.Slide => RESOLVE_SLIDE(tileMap, layerName, currentPos, targetPos, size),
-            CollisionResolutionMode.Push => RESOLVE_PUSH(tileMap, layerName, currentPos, targetPos, size),
+            CollisionMode.None => targetPos,
+            CollisionMode.Stop => RESOLVE_STOP(tileMap, layerName, currentPos, targetPos, size),
+            CollisionMode.Slide => RESOLVE_SLIDE(tileMap, layerName, currentPos, targetPos, size),
+            CollisionMode.Push => RESOLVE_PUSH(tileMap, layerName, currentPos, targetPos, size),
             _ => currentPos
         };
     }

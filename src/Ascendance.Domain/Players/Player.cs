@@ -34,9 +34,9 @@ namespace Ascendance.Domain.Players;
 /// Expected sprite sheet layout:
 /// <code>
 /// Row 0: Down  [Idle] [Walk1] [Walk2] [Walk3]
-/// Row 1: Up    [Idle] [Walk1] [Walk2] [Walk3]
-/// Row 2: Left  [Idle] [Walk1] [Walk2] [Walk3]
-/// Row 3: Right [Idle] [Walk1] [Walk2] [Walk3]
+/// Row 2: Right [Idle] [Walk1] [Walk2] [Walk3]
+/// Row 3: Up    [Idle] [Walk1] [Walk2] [Walk3]
+/// Row 4: Left  [Idle] [Walk1] [Walk2] [Walk3]
 /// </code>
 /// </para>
 /// </remarks>
@@ -158,17 +158,17 @@ public sealed class Player : AnimatedSprite
         // Initialize animation controller
         _animationController = new PlayerAnimationController(this.SpriteAnimator);
 
-        // Initialize collision (circular for smooth 2.5D movement)
-        this.Collider = new CircleCollider(startPosition, COLLISION_RADIUS);
-
         // Set default state
         _state = PlayerState.Idle;
         _direction = Direction2D.Down;
-        this.CollisionLayerName = "Collision";
 
+        // Initialize collision (circular for smooth 2.5D movement)
         // Set sprite origin to center-bottom (for 2.5D depth sorting)
         // Origin (7.5, 31) means center-X (15/2) and bottom-Y (31)
+        this.CollisionLayerName = "Collision";
+        this.Sprite.Scale = new Vector2f(2f, 2f);
         this.Sprite.Origin = new Vector2f(7.5f, 31f);
+        this.Collider = new CircleCollider(startPosition, COLLISION_RADIUS);
 
         // Attach animation event handlers
         this.AttachAnimatorEventHandlers();
@@ -507,7 +507,7 @@ public sealed class Player : AnimatedSprite
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Uses <see cref="TileCollider.ResolveCollision"/> with <see cref="CollisionResolutionMode.Stop"/>
+    /// Uses <see cref="TileCollider.ResolveCollision"/> with <see cref="CollisionMode.Stop"/>
     /// to prevent the player from moving into collidable tiles.
     /// </para>
     /// <para>
@@ -543,7 +543,7 @@ public sealed class Player : AnimatedSprite
             currentPosition,
             targetPosition,
             colliderSize,
-            CollisionResolutionMode.Stop); // Stop mode: cannot move if collision detected
+            CollisionMode.Stop); // Stop mode: cannot move if collision detected
 
         // Update collider position with resolved position
         this.Collider.Position = resolvedPosition;
