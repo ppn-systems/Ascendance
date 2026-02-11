@@ -12,7 +12,8 @@ namespace Ascendance.Game.Entities;
 /// This struct is optimized for cache-friendly memory layout with value semantics.
 /// Uses struct for better performance in large tile arrays.
 /// </remarks>
-[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+[System.Runtime.InteropServices.StructLayout(
+    System.Runtime.InteropServices.LayoutKind.Sequential)]
 public struct Tile : System.IEquatable<Tile>
 {
     #region Fields

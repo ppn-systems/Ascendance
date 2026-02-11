@@ -5,7 +5,7 @@ using Ascendance.Rendering.Utilities;
 using Ascendance.Shared.Enums;
 using SFML.Graphics;
 
-namespace Ascendance.Game.Players;
+namespace Ascendance.Game.Controllers;
 
 /// <summary>
 /// Manages player animation state transitions and frame selection based on player state and direction.

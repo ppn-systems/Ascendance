@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Players;
+using Ascendance.Game.Controllers;
 using Ascendance.Game.Tilemaps;
 using Ascendance.Game.Tiles;
 using Ascendance.Physics.Colliders;
@@ -167,7 +167,7 @@ public sealed class Player : AnimatedSprite
         // Set sprite origin to center-bottom (for 2.5D depth sorting)
         // Origin (7.5, 31) means center-X (15/2) and bottom-Y (31)
         this.CollisionLayerName = "Collision";
-        this.Sprite.Scale = new Vector2f(2f, 2f);
+        this.Sprite.Scale = new Vector2f(1.6f, 1.6f);
         this.Sprite.Origin = new Vector2f(7.5f, 31f);
         this.Collider = new CircleCollider(startPosition, COLLISION_RADIUS);
 
