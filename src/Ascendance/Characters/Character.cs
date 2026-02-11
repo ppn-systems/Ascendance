@@ -56,6 +56,8 @@ public sealed class Character : AnimatedSprite
     private PlayerState _state;
     private Direction2D _direction;
 
+    private System.String _collisionLayerName = "collision";
+
     #endregion Fields
 
     #region Properties
@@ -103,7 +105,11 @@ public sealed class Character : AnimatedSprite
     /// Default: "Collision". Set this to match your tile map's collision layer name.
     /// This layer should contain tiles marked as collidable.
     /// </remarks>
-    public System.String CollisionLayerName { get; set; }
+    public System.String CollisionLayerName
+    {
+        get => _collisionLayerName;
+        set => _collisionLayerName = value?.ToLowerInvariant() ?? System.String.Empty;
+    }
 
     /// <summary>
     /// Gets or sets the camera that follows the player.
@@ -164,7 +170,6 @@ public sealed class Character : AnimatedSprite
         // Initialize collision (circular for smooth 2.5D movement)
         // Set sprite origin to center-bottom (for 2.5D depth sorting)
         // Origin (7.5, 31) means center-X (15/2) and bottom-Y (31)
-        this.CollisionLayerName = "Collision";
         this.Sprite.Scale = new Vector2f(1.6f, 1.6f);
         this.Sprite.Origin = new Vector2f(7.5f, 31f);
         this.Collider = new CircleCollider(startPosition, COLLISION_RADIUS);

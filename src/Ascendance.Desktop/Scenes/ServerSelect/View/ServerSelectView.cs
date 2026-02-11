@@ -27,11 +27,6 @@ internal sealed class ServerSelectView : RenderObject
     public event System.Action BackRequested;
 
     /// <summary>
-    /// Raised when the language dropdown is clicked.
-    /// </summary>
-    public event System.Action LanguageDropdownClicked;
-
-    /// <summary>
     /// Raised when a server is selected.
     /// </summary>
     public event System.Action<System.Int32> ServerSelected;
@@ -307,7 +302,6 @@ internal sealed class ServerSelectView : RenderObject
         this.BackRequested = null;
         this.ServerSelected = null;
         this.ServerTypeChanged = null;
-        this.LanguageDropdownClicked = null;
 
         for (System.Int32 i = 0; i < _serverButtons.Length; i++)
         {

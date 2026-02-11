@@ -154,21 +154,56 @@ public class Camera2D : SingletonBase<Camera2D>, IUpdatable
 
     /// <summary>
     /// Clamps the camera center so that it stays entirely within <see cref="Bounds"/>.
+    /// This method handles cases where the view is larger than the bounds by centering
+    /// the view on the bounds axis that is too small.
     /// </summary>
     /// <remarks>
-    /// This method assumes that <see cref="Bounds"/> is larger than the current view size.
-    /// Call this after camera movement (e.g. follow or shake) to enforce limits.
+    /// This method is safe to call regardless of relative sizes of view and bounds.
+    /// It ensures the camera never shows areas outside the world defined by Bounds.
     /// </remarks>
     public void ClampToBounds()
     {
-        Vector2f center = this.SFMLView.Center;
-        Vector2f half = this.SFMLView.Size / 2f;
-        Vector2f min = new(this.Bounds.Left + half.X, this.Bounds.Top + half.Y);
-        Vector2f max = new(this.Bounds.Left + this.Bounds.Width - half.X, this.Bounds.Top + this.Bounds.Height - half.Y);
+        // If bounds not set or invalid, nothing to clamp
+        if (this.Bounds.Width <= 0f || this.Bounds.Height <= 0f)
+        {
+            return;
+        }
 
-        center.X = System.Math.Max(min.X, System.Math.Min(max.X, center.X));
-        center.Y = System.Math.Max(min.Y, System.Math.Min(max.Y, center.Y));
+        Vector2f size = this.SFMLView.Size;
+        Vector2f half = size / 2f;
+
+        // Start from current center (may include shake)
+        Vector2f center = this.SFMLView.Center;
+
+        // Handle X axis:
+        // - If bounds width is smaller than or equal to view width, center X on bounds center.
+        // - Otherwise, clamp X to [minX, maxX].
+        if (this.Bounds.Width <= size.X)
+        {
+            center.X = this.Bounds.Left + (this.Bounds.Width * 0.5f);
+        }
+        else
+        {
+            System.Single minX = this.Bounds.Left + half.X;
+            System.Single maxX = this.Bounds.Left + this.Bounds.Width - half.X;
+            center.X = System.Math.Max(minX, System.Math.Min(maxX, center.X));
+        }
+
+        // Handle Y axis similarly
+        if (this.Bounds.Height <= size.Y)
+        {
+            center.Y = this.Bounds.Top + (this.Bounds.Height * 0.5f);
+        }
+        else
+        {
+            System.Single minY = this.Bounds.Top + half.Y;
+            System.Single maxY = this.Bounds.Top + this.Bounds.Height - half.Y;
+            center.Y = System.Math.Max(minY, System.Math.Min(maxY, center.Y));
+        }
+
+        // Apply clamped center to view and update base center so future movement uses clamped position.
         this.SFMLView.Center = center;
+        _baseCenter = center;
     }
 
     /// <summary>

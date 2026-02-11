@@ -26,10 +26,10 @@ public static class Program
         NLogixFx.MinimumLevel = LogLevel.Debug;
         System.Threading.CancellationTokenSource cts = new();
 
-        if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
-        {
-            Kernel32.Hide();
-        }
+        //if (!GraphicsEngine.Instance.IsDebugMode && System.OperatingSystem.IsWindows())
+        //{
+        //    Kernel32.Hide();
+        //}
 
         //AntiCheatMonitor.Instance.Activate(cts.Token);
 
