@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<IsTrimmable>true</IsTrimmable>
+		<Deterministic>true</Deterministic>
+		<TargetFramework>net10.0</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="TiledCS" Version="3.3.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
+		<ProjectReference Include="..\Ascendance.Rendering\Ascendance.Rendering.csproj" />
+	</ItemGroup>
+</Project>

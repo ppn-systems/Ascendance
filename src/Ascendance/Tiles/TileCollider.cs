@@ -1,13 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Entities;
-using Ascendance.Game.Tilemaps;
-using Ascendance.Game.Tiles;
 using Ascendance.Shared.Enums;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Game.Colliders;
+namespace Ascendance.Tiles;
 
 /// <summary>
 /// Provides static methods for collision detection between entities and tiles in a tile map.
@@ -32,7 +29,7 @@ public static class TileCollider
     public static System.Boolean CheckCollision(TileMap tileMap, System.String layerName, FloatRect bounds)
     {
         TileLayer layer = tileMap.GetLayer(layerName);
-        if (layer?.Visible != true)
+        if (layer is null)
         {
             return false;
         }

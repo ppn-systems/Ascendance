@@ -3,7 +3,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Game.Entities;
+namespace Ascendance.Tiles;
 
 /// <summary>
 /// Represents a single tile in the tile map with collision and rendering properties.
@@ -39,6 +39,12 @@ public struct Tile : System.IEquatable<Tile>
     public Vector2f WorldPosition;
 
     /// <summary>
+    /// Reference to the atlas texture used for this tile.
+    /// May be null for empty tiles.
+    /// </summary>
+    public Texture Atlas;
+
+    /// <summary>
     /// Packed flags for tile properties (collision, flip, rotation).
     /// </summary>
     private System.Byte _flags;
@@ -48,7 +54,7 @@ public struct Tile : System.IEquatable<Tile>
     #region Properties
 
     /// <summary>
-    /// Gets or sets whether this tile blocks movement (collision).
+    /// Gets whether this tile blocks movement (collision).
     /// </summary>
     public readonly System.Boolean IsCollidable
     {
@@ -58,7 +64,7 @@ public struct Tile : System.IEquatable<Tile>
     }
 
     /// <summary>
-    /// Gets or sets whether this tile is flipped horizontally.
+    /// Gets whether this tile is flipped horizontally.
     /// </summary>
     public readonly System.Boolean IsFlippedHorizontally
     {
@@ -68,7 +74,7 @@ public struct Tile : System.IEquatable<Tile>
     }
 
     /// <summary>
-    /// Gets or sets whether this tile is flipped vertically.
+    /// Gets whether this tile is flipped vertically.
     /// </summary>
     public readonly System.Boolean IsFlippedVertically
     {
@@ -78,7 +84,7 @@ public struct Tile : System.IEquatable<Tile>
     }
 
     /// <summary>
-    /// Gets or sets whether this tile is flipped diagonally.
+    /// Gets whether this tile is flipped diagonally.
     /// </summary>
     public readonly System.Boolean IsFlippedDiagonally
     {
@@ -99,18 +105,21 @@ public struct Tile : System.IEquatable<Tile>
     /// <param name="textureRect">The texture rectangle.</param>
     /// <param name="worldPosition">The world position.</param>
     /// <param name="isCollidable">Whether the tile is collidable.</param>
+    /// <param name="atlas">The texture atlas containing this tile's image.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     public Tile(
         System.Int16 gid,
         System.Int16 localId,
         IntRect textureRect,
         Vector2f worldPosition,
-        System.Boolean isCollidable = false)
+        System.Boolean isCollidable = false,
+        Texture atlas = null)
     {
         Gid = gid;
         LocalId = localId;
         TextureRect = textureRect;
         WorldPosition = worldPosition;
+        Atlas = atlas;
         _flags = (System.Byte)(isCollidable ? 0x01 : 0x00);
     }
 
@@ -206,7 +215,7 @@ public struct Tile : System.IEquatable<Tile>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static Tile CreateEmpty(Vector2f worldPosition) =>
-        new(0, -1, default, worldPosition, false);
+        new(0, -1, default, worldPosition, false, null);
 
     #endregion Methods
 

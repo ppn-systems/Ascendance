@@ -1,13 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Entities;
-using Ascendance.Game.Tiles;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Entities;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Game.Tilemaps;
+namespace Ascendance.Tiles;
 
 /// <summary>
 /// Represents a complete tile-based map that manages layers, tilesets, coordinate transformations, and rendering.
@@ -354,9 +352,21 @@ public sealed class TileMap : RenderObject, System.IDisposable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public System.Boolean IsTileCollidable(System.String layerName, Vector2f worldPos)
     {
-        ref readonly Tile tile = ref GetTileAtWorldPos(layerName, worldPos);
-        return !System.Runtime.CompilerServices.Unsafe.IsNullRef(ref System.Runtime.CompilerServices.Unsafe.AsRef(in tile)) &&
-               !tile.IsEmpty() && tile.IsCollidable;
+        TileLayer layer = GetLayer(layerName);
+        if (layer is null)
+        {
+            return false;
+        }
+
+        Vector2i tileCoord = WorldToTile(worldPos);
+        if (!IsValidTileCoord(tileCoord.X, tileCoord.Y))
+        {
+            return false;
+        }
+
+        ref readonly Tile tile = ref layer.GetTileRef(tileCoord.X, tileCoord.Y);
+        // At this point tile ref is valid (we checked bounds). Just inspect tile fields.
+        return !tile.IsEmpty() && tile.IsCollidable;
     }
 
     #endregion Tile Queries

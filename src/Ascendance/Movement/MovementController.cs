@@ -4,7 +4,7 @@ using Ascendance.Shared.Abstractions;
 using Ascendance.Shared.Enums;
 using SFML.System;
 
-namespace Ascendance.Game.Movement;
+namespace Ascendance.Movement;
 
 /// <summary>
 /// Controls movement state and applies movement strategies to update position and velocity.

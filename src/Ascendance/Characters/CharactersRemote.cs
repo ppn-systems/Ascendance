@@ -1,19 +1,18 @@
 ﻿// Copyright (c) 2026 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Controllers;
 using Ascendance.Rendering.Animation;
 using Ascendance.Shared.Enums;
 using Ascendance.Shared.Protocol;
 using SFML.System;
 
-namespace Ascendance.Game.Entities;
+namespace Ascendance.Characters;
 
 /// <summary>
 /// Client-side representation of a remote player entity.
 /// Buffers server snapshots (PlayerSnapshotPacket), performs interpolation/extrapolation,
 /// and synchronizes animation state with the local animator or PlayerController.
 /// </summary>
-public sealed class RemotePlayer : System.IDisposable
+public sealed class CharactersRemote : System.IDisposable
 {
     #region Constants
 
@@ -46,7 +45,7 @@ public sealed class RemotePlayer : System.IDisposable
     private readonly Animator _animator;
     private readonly System.Threading.Lock _lock;
     private readonly System.Int32 _bufferCapacity;
-    private readonly PlayerController _animationController; // optional, may be null
+    private readonly CharacterController _animationController; // optional, may be null
     private readonly System.Collections.Generic.LinkedList<Snapshot> _buffer;
 
     private System.Boolean _disposed;
@@ -65,9 +64,9 @@ public sealed class RemotePlayer : System.IDisposable
     /// <param name="bufferCapacity">Snapshot buffer capacity (default 64).</param>
     /// <exception cref="System.ArgumentNullException">Thrown when animator is null.</exception>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
-    public RemotePlayer(
+    public CharactersRemote(
         Animator animator,
-        PlayerController animationController = null,
+        CharacterController animationController = null,
         System.Int32 interpolationDelayMs = DEFAULT_INTERPOLATION_DELAY_MS,
         System.Int32 bufferCapacity = DEFAULT_BUFFER_CAPACITY)
     {

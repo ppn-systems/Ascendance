@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Entities;
-
-namespace Ascendance.Game.Tiles;
+namespace Ascendance.Tiles;
 
 /// <summary>
 /// Represents tile information including position in grid.

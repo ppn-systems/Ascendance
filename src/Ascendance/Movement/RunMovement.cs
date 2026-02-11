@@ -3,7 +3,7 @@
 using Ascendance.Shared.Abstractions;
 using SFML.System;
 
-namespace Ascendance.Game.Movement;
+namespace Ascendance.Movement;
 
 /// <summary>
 /// Implements running movement with increased speed for top-down 2D games.

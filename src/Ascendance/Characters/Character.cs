@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Colliders;
-using Ascendance.Game.Controllers;
-using Ascendance.Game.Movement;
-using Ascendance.Game.Tilemaps;
+using Ascendance.Colliders;
+using Ascendance.Movement;
 using Ascendance.Rendering.Animation;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Input;
 using Ascendance.Shared.Enums;
+using Ascendance.Tiles;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace Ascendance.Game.Entities;
+namespace Ascendance.Characters;
 
 /// <summary>
 /// Represents the player character in a 2.5D top-down game (Stardew Valley style).
@@ -40,7 +39,7 @@ namespace Ascendance.Game.Entities;
 /// </code>
 /// </para>
 /// </remarks>
-public sealed class Player : AnimatedSprite
+public sealed class Character : AnimatedSprite
 {
     #region Constants
 
@@ -52,7 +51,7 @@ public sealed class Player : AnimatedSprite
 
     private readonly KeyboardManager _keyboard;
     private readonly MovementController _movementController;
-    private readonly PlayerController _animationController;
+    private readonly CharacterController _animationController;
 
     private PlayerState _state;
     private Direction2D _direction;
@@ -141,12 +140,12 @@ public sealed class Player : AnimatedSprite
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Player"/> class.
+    /// Initializes a new instance of the <see cref="Character"/> class.
     /// </summary>
     /// <param name="texture">The player sprite sheet texture (15x31 per frame, 4x4 grid).</param>
     /// <param name="startPosition">The initial spawn position in world coordinates.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="texture"/> is null.</exception>
-    public Player(Texture texture, Vector2f startPosition)
+    public Character(Texture texture, Vector2f startPosition)
         : base(texture, new IntRect(0, 0, 15, 31), startPosition, new Vector2f(1f, 1f), 0f)
     {
         // Initialize input manager (singleton)
@@ -156,7 +155,7 @@ public sealed class Player : AnimatedSprite
         _movementController = new MovementController(startPosition);
 
         // Initialize animation controller
-        _animationController = new PlayerController(this.SpriteAnimator);
+        _animationController = new CharacterController(this.SpriteAnimator);
 
         // Set default state
         _state = PlayerState.Idle;

@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Entities;
-using Ascendance.Game.Loaders;
-using Ascendance.Game.Tilemaps;
+using Ascendance.Characters;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Indicators;
+using Ascendance.Tiles;
 using Nalix.Framework.Configuration;
 using SFML.Graphics;
 using SFML.System;
@@ -30,7 +29,7 @@ public sealed class MainScene : BaseScene
         Texture playerTexture = AssetManager.Instance.LoadTexture("res/texture/characters/1.png");
 
         // 2. Tạo Player - AnimationController tự động cắt sprite bên trong
-        Player player = new(playerTexture, new Vector2f(400, 300));
+        Character player = new(playerTexture, new Vector2f(400, 300));
 
         // 3. Setup tile map collision
         TileMap tileMap = TmxMapLoader.Load("res/maps/2.tmx");

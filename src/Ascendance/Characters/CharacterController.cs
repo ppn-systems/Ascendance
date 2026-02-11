@@ -5,7 +5,7 @@ using Ascendance.Rendering.Utilities;
 using Ascendance.Shared.Enums;
 using SFML.Graphics;
 
-namespace Ascendance.Game.Controllers;
+namespace Ascendance.Characters;
 
 /// <summary>
 /// Manages player animation state transitions and frame selection based on player state and direction.
@@ -24,7 +24,7 @@ namespace Ascendance.Game.Controllers;
 /// </code>
 /// </para>
 /// </remarks>
-public sealed class PlayerController
+public sealed class CharacterController
 {
     #region Constants
 
@@ -67,11 +67,11 @@ public sealed class PlayerController
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PlayerController"/> class.
+    /// Initializes a new instance of the <see cref="CharacterController"/> class.
     /// </summary>
     /// <param name="animator">The animator component to control.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="animator"/> is null.</exception>
-    public PlayerController(Animator animator)
+    public CharacterController(Animator animator)
     {
         _animator = animator ?? throw new System.ArgumentNullException(nameof(animator));
 

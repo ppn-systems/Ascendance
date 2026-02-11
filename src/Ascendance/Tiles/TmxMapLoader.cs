@@ -1,15 +1,12 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Entities;
-using Ascendance.Game.Tilemaps;
-using Ascendance.Game.Tiles;
 using Ascendance.Rendering.Managers;
 using Ascendance.Shared.Enums;
 using Nalix.Logging.Extensions;
 using SFML.System;
 using System.Xml.Linq;
 
-namespace Ascendance.Game.Loaders;
+namespace Ascendance.Tiles;
 
 /// <summary>
 /// Provides high-performance TMX (Tiled Map XML) file loading.
@@ -252,7 +249,7 @@ public static class TmxMapLoader
             // Load layer properties
             LOAD_PROPERTIES(layerElement.Element("properties"), layer.Properties);
 
-            // Determine layer type from properties
+            // Determine layer type from properties or name
             if (layer.Properties.TryGetValue("type", out System.String typeValue))
             {
                 layer.LayerType = PARSE_LAYER_TYPE(typeValue);
@@ -293,6 +290,22 @@ public static class TmxMapLoader
                 }
             }
 
+            // If this is a collision layer, mark all non-empty tiles as collidable.
+            if (layer.LayerType == TileLayerType.Collision)
+            {
+                System.Span<Tile> tiles = layer.GetTilesSpan();
+                for (System.Int32 i = 0; i < tiles.Length; i++)
+                {
+                    if (!tiles[i].IsEmpty())
+                    {
+                        Tile t = tiles[i];
+                        t.SetCollidable(true);
+                        tiles[i] = t; // write-back because Tile is a struct
+                    }
+                }
+            }
+
+            // Choose texture for layer from first non-empty tile (if any)
             System.Int16 firstNonEmptyGid = 0;
             foreach (Tile tile in layer.GetTilesSpan())
             {

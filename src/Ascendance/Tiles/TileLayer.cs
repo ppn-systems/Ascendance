@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Game.Entities;
 using Ascendance.Rendering.Entities;
 using Ascendance.Shared.Enums;
 using Ascendance.Shared.Extensions;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Game.Tilemaps;
+namespace Ascendance.Tiles;
 
 /// <summary>
 /// Represents a single renderable layer in a tile map with efficient vertex-based rendering.
+/// Supports multi-texture batching for layers that contain tiles from multiple tilesets.
 /// </summary>
 public sealed class TileLayer : RenderObject, System.IDisposable
 {
@@ -18,15 +18,17 @@ public sealed class TileLayer : RenderObject, System.IDisposable
 
     private readonly Tile[] _tiles;
 
-    private VertexArray _vertexArray;
+    // Support multiple batches (one VertexArray per texture atlas)
     private System.Boolean _disposed;
+    private System.Collections.Generic.List<Batch> _batches;
 
     #endregion Fields
 
     #region Properties
 
     /// <summary>
-    /// The texture atlas used for this tile layer.
+    /// The texture atlas used for this tile layer when a single atlas is desired.
+    /// If tiles come from multiple atlases, batching will use each tile's Atlas instead.
     /// </summary>
     public Texture Texture { get; set; }
 
@@ -72,6 +74,23 @@ public sealed class TileLayer : RenderObject, System.IDisposable
 
     #endregion Properties
 
+    #region Inner types
+
+    private sealed class Batch
+    {
+        public Texture Texture;
+        public VertexArray Va;
+
+        public void Dispose()
+        {
+            Va?.Dispose();
+            Va = null;
+            Texture = null;
+        }
+    }
+
+    #endregion Inner types
+
     #region Constructor
 
     /// <summary>
@@ -85,8 +104,9 @@ public sealed class TileLayer : RenderObject, System.IDisposable
 
         Width = width;
         Height = height;
-        Properties = [];
+        Properties = new System.Collections.Generic.Dictionary<System.String, System.String>(System.StringComparer.Ordinal);
         Visible = LayerType.IsVisibleByDefault();
+        _batches = [];
     }
 
     #endregion Constructor
@@ -129,7 +149,8 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     public System.Span<Tile> GetTilesSpan() => System.MemoryExtensions.AsSpan(_tiles);
 
     /// <summary>
-    /// Builds or rebuilds the vertex array for efficient batch rendering.
+    /// Builds or rebuilds the vertex array(s) for efficient batch rendering.
+    /// Groups vertices by texture atlas to support multi-tileset layers.
     /// </summary>
     /// <param name="tileWidth">The width of each tile in pixels.</param>
     /// <param name="tileHeight">The height of each tile in pixels.</param>
@@ -137,8 +158,22 @@ public sealed class TileLayer : RenderObject, System.IDisposable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void BuildVertexArray(System.Int32 tileWidth, System.Int32 tileHeight)
     {
-        _vertexArray?.Dispose();
-        _vertexArray = new VertexArray(PrimitiveType.Triangles);
+        // Dispose old batches
+        if (_batches is not null)
+        {
+            foreach (var b in _batches)
+            {
+                b.Dispose();
+            }
+            _batches.Clear();
+        }
+        else
+        {
+            _batches = [];
+        }
+
+        // Map texture -> vertex array batch
+        System.Collections.Generic.Dictionary<Texture, VertexArray> dict = new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
         System.Byte alpha = (System.Byte)(Opacity * 255);
         Color color = new(255, 255, 255, alpha);
@@ -156,43 +191,62 @@ public sealed class TileLayer : RenderObject, System.IDisposable
                     continue;
                 }
 
+                Texture atlas = tile.Atlas ?? Texture;
+                if (atlas is null)
+                {
+                    // If we don't have a texture for this tile, skip it.
+                    continue;
+                }
+
+                if (!dict.TryGetValue(atlas, out VertexArray va))
+                {
+                    va = new VertexArray(PrimitiveType.Triangles);
+                    dict[atlas] = va;
+                }
+
                 System.Single worldX = x * tileWidth;
                 System.Single worldY = y * tileHeight;
 
                 IntRect texRect = tile.TextureRect;
 
                 // Triangle 1
-                _vertexArray.Append(new Vertex(
+                va.Append(new Vertex(
                     new Vector2f(worldX, worldY),
                     color,
                     new Vector2f(texRect.Left, texRect.Top)));
 
-                _vertexArray.Append(new Vertex(
+                va.Append(new Vertex(
                     new Vector2f(worldX + tileWidth, worldY),
                     color,
                     new Vector2f(texRect.Left + texRect.Width, texRect.Top)));
 
-                _vertexArray.Append(new Vertex(
+                va.Append(new Vertex(
                     new Vector2f(worldX, worldY + tileHeight),
                     color,
                     new Vector2f(texRect.Left, texRect.Top + texRect.Height)));
 
                 // Triangle 2
-                _vertexArray.Append(new Vertex(
+                va.Append(new Vertex(
                     new Vector2f(worldX, worldY + tileHeight),
                     color,
                     new Vector2f(texRect.Left, texRect.Top + texRect.Height)));
 
-                _vertexArray.Append(new Vertex(
+                va.Append(new Vertex(
                     new Vector2f(worldX + tileWidth, worldY),
                     color,
                     new Vector2f(texRect.Left + texRect.Width, texRect.Top)));
 
-                _vertexArray.Append(new Vertex(
+                va.Append(new Vertex(
                     new Vector2f(worldX + tileWidth, worldY + tileHeight),
                     color,
                     new Vector2f(texRect.Left + texRect.Width, texRect.Top + texRect.Height)));
             }
+        }
+
+        // Convert dictionary to batches and store
+        foreach (var kvp in dict)
+        {
+            _batches.Add(new Batch { Texture = kvp.Key, Va = kvp.Value });
         }
     }
 
@@ -201,13 +255,21 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     /// </summary>
     public override void Draw(RenderTarget target)
     {
-        if (!Visible || _vertexArray is null)
+        if (!Visible || _batches is null || _batches.Count == 0)
         {
             return;
         }
 
-        RenderStates states = new(texture: Texture);
-        target.Draw(_vertexArray, states);
+        foreach (Batch b in _batches)
+        {
+            if (b.Texture is null || b.Va is null)
+            {
+                continue;
+            }
+
+            RenderStates states = new(texture: b.Texture);
+            target.Draw(b.Va, states);
+        }
     }
 
     /// <inheritdoc/>
@@ -228,8 +290,16 @@ public sealed class TileLayer : RenderObject, System.IDisposable
             return;
         }
 
-        _vertexArray?.Dispose();
-        _vertexArray = null;
+        if (_batches is not null)
+        {
+            foreach (var b in _batches)
+            {
+                b.Dispose();
+            }
+            _batches.Clear();
+            _batches = null;
+        }
+
         _disposed = true;
 
         System.GC.SuppressFinalize(this);
