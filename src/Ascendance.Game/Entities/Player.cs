@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Domain.Tiles;
+using Ascendance.Game.Players;
+using Ascendance.Game.Tilemaps;
+using Ascendance.Game.Tiles;
 using Ascendance.Physics.Colliders;
 using Ascendance.Physics.Movement;
 using Ascendance.Rendering.Animation;
@@ -11,7 +13,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace Ascendance.Domain.Players;
+namespace Ascendance.Game.Entities;
 
 /// <summary>
 /// Represents the player character in a 2.5D top-down game (Stardew Valley style).
@@ -328,56 +330,24 @@ public sealed class Player : AnimatedSprite
         System.Single x = 0f;
         System.Single y = 0f;
 
-        // Cache key states (WASD only)
-        System.Boolean keyA = _keyboard.IsKeyDown(Keyboard.Key.A);
-        System.Boolean keyD = _keyboard.IsKeyDown(Keyboard.Key.D);
-        System.Boolean keyW = _keyboard.IsKeyDown(Keyboard.Key.W);
-        System.Boolean keyS = _keyboard.IsKeyDown(Keyboard.Key.S);
-
-        // Explicit combination handling (makes intent clear).
-        // Diagonal combinations are allowed and will be normalized later.
-        if (keyA && keyW)
+        if (_keyboard.IsKeyDown(Keyboard.Key.A))
         {
-            x = -1f;
-            y = -1f;
+            x--;
         }
-        else if (keyD && keyW)
-        {
-            x = 1f;
-            y = -1f;
-        }
-        else if (keyA && keyS)
-        {
-            x = -1f;
-            y = 1f;
-        }
-        else if (keyD && keyS)
-        {
-            x = 1f;
-            y = 1f;
-        }
-        else
-        {
-            // Single-axis inputs
-            if (keyA)
-            {
-                x--;
-            }
 
-            if (keyD)
-            {
-                x++;
-            }
+        if (_keyboard.IsKeyDown(Keyboard.Key.D))
+        {
+            x++;
+        }
 
-            if (keyW)
-            {
-                y--;
-            }
+        if (_keyboard.IsKeyDown(Keyboard.Key.W))
+        {
+            y--;
+        }
 
-            if (keyS)
-            {
-                y++;
-            }
+        if (_keyboard.IsKeyDown(Keyboard.Key.S))
+        {
+            y++;
         }
 
         // Normalize diagonal movement to prevent faster diagonal speed

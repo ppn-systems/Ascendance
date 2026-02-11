@@ -2,7 +2,7 @@
 
 using SFML.Graphics;
 
-namespace Ascendance.Domain.Tiles;
+namespace Ascendance.Game.Tiles;
 
 /// <summary>
 /// Represents a tileset containing tile graphics and metadata for use in tile-based rendering.

@@ -1,7 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Domain.Players;
-using Ascendance.Domain.Tiles;
+using Ascendance.Game.Entities;
+using Ascendance.Game.Loaders;
+using Ascendance.Game.Tilemaps;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Engine;

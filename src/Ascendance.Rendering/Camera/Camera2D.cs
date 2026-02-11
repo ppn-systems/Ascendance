@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Engine;
+using Ascendance.Shared.Abstractions;
 using Nalix.Framework.Injection.DI;
 using Nalix.Framework.Random;
 using SFML.Graphics;
@@ -26,28 +28,18 @@ namespace Ascendance.Rendering.Camera;
 /// Designed to minimize per-frame allocations and be safe for real-time usage.
 /// </para>
 /// </remarks>
-public class Camera2D : SingletonBase<Camera2D>
+public class Camera2D : SingletonBase<Camera2D>, IUpdatable
 {
     #region Fields
-
-    /// <summary>
-    /// Tracks the current absolute zoom level of the camera.
-    /// </summary>
-    /// <remarks>
-    /// A value of <c>1.0</c> represents the default zoom.
-    /// This field is required because SFML's <see cref="View.Zoom(System.Single)"/>
-    /// is relative, not absolute.
-    /// </remarks>
-    private System.Single _zoom = 1f;
-
-    /// <summary>
-    /// Current intensity of the camera shake effect.
-    /// </summary>
-    /// <remarks>
-    /// The value decays over time during <see cref="UpdateShake"/>.
-    /// When it reaches zero, the shake effect stops automatically.
-    /// </remarks>
+    private System.Single _zoom;
+    private Vector2f _baseCenter;
+    private Vector2f _shakeOffset;
     private System.Single _shakeAmount;
+    private System.Single _shakeDecayPerSecond;
+
+    // Backing fields for enable/disable properties
+    private System.Boolean _shakeEnabled;
+    private System.Boolean _followEnabled;
 
     #endregion Fields
 
@@ -58,7 +50,7 @@ public class Camera2D : SingletonBase<Camera2D>
     /// </summary>
     /// <remarks>
     /// This view should be applied to a <see cref="RenderWindow"/>
-    /// via <see cref="Apply(RenderWindow)"/>.
+    /// via <see cref="Update(RenderWindow)"/>.
     /// </remarks>
     public View SFMLView { get; }
 
@@ -71,6 +63,49 @@ public class Camera2D : SingletonBase<Camera2D>
     /// </remarks>
     public FloatRect Bounds { get; set; }
 
+    /// <summary>
+    /// Enable or disable camera shake. When disabled, shake is cleared and camera center
+    /// returns to the base center immediately.
+    /// </summary>
+    public System.Boolean ShakeEnabled
+    {
+        get => _shakeEnabled;
+        set
+        {
+            _shakeEnabled = value;
+            if (!_shakeEnabled)
+            {
+                // Clear any active shake and restore center to base center
+                _shakeAmount = 0f;
+                _shakeOffset = new Vector2f(0f, 0f);
+                this.SFMLView.Center = _baseCenter;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Enable or disable automatic follow behavior. When disabled, calls to Follow()
+    /// will be ignored; manual SetCenter/Move still work.
+    /// </summary>
+    public System.Boolean FollowEnabled
+    {
+        get => _followEnabled;
+        set
+        {
+            _followEnabled = value;
+            // When disabling follow we do not alter _baseCenter, but ensure view shows current base center
+            if (!_followEnabled)
+            {
+                this.SFMLView.Center = _baseCenter;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Enable or disable bounds clamping. When disabled, camera will not be clamped to Bounds.
+    /// </summary>
+    public System.Boolean ClampEnabled { get; set; }
+
     #endregion Properties
 
     #region Constructor
@@ -79,9 +114,9 @@ public class Camera2D : SingletonBase<Camera2D>
     /// Initializes a new instance of the <see cref="Camera2D"/> class with default settings.
     /// </summary>
     /// <remarks>
-    /// Creates a view with center at (0, 0) and size of (800, 600).
+    /// Creates a view with center at (0, 0) and size of (GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y).
     /// </remarks>
-    public Camera2D() : this(new Vector2f(0f, 0f), new Vector2f(800f, 600f))
+    public Camera2D() : this(new Vector2f(0f, 0f), new Vector2f(GraphicsEngine.ScreenSize.X, GraphicsEngine.ScreenSize.Y))
     {
     }
 
@@ -96,7 +131,19 @@ public class Camera2D : SingletonBase<Camera2D>
     /// </param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
-    public Camera2D(Vector2f center, Vector2f size) => this.SFMLView = new View(center, size);
+    public Camera2D(Vector2f center, Vector2f size)
+    {
+        _zoom = 1f;
+        _baseCenter = center;
+        _shakeDecayPerSecond = 3.0f;
+
+        // Enable features by default
+        _shakeEnabled = true;
+        _followEnabled = true;
+        this.ClampEnabled = true;
+
+        this.SFMLView = new View(center, size);
+    }
 
     #endregion Constructor
 
@@ -138,8 +185,12 @@ public class Camera2D : SingletonBase<Camera2D>
     /// </remarks>
     public void Follow(Vector2f target, System.Single smooth = 0.1f)
     {
-        var delta = (target - this.SFMLView.Center) * smooth;
-        this.Move(delta);
+        if (!this.FollowEnabled)
+        {
+            return;
+        }
+
+        _baseCenter += (target - _baseCenter) * smooth;
     }
 
     /// <summary>
@@ -150,41 +201,89 @@ public class Camera2D : SingletonBase<Camera2D>
     /// </param>
     /// <remarks>
     /// The shake intensity decays automatically over time.
+    /// If shake is disabled, this call has no effect and the camera remains stable.
     /// </remarks>
-    public void Shake(System.Single amount) => _shakeAmount = amount;
-
-    /// <summary>
-    /// Updates the camera shake effect.
-    /// </summary>
-    /// <remarks>
-    /// This method should be called once per frame.
-    /// Uses a cryptographically secure PRNG to generate
-    /// random offsets for visual instability.
-    /// </remarks>
-    public void UpdateShake()
+    public void Shake(System.Single amount)
     {
-        if (_shakeAmount <= 0f)
+        if (!this.ShakeEnabled)
         {
+            // If disabled, ensure no shake is active and keep center normal
+            _shakeAmount = 0f;
+            _shakeOffset = new Vector2f(0f, 0f);
+            this.SFMLView.Center = _baseCenter;
             return;
         }
 
-        Vector2f offset = new(((System.Single)Csprng.NextDouble() - 0.5f) * _shakeAmount, ((System.Single)Csprng.NextDouble() - 0.5f) * _shakeAmount);
+        _shakeAmount = System.Math.Max(_shakeAmount, amount);
+    }
 
-        _shakeAmount *= 0.9f; // Gradually decay shake intensity
-        this.SFMLView.Center += offset;
+    /// <summary>
+    /// Updates the camera logic (shake, combine base center and shake offset) for a frame.
+    /// </summary>
+    /// <remarks>
+    /// Call this from your game update loop after object positions (player, entities) are updated.
+    /// This method does not apply the view to a window; call Update(RenderWindow) (below) to apply.
+    /// </remarks>
+    /// <param name="deltaTime">Frame delta time in seconds.</param>
+    public void Update(System.Single deltaTime)
+    {
+        // If shake disabled, ensure it's cleared
+        if (!this.ShakeEnabled)
+        {
+            _shakeAmount = 0f;
+            _shakeOffset = new Vector2f(0f, 0f);
+        }
+        else
+        {
+            // Only compute shake offset if there is some shake amount
+            if (_shakeAmount > 0f)
+            {
+                // generate pseudo-random values in [-0.5, 0.5)
+                System.Single rx = (System.Single)Csprng.NextDouble() - 0.5f;
+                System.Single ry = (System.Single)Csprng.NextDouble() - 0.5f;
+                _shakeOffset = new Vector2f(rx * _shakeAmount, ry * _shakeAmount);
+
+                // decay shake over time (frame-rate independent)
+                _shakeAmount -= _shakeDecayPerSecond * deltaTime;
+                if (_shakeAmount <= 0f)
+                {
+                    _shakeAmount = 0f;
+                    _shakeOffset = new Vector2f(0f, 0f);
+                }
+            }
+            else
+            {
+                _shakeOffset = new Vector2f(0f, 0f);
+            }
+        }
+
+        // Combine base center and shake offset (no accumulation / no drift)
+        Vector2f finalCenter = _baseCenter + _shakeOffset;
+        this.SFMLView.Center = finalCenter;
+
+        // Optionally clamp the final center to bounds
+        if (this.ClampEnabled && this.Bounds.Width > 0 && this.Bounds.Height > 0)
+        {
+            this.ClampToBounds();
+        }
     }
 
     /// <summary>
     /// Sets the camera center position directly.
     /// </summary>
     /// <param name="center">New center position in world coordinates.</param>
-    public void SetCenter(Vector2f center) => this.SFMLView.Center = center;
+    public void SetCenter(Vector2f center)
+    {
+        _baseCenter = center;
+        // Keep view visually consistent; Update() will combine offsets if any
+        this.SFMLView.Center = center;
+    }
 
     /// <summary>
     /// Moves the camera by a given offset.
     /// </summary>
     /// <param name="offset">Movement delta in world units.</param>
-    public void Move(Vector2f offset) => this.SFMLView.Center += offset;
+    public void Move(Vector2f offset) => _baseCenter += offset;
 
     /// <summary>
     /// Applies a relative zoom factor to the camera.
@@ -241,7 +340,7 @@ public class Camera2D : SingletonBase<Camera2D>
     /// Applies this camera view to a render window.
     /// </summary>
     /// <param name="window">Target SFML render window.</param>
-    public void Apply(RenderWindow window) => window.SetView(this.SFMLView);
+    public void Update(RenderWindow window) => window.SetView(this.SFMLView);
 
     /// <summary>
     /// Resets the camera to a default state.
@@ -257,6 +356,10 @@ public class Camera2D : SingletonBase<Camera2D>
 
         this.SFMLView.Size = size;
         this.SFMLView.Center = center;
+
+        _baseCenter = center;
+        _shakeAmount = 0f;
+        _shakeOffset = new Vector2f(0f, 0f);
     }
 
     #endregion Public Methods

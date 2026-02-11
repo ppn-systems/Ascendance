@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Game.Entities;
 using Ascendance.Rendering.Entities;
 using Ascendance.Shared.Enums;
 using Ascendance.Shared.Extensions;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Domain.Tiles;
+namespace Ascendance.Game.Tilemaps;
 
 /// <summary>
 /// Represents a single renderable layer in a tile map with efficient vertex-based rendering.

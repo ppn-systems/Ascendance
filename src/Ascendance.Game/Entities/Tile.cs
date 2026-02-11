@@ -3,7 +3,7 @@
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Domain.Tiles;
+namespace Ascendance.Game.Entities;
 
 /// <summary>
 /// Represents a single tile in the tile map with collision and rendering properties.

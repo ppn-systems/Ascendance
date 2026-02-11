@@ -1,12 +1,15 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Game.Entities;
+using Ascendance.Game.Tilemaps;
+using Ascendance.Game.Tiles;
 using Ascendance.Rendering.Managers;
 using Ascendance.Shared.Enums;
 using Nalix.Logging.Extensions;
 using SFML.System;
 using System.Xml.Linq;
 
-namespace Ascendance.Domain.Tiles;
+namespace Ascendance.Game.Loaders;
 
 /// <summary>
 /// Provides high-performance TMX (Tiled Map XML) file loading.

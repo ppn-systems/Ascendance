@@ -181,7 +181,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     /// </summary>
     /// <param name="strings">Optional command-line arguments (unused).</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1163:Unused parameter", Justification = "<Pending>")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
     public void Launch(System.String[] strings = null)
     {
         const System.Single MAX_ACCUMULATOR = 0.25f;
@@ -204,7 +203,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
                 this.RenderWindow.DispatchEvents();
 
                 time.Update();
-                Camera2D.Instance.Apply(RenderWindow);
 
                 System.Int32 updateIterations = 0;
                 accumulator += System.Math.Min(time.Current.DeltaTime, MAX_ACCUMULATOR);
@@ -212,9 +210,11 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
                 while (accumulator >= time.FixedDeltaTime &&
                        updateIterations < MAX_UPDATES_PER_FRAME)
                 {
-                    this.Update(time.FixedDeltaTime);
-                    accumulator -= time.FixedDeltaTime;
                     updateIterations++;
+                    this.Update(time.FixedDeltaTime);
+                    Camera2D.Instance.Update(time.FixedDeltaTime);
+
+                    accumulator -= time.FixedDeltaTime;
                 }
 
                 // If we hit the max, reset accumulator
@@ -222,6 +222,8 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
                 {
                     accumulator = 0f;
                 }
+
+                Camera2D.Instance.Update(RenderWindow);
 
                 this.RenderWindow.Clear();
                 this.UPDATE_DRAW(this.RenderWindow);

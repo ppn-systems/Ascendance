@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Game.Entities;
+using Ascendance.Game.Tiles;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Entities;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Domain.Tiles;
+namespace Ascendance.Game.Tilemaps;
 
 /// <summary>
 /// Represents a complete tile-based map that manages layers, tilesets, coordinate transformations, and rendering.

@@ -27,8 +27,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Nalix.Logging" Version="9.9.0" />
+		<ProjectReference Include="..\Ascendance.Game\Ascendance.Game.csproj" />
 		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
-		<ProjectReference Include="..\Ascendance.Domain\Ascendance.Domain.csproj" />
 		<ProjectReference Include="..\Ascendance.Physics\Ascendance.Physics.csproj" />
 		<ProjectReference Include="..\Ascendance.Rendering\Ascendance.Rendering.csproj" />
 	</ItemGroup>
