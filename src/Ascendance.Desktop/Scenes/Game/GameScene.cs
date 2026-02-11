@@ -22,7 +22,7 @@ public sealed class GameScene : BaseScene
     protected override void LoadObjects()
     {
         TileMap tileMap = TmxMapLoader.Load("res/maps/2.tmx");
-        Texture playerTexture = AssetManager.Instance.LoadTexture("res/texture/characters/1.png");
+        Texture playerTexture = AssetManager.Instance.LoadTexture("res/texture/characters/2.png");
 
         Player player = new(playerTexture, new Vector2f(400, 300))
         {
