@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Game.Colliders;
 using Ascendance.Game.Controllers;
+using Ascendance.Game.Movement;
 using Ascendance.Game.Tilemaps;
-using Ascendance.Game.Tiles;
-using Ascendance.Physics.Colliders;
-using Ascendance.Physics.Movement;
 using Ascendance.Rendering.Animation;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Input;

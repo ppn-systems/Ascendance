@@ -3,7 +3,6 @@
   <Project Path="Ascendance.Game/Ascendance.Game.csproj" Id="6160902a-3991-4ac8-b44b-b40a09724782" />
   <Project Path="Ascendance.Hosting/Ascendance.Hosting.csproj" Id="a95a77d5-67db-4145-9db8-624b3e9f5cf8" />
   <Project Path="Ascendance.Infrastructure/Ascendance.Infrastructure.csproj" Id="9053752a-8769-4369-856f-e1dcbb2b8603" />
-  <Project Path="Ascendance.Physics/Ascendance.Physics.csproj" Id="5203a60b-4786-4fa3-9abb-4b93aaa1aeef" />
   <Project Path="Ascendance.Rendering/Ascendance.Rendering.csproj" />
   <Project Path="Ascendance.Sandbox/Ascendance.Sandbox.csproj" Id="defa4f1c-673a-4691-8b2f-a2331bf4c87b" />
   <Project Path="Ascendance.Security/Ascendance.Security.csproj" Id="ba573946-3a5b-4220-bc77-a1c96aab4e37" />

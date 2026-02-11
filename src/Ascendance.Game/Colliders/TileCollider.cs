@@ -2,11 +2,12 @@
 
 using Ascendance.Game.Entities;
 using Ascendance.Game.Tilemaps;
+using Ascendance.Game.Tiles;
 using Ascendance.Shared.Enums;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Game.Tiles;
+namespace Ascendance.Game.Colliders;
 
 /// <summary>
 /// Provides static methods for collision detection between entities and tiles in a tile map.

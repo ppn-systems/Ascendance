@@ -10,7 +10,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
-		<ProjectReference Include="..\Ascendance.Physics\Ascendance.Physics.csproj" />
 		<ProjectReference Include="..\Ascendance.Rendering\Ascendance.Rendering.csproj" />
 	</ItemGroup>
 </Project>
