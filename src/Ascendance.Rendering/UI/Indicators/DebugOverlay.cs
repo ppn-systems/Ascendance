@@ -61,13 +61,24 @@ public class DebugOverlay : RenderObject
     /// </summary>
     public enum DebugOverlayAlignment
     {
-        /// <summary>Top-left corner alignment.</summary>
+        /// <summary>
+        /// Top-left corner alignment.
+        /// </summary>
         TopLeft,
-        /// <summary>Top-right corner alignment.</summary>
+
+        /// <summary>
+        /// Top-right corner alignment.
+        /// </summary>
         TopRight,
-        /// <summary>Bottom-left corner alignment.</summary>
+
+        /// <summary>
+        /// Bottom-left corner alignment.
+        /// </summary>
         BottomLeft,
-        /// <summary>Bottom-right corner alignment.</summary>
+
+        /// <summary>
+        /// Bottom-right corner alignment.
+        /// </summary>
         BottomRight
     }
 
@@ -301,6 +312,60 @@ public class DebugOverlay : RenderObject
 
     #endregion Constructor
 
+    #region Overrides
+
+    /// <summary>
+    /// Renders the debug overlay if debug mode is enabled.
+    /// </summary>
+    /// <param name="target">The target SFML render window for drawing.</param>
+    public override void Draw(RenderTarget target)
+    {
+        if (!this.IsVisible)
+        {
+            return;
+        }
+
+        // If possible, switch to the window's default view so overlay is drawn in screen space.
+        RenderWindow window = target as RenderWindow;
+        View previousView = null;
+        if (window is not null)
+        {
+            previousView = window.GetView();
+            window.SetView(window.DefaultView);
+        }
+
+        try
+        {
+            this.UPDATE_FPS();
+            System.Collections.Generic.List<System.String> lines = this.COMPOSE_DEBUG_LINES();
+
+            if (this.ShowBackground)
+            {
+                this.UPDATE_BACKGROUND_SIZE(lines.Count);
+                target.Draw(_background);
+            }
+
+            this.ENSURE_TEXT_POOL_SIZE(lines.Count);
+            this.RENDER_DEBUG_LINES(target, lines);
+
+            _customDebugLines.Clear();
+        }
+        finally
+        {
+            // Restore the previous view so subsequent drawing (world objects) is unaffected.
+            if (window is not null && previousView is not null)
+            {
+                window.SetView(previousView);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
+    protected override Drawable GetDrawable() => throw new System.NotSupportedException("Use Draw() instead.");
+
+    #endregion Overrides
+
     #region Public Methods
 
     /// <summary>
@@ -391,61 +456,6 @@ public class DebugOverlay : RenderObject
     }
 
     #endregion Public Methods
-
-    #region Overrides
-
-    /// <summary>
-    /// Renders the debug overlay if debug mode is enabled.
-    /// </summary>
-    /// <param name="target">The target SFML render window for drawing.</param>
-    public override void Draw(RenderTarget target)
-    {
-        if (!this.IsVisible)
-        {
-            return;
-        }
-
-        // If possible, switch to the window's default view so overlay is drawn in screen space.
-        RenderWindow window = target as RenderWindow;
-        View previousView = null;
-        if (window is not null)
-        {
-            previousView = window.GetView();
-            window.SetView(window.DefaultView);
-        }
-
-        try
-        {
-            this.UPDATE_FPS();
-            System.Collections.Generic.List<System.String> lines = this.COMPOSE_DEBUG_LINES();
-
-            if (this.ShowBackground)
-            {
-                this.UPDATE_BACKGROUND_SIZE(lines.Count);
-                target.Draw(_background);
-            }
-
-            this.ENSURE_TEXT_POOL_SIZE(lines.Count);
-            this.RENDER_DEBUG_LINES(target, lines);
-
-            _customDebugLines.Clear();
-        }
-        finally
-        {
-            // Restore the previous view so subsequent drawing (world objects) is unaffected.
-            if (window is not null && previousView is not null)
-            {
-                window.SetView(previousView);
-            }
-        }
-    }
-
-    /// <inheritdoc/>
-    [return: System.Diagnostics.CodeAnalysis.NotNull]
-    protected override Drawable GetDrawable() =>
-        throw new System.NotSupportedException("Use Draw() instead.");
-
-    #endregion Overrides
 
     #region Private Methods - FPS Tracking
 
