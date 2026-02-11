@@ -34,7 +34,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     #region Fields
 
     private readonly System.UInt32 _foregroundFps;
-    private readonly System.UInt32 _backgroundFps;
 
     private System.Boolean _isFocused;
     private System.Single _lastLogicMs;
@@ -117,7 +116,6 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         _lastRenderMs = 0f;
         _renderObjectCache = [];
         _renderCacheDirty = true;
-        _backgroundFps = DEFAULT_BACKGROUND_FPS;
         _foregroundFps = GraphicsConfig.FrameLimit > 0 ? GraphicsConfig.FrameLimit : 60;
 
         ContextSettings ctx = new()
@@ -181,6 +179,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     /// </summary>
     /// <param name="strings">Optional command-line arguments (unused).</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1163:Unused parameter", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
     public void Launch(System.String[] strings = null)
     {
         const System.Single MAX_ACCUMULATOR = 0.25f;
@@ -233,7 +232,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
                 {
                     if (!GraphicsConfig.VSync)
                     {
-                        this.RenderWindow.SetFramerateLimit(_backgroundFps);
+                        this.RenderWindow.SetFramerateLimit(DEFAULT_BACKGROUND_FPS);
                     }
 
                     System.Threading.Thread.Sleep(LOW_POWER_SLEEP_MS);
@@ -363,7 +362,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
 
         if (!GraphicsConfig.VSync)
         {
-            this.RenderWindow.SetFramerateLimit(focused ? _foregroundFps : _backgroundFps);
+            this.RenderWindow.SetFramerateLimit(focused ? _foregroundFps : DEFAULT_BACKGROUND_FPS);
         }
 
         NLogixFx.Info(message: $"Window focus changed: {(focused ? "Gained" : "Lost")}", source: "GraphicsEngine");

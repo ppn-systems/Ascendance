@@ -31,11 +31,12 @@ namespace Ascendance.Rendering.Camera;
 public class Camera2D : SingletonBase<Camera2D>, IUpdatable
 {
     #region Fields
+
     private System.Single _zoom;
     private Vector2f _baseCenter;
     private Vector2f _shakeOffset;
     private System.Single _shakeAmount;
-    private System.Single _shakeDecayPerSecond;
+    private readonly System.Single _shakeDecayPerSecond;
 
     // Backing fields for enable/disable properties
     private System.Boolean _shakeEnabled;

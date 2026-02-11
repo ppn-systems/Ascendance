@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2026 PPN Corporation. All rights reserved.
 
 using Ascendance.Rendering.Assets;
+using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
@@ -132,14 +133,19 @@ public class DebugOverlay : RenderObject
         Timestamp = 1 << 9,
 
         /// <summary>
+        /// Display camera information (position, zoom, bounds, shake/clamp states).
+        /// </summary>
+        Camera = 1 << 10,
+
+        /// <summary>
         /// Display all available information.
         /// </summary>
-        All = Fps | FpsStats | Window | VSync | Memory | Performance | Input | Scene | ObjectsInfo | Timestamp,
+        All = Fps | FpsStats | Window | VSync | Memory | Performance | Input | Scene | ObjectsInfo | Timestamp | Camera,
 
         /// <summary>
         /// Default display flags (common debug information).
         /// </summary>
-        Default = Fps | Window | Memory | Performance | Input | Scene | ObjectsInfo | Timestamp
+        Default = Fps | Window | Memory | Performance | Input | Scene | ObjectsInfo | Timestamp | Camera
     }
 
     #endregion Enums
@@ -627,6 +633,31 @@ public class DebugOverlay : RenderObject
             else if (!System.String.IsNullOrEmpty(objectCount))
             {
                 lines.Add(objectCount);
+            }
+        }
+
+        // Camera info
+        if (this.HasFlags(DebugDisplayFlags.Camera))
+        {
+            try
+            {
+                Camera2D cam = Camera2D.Instance;
+                if (cam is not null)
+                {
+                    Vector2f center = cam.SFMLView.Center;
+                    System.Single zoom = cam.GetZoom();
+                    FloatRect bounds = cam.Bounds;
+
+                    System.String boundsStr = $"L:{bounds.Left:0.##} T:{bounds.Top:0.##} W:{bounds.Width:0.##} H:{bounds.Height:0.##}";
+
+                    lines.Add($"Camera: ({center.X:0.##}, {center.Y:0.##})");
+                    lines.Add($"Zoom: {zoom:0.00}  Shake: {(cam.ShakeEnabled ? "On" : "Off")}  Clamp: {(cam.ClampEnabled ? "On" : "Off")}");
+                    lines.Add($"Camera Bounds: {boundsStr}");
+                }
+            }
+            catch
+            {
+                // Ignore camera read errors
             }
         }
 
