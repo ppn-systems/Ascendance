@@ -27,13 +27,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Nalix.Framework" Version="9.9.0" />
+		<ProjectReference Include="..\Ascendance.Game\Ascendance.Game.csproj" />
 		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
 		<ProjectReference Include="..\Ascendance.Physics\Ascendance.Physics.csproj" />
 		<ProjectReference Include="..\Ascendance.Security\Ascendance.Security.csproj" />
 		<ProjectReference Include="..\Ascendance.Rendering\Ascendance.Rendering.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Scenes\Game\" />
 	</ItemGroup>
 </Project>

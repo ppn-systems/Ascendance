@@ -21,4 +21,9 @@ public static class SceneConstants
     /// Scene hiển thị thông tin về máy chủ trò chơi.
     /// </summary>
     public const System.String ServerSelect = "server_selection";
+
+    /// <summary>
+    /// Scene chính của trò chơi.
+    /// </summary>
+    public const System.String MainGame = "main_game";
 }

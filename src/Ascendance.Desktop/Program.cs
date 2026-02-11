@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Native;
@@ -38,7 +37,6 @@ public static class Program
         Image icon = GetImageFromBase64(Program.IconBase64);
         GraphicsEngine.Instance.FrameUpdate += Program.OnFrameUpdate;
         AntiCheatMonitor.Instance.CheatDetected += Program.OnCheatDetected;
-        Camera2D.Instance.SetCenter(new SFML.System.Vector2f(GraphicsEngine.ScreenSize.X / 2f, GraphicsEngine.ScreenSize.Y / 2f));
 
         GraphicsEngine.Instance.SetIcon(icon);
         GraphicsEngine.Instance.Launch();

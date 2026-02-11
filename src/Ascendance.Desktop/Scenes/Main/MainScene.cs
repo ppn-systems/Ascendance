@@ -2,10 +2,10 @@
 
 using Ascendance.Desktop.Scenes.Main.View;
 using Ascendance.Rendering.Attributes;
+using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Banners;
-using Ascendance.Rendering.UI.Indicators;
 using Nalix.Framework.Configuration;
 
 namespace Ascendance.Desktop.Scenes.Main;
@@ -19,6 +19,8 @@ public sealed class MainScene : BaseScene
 
     protected override void LoadObjects()
     {
+        Camera2D.Instance.SetCenter(new SFML.System.Vector2f(GraphicsEngine.ScreenSize.X / 2f, GraphicsEngine.ScreenSize.Y / 2f));
+
         ButtonView buttonView = new();
         VersionView versionView = new();
         ParallaxView parallaxLayerView = new();
@@ -27,14 +29,14 @@ public sealed class MainScene : BaseScene
         buttonView.ChangeAccountRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.Login);
 
+        buttonView.LoginRequested += () =>
+            SceneManager.Instance.ScheduleSceneChange(SceneConstants.MainGame);
+
         buttonView.NewGameRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.CharCreation);
 
         buttonView.ServerInfoRequested += () =>
             SceneManager.Instance.ScheduleSceneChange(SceneConstants.ServerSelect);
-
-        buttonView.LoginRequested += () =>
-            SceneManager.Instance.EnqueueSpawn(new LoadingOverlay());
 
         base.AddObject(buttonView);
         base.AddObject(versionView);
