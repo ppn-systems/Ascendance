@@ -4,63 +4,102 @@ using Ascendance.Maps;
 using Ascendance.Maps.Abstractions;
 using Ascendance.Maps.Core;
 using Ascendance.Maps.Layers;
+using Ascendance.Maps.Objects;
 using Ascendance.Maps.Tilesets;
-using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Entities;
 using SFML.Graphics;
 using SFML.System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Ascendance.Desktop.Rendering;
 
 /// <summary>
-/// Debug version of TMX Map Renderer with extensive logging
+/// Debug version of the TMX Map Renderer with extensive logging.
 /// </summary>
-public class TmxMapRenderer : RenderObject, IRenderOrderSortable
+/// <remarks>
+/// This renderer is intended for diagnostics, providing visibility into map and tileset
+/// metadata, as well as tile caching behavior. It does not optimize for production use.
+/// </remarks>
+/// <seealso cref="TmxMap"/>
+/// <seealso cref="TmxTileset"/>
+public class TmxMapRenderer : RenderObject
 {
     #region Fields
 
+    /// <summary>
+    /// Holds draw data for currently visible tiles based on culling and viewport calculations.
+    /// </summary>
     private readonly System.Collections.Generic.List<TileDrawData> _visibleTiles;
+
+    /// <summary>
+    /// Caches textures by a string key (e.g., tileset source path) to avoid redundant loads.
+    /// </summary>
     private readonly System.Collections.Generic.Dictionary<System.String, Texture> _textureCache;
+
+    /// <summary>
+    /// Maps global tile IDs (GIDs) to their originating TMX tileset for quick lookup.
+    /// </summary>
     private readonly System.Collections.Generic.Dictionary<System.Int32, TmxTileset> _gidToTilesetCache;
 
+    /// <summary>
+    /// Indicates whether internal caches must be rebuilt before the next draw.
+    /// </summary>
     private System.Boolean _cacheDirty;
 
     #endregion Fields
 
     #region Properties
 
+    /// <summary>
+    /// Gets the TMX map instance to be rendered.
+    /// </summary>
+    /// <value>
+    /// A non-null <see cref="TmxMap"/> reference provided at construction.
+    /// </value>
     public TmxMap Map { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether viewport culling is enabled.
+    /// </summary>
+    /// <remarks>
+    /// When enabled, only tiles visible within the current viewport will be considered for drawing,
+    /// which can improve performance on large maps.
+    /// </remarks>
     public System.Boolean UseViewportCulling { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the render offset applied to the map in screen space.
+    /// </summary>
+    /// <remarks>
+    /// Use this to pan or shift the map rendering position without modifying world coordinates.
+    /// The unit is pixels in the render target coordinate system.
+    /// </remarks>
     public Vector2f MapOffset { get; set; } = new Vector2f(0, 0);
+
+    /// <summary>
+    /// Gets the number of tiles currently considered visible and queued for rendering.
+    /// </summary>
     public System.Int32 VisibleTileCount => _visibleTiles.Count;
 
     #endregion Properties
 
     #region Construction
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TmxMapRenderer"/> class.
+    /// </summary>
+    /// <param name="map">The TMX map instance to render. Must not be <see langword="null"/>.</param>
+    /// <exception cref="System.ArgumentNullException">
+    /// Thrown when <paramref name="map"/> is <see langword="null"/>.
+    /// </exception>
     public TmxMapRenderer(TmxMap map)
     {
-        this.Map = map ?? throw new System.ArgumentNullException(nameof(map));
+        System.ArgumentNullException.ThrowIfNull(map);
+        this.Map = map;
 
+        _cacheDirty = true;
         _textureCache = [];
         _visibleTiles = [];
         _gidToTilesetCache = [];
-
-        _cacheDirty = true;
-
-        // Create a red test sprite to check renderer
-        Texture testTexture = new(64, 64);
-        System.Byte[] pixels = new System.Byte[64 * 64 * 4];
-
-        for (System.Int32 i = 0; i < pixels.Length; i += 4)
-        {
-            pixels[i] = 255;     // R
-            pixels[i + 1] = 0;   // G
-            pixels[i + 2] = 0;   // B
-            pixels[i + 3] = 255; // A
-        }
-        testTexture.Update(pixels);
 
         DEBUG_PRINT_MAP_INFO();
         INITIALIZE_TILESETS();
@@ -133,16 +172,14 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
         }
 
         // Render layers
-        foreach (var layer in this.Map.Layers)
+        foreach (ITmxLayer layer in this.Map.Layers)
         {
             // Root call uses default parent opacity and offset
             RENDER_SINGLE_LAYER(target, layer);
         }
     }
 
-    public System.Single GetFootY() => throw new System.NotImplementedException();
-
-    [return: NotNull]
+    [return: System.Diagnostics.CodeAnalysis.NotNull]
     protected override Drawable GetDrawable() => throw new System.NotImplementedException();
 
     #endregion Overrides
@@ -151,7 +188,7 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
 
     private void INITIALIZE_TILESETS()
     {
-        foreach (var tileset in this.Map.Tilesets)
+        foreach (TmxTileset tileset in this.Map.Tilesets)
         {
             if (System.String.IsNullOrEmpty(tileset.Image?.Source))
             {
@@ -171,11 +208,11 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
                 ];
 
                 System.Boolean loaded = false;
-                foreach (var pathToTry in pathsToTry)
+                foreach (System.String pathToTry in pathsToTry)
                 {
                     if (System.IO.File.Exists(pathToTry))
                     {
-                        var texture = new Texture(pathToTry);
+                        Texture texture = new(pathToTry);
                         _textureCache[tileset.Image.Source] = texture;
                         loaded = true;
                         break;
@@ -185,8 +222,8 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
                 if (!loaded)
                 {
                     // Create a blue placeholder texture
-                    var placeholderTexture = new Texture(32, 32);
-                    var placeholderPixels = new System.Byte[32 * 32 * 4];
+                    Texture placeholderTexture = new(32, 32);
+                    System.Byte[] placeholderPixels = new System.Byte[32 * 32 * 4];
                     for (System.Int32 i = 0; i < placeholderPixels.Length; i += 4)
                     {
                         placeholderPixels[i] = 0;       // R
@@ -194,6 +231,7 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
                         placeholderPixels[i + 2] = 255; // B
                         placeholderPixels[i + 3] = 255; // A
                     }
+
                     placeholderTexture.Update(placeholderPixels);
                     _textureCache[tileset.Image.Source] = placeholderTexture;
                 }
@@ -207,7 +245,7 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
 
     private void INITIALIZE_GID_CACHE()
     {
-        foreach (var tileset in this.Map.Tilesets)
+        foreach (TmxTileset tileset in this.Map.Tilesets)
         {
             System.Int32 tileCount = tileset.TileCount ?? 100; // Default fallback
 
@@ -239,7 +277,7 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
                 continue;
             }
 
-            foreach (var tile in tileLayer.Tiles)
+            foreach (TmxLayerTile tile in tileLayer.Tiles)
             {
                 if (tile.Gid == 0)
                 {
@@ -249,12 +287,13 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
                 System.Single tileWorldX = (tile.X * this.Map.TileWidth) + MapOffset.X + (System.Single)(tileLayer.OffsetX ?? 0.0);
                 System.Single tileWorldY = (tile.Y * this.Map.TileHeight) + MapOffset.Y + (System.Single)(tileLayer.OffsetY ?? 0.0);
 
-                if (_gidToTilesetCache.TryGetValue(tile.Gid, out var tileset))
+                if (_gidToTilesetCache.TryGetValue(tile.Gid, out TmxTileset tileset))
                 {
-                    var drawData = CALCULATE_TILE_DRAW_DATA(tile, tileset, tileWorldX, tileWorldY, tileLayer);
-                    if (drawData.HasValue)
+                    TileDrawData? data = CALCULATE_TILE_DRAW_DATA(tile, tileset, tileWorldX, tileWorldY, tileLayer);
+
+                    if (data.HasValue)
                     {
-                        _visibleTiles.Add(drawData.Value);
+                        _visibleTiles.Add(data.Value);
                     }
                 }
             }
@@ -277,8 +316,8 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
         System.Int32 srcX = localId % tilesPerRow * tileset.TileWidth;
         System.Int32 srcY = localId / tilesPerRow * tileset.TileHeight;
 
-        var sourceRect = new IntRect(srcX, srcY, tileset.TileWidth, tileset.TileHeight);
-        var position = new Vector2f(worldX, worldY);
+        IntRect sourceRect = new(srcX, srcY, tileset.TileWidth, tileset.TileHeight);
+        Vector2f position = new(worldX, worldY);
 
         return new TileDrawData
         {
@@ -338,17 +377,17 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
 
         // Combine opacity: parent * layer
         System.Double opacity = System.Math.Clamp(parentOpacity * layer.Opacity, 0.0, 1.0);
-        var alpha = (System.Byte)System.Math.Clamp((System.Int32)(opacity * 255.0), 0, 255);
+        System.Byte alpha = (System.Byte)System.Math.Clamp((System.Int32)(opacity * 255.0), 0, 255);
 
         // Draw only the tiles belonging to this layer
-        foreach (var tileData in _visibleTiles)
+        foreach (TileDrawData tileData in _visibleTiles)
         {
             if (!System.Object.ReferenceEquals(tileData.Layer, layer))
             {
                 continue;
             }
 
-            var sprite = new Sprite(tileData.Texture, tileData.SourceRect)
+            Sprite sprite = new(tileData.Texture, tileData.SourceRect)
             {
                 // Combine offsets: cached position already includes MapOffset + layer offset;
                 // add parent offsets if any (e.g., group offsets).
@@ -359,8 +398,8 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
             };
 
             // Apply flips
-            var scale = new Vector2f(1f, 1f);
-            var origin = new Vector2f(0f, 0f);
+            Vector2f scale = new(1f, 1f);
+            Vector2f origin = new(0f, 0f);
 
             if (tileData.HorizontalFlip)
             {
@@ -396,23 +435,23 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
             return;
         }
 
-        var texture = GET_OR_LOAD_TEXTURE(imgLayer.Image);
+        Texture texture = GET_OR_LOAD_TEXTURE(imgLayer.Image);
         if (texture is null)
         {
             System.Console.WriteLine($"Image layer '{imgLayer.Name}' has no loadable texture: {imgLayer.Image.Source ?? "(embedded/unknown)"}");
             return;
         }
 
-        var sprite = new Sprite(texture);
+        Sprite sprite = new(texture);
 
         // Position: MapOffset + parent offsets + layer offsets
-        var posX = MapOffset.X + (System.Single)parentOffsetX + (System.Single)(imgLayer.OffsetX ?? 0.0);
-        var posY = MapOffset.Y + (System.Single)parentOffsetY + (System.Single)(imgLayer.OffsetY ?? 0.0);
+        System.Single posX = MapOffset.X + (System.Single)parentOffsetX + (System.Single)(imgLayer.OffsetX ?? 0.0);
+        System.Single posY = MapOffset.Y + (System.Single)parentOffsetY + (System.Single)(imgLayer.OffsetY ?? 0.0);
         sprite.Position = new Vector2f(posX, posY);
 
         // Apply opacity
         System.Double opacity = System.Math.Clamp(parentOpacity * imgLayer.Opacity, 0.0, 1.0);
-        var alpha = (System.Byte)System.Math.Clamp((System.Int32)(opacity * 255.0), 0, 255);
+        System.Byte alpha = (System.Byte)System.Math.Clamp((System.Int32)(opacity * 255.0), 0, 255);
         sprite.Color = new Color(255, 255, 255, alpha);
 
         target.Draw(sprite);
@@ -430,9 +469,9 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
         }
 
         System.Double opacity = System.Math.Clamp(parentOpacity * objGroup.Opacity, 0.0, 1.0);
-        var alpha = (System.Byte)System.Math.Clamp((System.Int32)(opacity * 255.0), 0, 255);
+        System.Byte alpha = (System.Byte)System.Math.Clamp((System.Int32)(opacity * 255.0), 0, 255);
 
-        foreach (var obj in objGroup.Objects)
+        foreach (TmxObject obj in objGroup.Objects)
         {
             // Render only tile objects for now
             if (obj.Tile is null || obj.Tile.Gid == 0)
@@ -459,18 +498,18 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
             System.Int32 tilesPerRow = tileset.Columns ?? (System.Int32)(texture.Size.X / (System.UInt32)tileset.TileWidth);
             System.Int32 srcX = localId % tilesPerRow * tileset.TileWidth;
             System.Int32 srcY = localId / tilesPerRow * tileset.TileHeight;
-            var sourceRect = new IntRect(srcX, srcY, tileset.TileWidth, tileset.TileHeight);
+            IntRect sourceRect = new(srcX, srcY, tileset.TileWidth, tileset.TileHeight);
 
-            var sprite = new Sprite(texture, sourceRect);
+            Sprite sprite = new(texture, sourceRect);
 
             // Position: objects use pixel coordinates (X,Y). Apply MapOffset + parent offsets + group offsets.
-            var totalOffsetX = MapOffset.X + (System.Single)parentOffsetX + (System.Single)(objGroup.OffsetX ?? 0.0);
-            var totalOffsetY = MapOffset.Y + (System.Single)parentOffsetY + (System.Single)(objGroup.OffsetY ?? 0.0);
+            System.Single totalOffsetX = MapOffset.X + (System.Single)parentOffsetX + (System.Single)(objGroup.OffsetX ?? 0.0);
+            System.Single totalOffsetY = MapOffset.Y + (System.Single)parentOffsetY + (System.Single)(objGroup.OffsetY ?? 0.0);
             sprite.Position = new Vector2f((System.Single)obj.X + totalOffsetX, (System.Single)obj.Y + totalOffsetY);
 
             // Flips
-            var scale = new Vector2f(1f, 1f);
-            var origin = new Vector2f(0f, 0f);
+            Vector2f scale = new(1f, 1f);
+            Vector2f origin = new(0f, 0f);
             if (obj.Tile.HorizontalFlip)
             {
                 scale.X = -1f;
@@ -508,7 +547,7 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
         System.Double combinedOffsetX = parentOffsetX + (group.OffsetX ?? 0.0);
         System.Double combinedOffsetY = parentOffsetY + (group.OffsetY ?? 0.0);
 
-        foreach (var child in group.Layers)
+        foreach (ITmxLayer child in group.Layers)
         {
             switch (child)
             {
@@ -557,11 +596,11 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
                 System.IO.Path.GetFullPath(image.Source)
             ];
 
-            foreach (var p in pathsToTry)
+            foreach (System.String p in pathsToTry)
             {
                 if (System.IO.File.Exists(p))
                 {
-                    var tex = new Texture(p);
+                    Texture tex = new(p);
                     _textureCache[image.Source] = tex;
                     return tex;
                 }
@@ -581,13 +620,13 @@ public class TmxMapRenderer : RenderObject, IRenderOrderSortable
 
     private struct TileDrawData
     {
+        public TmxLayer Layer; // Owner layer reference, used to filter when rendering
         public Texture Texture;
         public Vector2f Position;
         public IntRect SourceRect;
         public System.Boolean VerticalFlip;
         public System.Boolean DiagonalFlip;
         public System.Boolean HorizontalFlip;
-        public TmxLayer Layer; // Owner layer reference, used to filter when rendering
     }
 
     #endregion Nested Types
