@@ -20,8 +20,8 @@ public sealed class TileLayer : RenderObject, System.IDisposable
     private readonly Tile[] _tiles;
 
     // Support multiple batches (one VertexArray per texture atlas)
-    private System.Boolean _disposed;
     private List<Batch> _batches;
+    private System.Boolean _disposed;
 
     #endregion Fields
 
