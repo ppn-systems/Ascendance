@@ -44,7 +44,7 @@ public sealed class GameScene : BaseScene
         Camera2D.Instance.ClampEnabled = true;
         Camera2D.Instance.Bounds = new FloatRect(
             0f, 0f,
-            map.Width * map.TileWidth,    // total map pixel width (not tile count * tile size)
+            map.Width * map.TileWidth,     // total map pixel width (not tile count * tile size)
             map.Height * map.TileHeight    // total map pixel height
         );
 
