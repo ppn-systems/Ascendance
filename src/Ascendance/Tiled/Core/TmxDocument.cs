@@ -1,7 +1,6 @@
-﻿using Ascendance.Tiled.Abstractions;
-using System.Reflection;
-using System.Xml;
-using System.Xml.Linq;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Tiled.Abstractions;
 
 namespace Ascendance.Tiled.Core;
 
@@ -24,6 +23,7 @@ public abstract class TmxDocument
     /// Create a new instance with an optional custom loader.
     /// </summary>
     /// <param name="customLoader">Optional custom loader.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>")]
     protected TmxDocument(ICustomLoader customLoader)
     {
         CustomLoader = customLoader;
@@ -37,7 +37,7 @@ public abstract class TmxDocument
     /// <returns>Parsed XDocument.</returns>
     /// <exception cref="System.ArgumentNullException">If <paramref name="filepath"/> is null or empty.</exception>
     /// <exception cref="System.IO.FileNotFoundException">If the file does not exist on disk when no resource is found.</exception>
-    protected XDocument ReadXml(System.String filepath)
+    protected System.Xml.Linq.XDocument ReadXml(System.String filepath)
     {
         if (System.String.IsNullOrWhiteSpace(filepath))
         {
@@ -49,10 +49,10 @@ public abstract class TmxDocument
             return CustomLoader.ReadXml(filepath);
         }
 
-        XDocument xDoc;
+        System.Xml.Linq.XDocument xDoc;
 
-        var asm = Assembly.GetEntryAssembly();
-        System.String[] manifest = System.Array.Empty<System.String>();
+        System.String[] manifest = [];
+        System.Reflection.Assembly asm = System.Reflection.Assembly.GetEntryAssembly();
 
         if (asm != null)
         {
@@ -60,8 +60,8 @@ public abstract class TmxDocument
         }
 
         // Try to match an embedded resource by transforming the filesystem path to a resource-style path.
-        var fileResPath = filepath.Replace(System.IO.Path.DirectorySeparatorChar.ToString(), ".");
-        var fileRes = System.Array.Find(manifest, s => s.EndsWith(fileResPath));
+        System.String fileResPath = filepath.Replace(System.IO.Path.DirectorySeparatorChar.ToString(), ".");
+        System.String fileRes = System.Array.Find(manifest, s => s.EndsWith(fileResPath));
 
         if (fileRes != null && asm != null)
         {
@@ -72,8 +72,8 @@ public abstract class TmxDocument
                     throw new System.IO.FileNotFoundException("Embedded resource not found.", fileRes);
                 }
 
-                using XmlReader reader = XmlReader.Create(xmlStream);
-                xDoc = XDocument.Load(reader);
+                using System.Xml.XmlReader reader = System.Xml.XmlReader.Create(xmlStream);
+                xDoc = System.Xml.Linq.XDocument.Load(reader);
             }
 
             // Resource-loaded, no directory on disk
@@ -87,7 +87,7 @@ public abstract class TmxDocument
                 throw new System.IO.FileNotFoundException("TMX/TSX file not found.", filepath);
             }
 
-            xDoc = XDocument.Load(filepath);
+            xDoc = System.Xml.Linq.XDocument.Load(filepath);
             TmxDirectory = System.IO.Path.GetDirectoryName(filepath) ?? System.String.Empty;
         }
 

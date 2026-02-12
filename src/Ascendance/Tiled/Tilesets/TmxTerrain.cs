@@ -1,6 +1,7 @@
-﻿using Ascendance.Tiled.Abstractions;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Tiled.Abstractions;
 using Ascendance.Tiled.Collections;
-using System.Xml.Linq;
 
 namespace Ascendance.Tiled.Tilesets;
 
@@ -9,22 +10,28 @@ namespace Ascendance.Tiled.Tilesets;
 /// </summary>
 public class TmxTerrain : ITmxElement
 {
+    #region Properties
+
     /// <summary>
     /// Terrain name.
     /// </summary>
-    public System.String Name { get; private set; }
+    public System.String Name { get; }
 
     /// <summary>
     /// Representative tile id for this terrain (local tile id).
     /// </summary>
-    public System.Int32 Tile { get; private set; }
+    public System.Int32 Tile { get; }
 
     /// <summary>
     /// Custom properties for this terrain.
     /// </summary>
-    public PropertyDict Properties { get; private set; }
+    public PropertyDict Properties { get; }
 
-    public TmxTerrain(XElement xTerrain)
+    #endregion Properties
+
+    #region Constructor
+
+    public TmxTerrain(System.Xml.Linq.XElement xTerrain)
     {
         System.ArgumentNullException.ThrowIfNull(xTerrain);
 
@@ -32,4 +39,6 @@ public class TmxTerrain : ITmxElement
         Tile = (System.Int32?)xTerrain.Attribute("tile") ?? 0;
         Properties = new PropertyDict(xTerrain.Element("properties"));
     }
+
+    #endregion Constructor
 }

@@ -1,6 +1,6 @@
-﻿using Ascendance.Tiled.Abstractions;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Tiled.Abstractions;
 
 namespace Ascendance.Tiled.Collections;
 
@@ -9,10 +9,10 @@ namespace Ascendance.Tiled.Collections;
 /// Public API: T implements ITmxElement and the collection is keyed by a generated unique string.
 /// </summary>
 /// <typeparam name="T">Item type implementing ITmxElement.</typeparam>
-public class TmxList<T> : KeyedCollection<System.String, T> where T : ITmxElement
+public class TmxList<T> : System.Collections.ObjectModel.KeyedCollection<System.String, T> where T : ITmxElement
 {
     // Track counts for base names so we can generate stable unique keys like "name", "name_1", "name_2", ...
-    private readonly Dictionary<System.String, System.Int32> nameCount = [];
+    private readonly System.Collections.Generic.Dictionary<System.String, System.Int32> nameCount = [];
 
     /// <summary>
     /// Add an item to the collection. This method ensures nameCount has an entry so GetKeyForItem can produce a unique key.

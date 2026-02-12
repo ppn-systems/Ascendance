@@ -1,6 +1,4 @@
-using System.IO;
-using System.IO.Compression;
-using System.Xml.Linq;
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 namespace Ascendance.Tiled.Core;
 
@@ -12,13 +10,13 @@ public class TmxBase64Data
     /// <summary>
     /// Decoded data stream. Caller should dispose when finished.
     /// </summary>
-    public System.IO.Stream Data { get; private set; }
+    public System.IO.Stream Data { get; }
 
     /// <summary>
     /// Parse &lt;data&gt; element containing base64 (and optional compression).
     /// </summary>
     /// <param name="xData">The &lt;data&gt; element or a &lt;chunk&gt; element inside &lt;data&gt;.</param>
-    public TmxBase64Data(XElement xData)
+    public TmxBase64Data(System.Xml.Linq.XElement xData)
     {
         System.ArgumentNullException.ThrowIfNull(xData);
 
@@ -31,15 +29,15 @@ public class TmxBase64Data
         }
 
         // Be tolerant of whitespace/newlines in base64 text
-        var base64Text = (xData.Value ?? System.String.Empty).Trim();
-        var rawData = System.Convert.FromBase64String(base64Text);
+        System.String base64Text = (xData.Value ?? System.String.Empty).Trim();
+        System.Byte[] rawData = System.Convert.FromBase64String(base64Text);
 
         // Default memory stream (not writable)
         System.IO.Stream stream = new System.IO.MemoryStream(rawData, writable: false);
 
         if (System.String.Equals(compression, "gzip", System.StringComparison.OrdinalIgnoreCase))
         {
-            stream = new GZipStream(stream, CompressionMode.Decompress);
+            stream = new System.IO.Compression.GZipStream(stream, System.IO.Compression.CompressionMode.Decompress);
         }
         else if (System.String.Equals(compression, "zlib", System.StringComparison.OrdinalIgnoreCase))
         {
@@ -47,14 +45,14 @@ public class TmxBase64Data
             // Skip first two bytes and last four bytes as a pragmatic handling.
             if (rawData.Length <= 6)
             {
-                throw new InvalidDataException("TmxBase64Data: zlib-compressed data is too short.");
+                throw new System.IO.InvalidDataException("TmxBase64Data: zlib-compressed data is too short.");
             }
 
-            var bodyLength = rawData.Length - 6;
-            var bodyData = new System.Byte[bodyLength];
+            System.Int32 bodyLength = rawData.Length - 6;
+            System.Byte[] bodyData = new System.Byte[bodyLength];
             System.Array.Copy(rawData, 2, bodyData, 0, bodyLength);
-            var bodyStream = new System.IO.MemoryStream(bodyData, writable: false);
-            stream = new DeflateStream(bodyStream, CompressionMode.Decompress);
+            System.IO.MemoryStream bodyStream = new(bodyData, writable: false);
+            stream = new System.IO.Compression.DeflateStream(bodyStream, System.IO.Compression.CompressionMode.Decompress);
         }
         else if (!System.String.IsNullOrEmpty(compression))
         {

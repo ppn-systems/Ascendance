@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Xml.Linq;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 namespace Ascendance.Tiled.Collections;
 
@@ -8,26 +7,26 @@ namespace Ascendance.Tiled.Collections;
 /// Dictionary of Tiled custom properties parsed from a &lt;properties&gt; element.
 /// </summary>
 [System.Serializable]
-public class PropertyDict : Dictionary<System.String, System.String>
+public class PropertyDict : System.Collections.Generic.Dictionary<System.String, System.String>
 {
     /// <summary>
     /// Build the dictionary from a &lt;properties&gt; container element. If xmlProp is null, an empty dictionary is created.
     /// </summary>
     /// <param name="xmlProp">The &lt;properties&gt; element or null.</param>
-    public PropertyDict(XContainer xmlProp)
+    public PropertyDict(System.Xml.Linq.XContainer xmlProp)
     {
         if (xmlProp == null)
         {
             return;
         }
 
-        foreach (var p in xmlProp.Elements("property"))
+        foreach (System.Xml.Linq.XElement p in xmlProp.Elements("property"))
         {
             System.String pname = (System.String)p.Attribute("name") ?? System.String.Empty;
             System.String pval;
 
             // Try attribute "value" first, otherwise fall back to element body
-            var valAttr = p.Attribute("value");
+            System.Xml.Linq.XAttribute valAttr = p.Attribute("value");
             pval = valAttr != null ? (System.String)valAttr : p.Value ?? System.String.Empty;
 
             // If duplicate property name exists, overwrite with the later one (same behavior as original)

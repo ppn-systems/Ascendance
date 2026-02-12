@@ -1,7 +1,8 @@
-﻿using Ascendance.Tiled.Abstractions;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Tiled.Abstractions;
 using Ascendance.Tiled.Collections;
 using Ascendance.Tiled.Core;
-using System.Xml.Linq;
 
 namespace Ascendance.Tiled.Tilesets;
 
@@ -12,6 +13,8 @@ namespace Ascendance.Tiled.Tilesets;
 /// </summary>
 public class TmxTileset : TmxDocument, ITmxElement
 {
+    #region Properties
+
     /// <summary>
     /// The first global tile id this tileset maps to (present on TMX references).
     /// May be 0 when absent (e.g. when parsing a standalone TSX file).
@@ -78,13 +81,17 @@ public class TmxTileset : TmxDocument, ITmxElement
     /// </summary>
     public TmxList<TmxTerrain> Terrains { get; }
 
+    #endregion Properties
+
+    #region Constructors
+
     /// <summary>
     /// Constructor for parsing a TSX document (XContainer) or an XElement that wraps a tileset element.
     /// </summary>
     /// <param name="xDoc">TSX document or container that contains a &lt;tileset&gt; element.</param>
     /// <param name="tmxDir">Base directory for resolving relative image/source paths.</param>
     /// <param name="customLoader">Optional custom loader for external resources.</param>
-    public TmxTileset(XContainer xDoc, System.String tmxDir, ICustomLoader customLoader = null)
+    public TmxTileset(System.Xml.Linq.XContainer xDoc, System.String tmxDir, ICustomLoader customLoader = null)
         : this(xDoc?.Element("tileset") ?? throw new System.ArgumentException("TSX document does not contain <tileset> element.", nameof(xDoc)), tmxDir, customLoader)
     {
     }
@@ -96,19 +103,19 @@ public class TmxTileset : TmxDocument, ITmxElement
     /// <param name="xTileset">The &lt;tileset&gt; element to parse.</param>
     /// <param name="tmxDir">Base directory for resolving relative paths (images/TSX).</param>
     /// <param name="customLoader">Optional custom loader.</param>
-    public TmxTileset(XElement xTileset, System.String tmxDir = "", ICustomLoader customLoader = null)
+    public TmxTileset(System.Xml.Linq.XElement xTileset, System.String tmxDir = "", ICustomLoader customLoader = null)
         : base(customLoader)
     {
         System.ArgumentNullException.ThrowIfNull(xTileset);
 
         // Read optional firstgid attribute (present when tileset is referenced from a TMX).
-        var xFirstGid = xTileset.Attribute("firstgid");
-        var source = (System.String)xTileset.Attribute("source");
+        System.Xml.Linq.XAttribute xFirstGid = xTileset.Attribute("firstgid");
+        System.String source = (System.String)xTileset.Attribute("source");
 
         // If source is present, the tileset is external (TSX). Load TSX and copy its data.
         if (!System.String.IsNullOrEmpty(source))
         {
-            var sourcePath = System.IO.Path.IsPathRooted(source) ? source : System.IO.Path.Combine(tmxDir ?? System.String.Empty, source);
+            System.String sourcePath = System.IO.Path.IsPathRooted(source) ? source : System.IO.Path.Combine(tmxDir ?? System.String.Empty, source);
             if (!System.IO.File.Exists(sourcePath))
             {
                 throw new System.IO.FileNotFoundException("Referenced TSX file not found.", sourcePath);
@@ -118,9 +125,9 @@ public class TmxTileset : TmxDocument, ITmxElement
             FirstGid = xFirstGid != null ? (System.Int32)xFirstGid : 0;
 
             // Load TSX content and create a tileset from it (TSX won't have 'source' attribute).
-            var tsxDoc = ReadXml(sourcePath);
+            System.Xml.Linq.XDocument tsxDoc = ReadXml(sourcePath);
             // Ensure tileset inside TSX is used; pass the directory of the TSX for resolving image paths.
-            var tsxTileset = new TmxTileset(tsxDoc, System.IO.Path.GetDirectoryName(sourcePath) ?? tmxDir, customLoader);
+            TmxTileset tsxTileset = new(tsxDoc, System.IO.Path.GetDirectoryName(sourcePath) ?? tmxDir, customLoader);
 
             // Copy values from the loaded TSX tileset.
             Name = tsxTileset.Name;
@@ -154,7 +161,7 @@ public class TmxTileset : TmxDocument, ITmxElement
 
         // Terrains
         Terrains = [];
-        var xTerrainTypes = xTileset.Element("terraintypes");
+        System.Xml.Linq.XElement xTerrainTypes = xTileset.Element("terraintypes");
         if (xTerrainTypes != null)
         {
             foreach (var e in xTerrainTypes.Elements("terrain"))
@@ -165,12 +172,14 @@ public class TmxTileset : TmxDocument, ITmxElement
 
         // Tiles (tile-specific overrides)
         Tiles = [];
-        foreach (var xTile in xTileset.Elements("tile"))
+        foreach (System.Xml.Linq.XElement xTile in xTileset.Elements("tile"))
         {
-            var tile = new TmxTilesetTile(xTile, Terrains, tmxDir);
+            TmxTilesetTile tile = new(xTile, Terrains, tmxDir);
             Tiles[tile.Id] = tile;
         }
 
         Properties = new PropertyDict(xTileset.Element("properties"));
     }
+
+    #endregion Constructors
 }

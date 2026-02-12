@@ -1,7 +1,8 @@
-﻿using Ascendance.Tiled.Collections;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Tiled.Collections;
 using Ascendance.Tiled.Core;
 using Ascendance.Tiled.Layers;
-using System.Xml.Linq;
 
 namespace Ascendance.Tiled.Tilesets;
 
@@ -10,6 +11,8 @@ namespace Ascendance.Tiled.Tilesets;
 /// </summary>
 public class TmxTilesetTile
 {
+    #region Properties
+
     /// <summary>
     /// Local tile id within the tileset (not the global GID).
     /// </summary>
@@ -59,13 +62,17 @@ public class TmxTilesetTile
     public TmxTerrain BottomLeft => TerrainEdges.Count > 2 ? TerrainEdges[2] : null;
     public TmxTerrain BottomRight => TerrainEdges.Count > 3 ? TerrainEdges[3] : null;
 
+    #endregion Properties
+
+    #region Constructors
+
     /// <summary>
     /// Parse a &lt;tile&gt; element.
     /// </summary>
     /// <param name="xTile">Tile element to parse.</param>
     /// <param name="terrains">List of terrains declared on the parent tileset.</param>
     /// <param name="tmxDir">Base directory for resolving image paths.</param>
-    public TmxTilesetTile(XElement xTile, TmxList<TmxTerrain> terrains, System.String tmxDir = "")
+    public TmxTilesetTile(System.Xml.Linq.XElement xTile, TmxList<TmxTerrain> terrains, System.String tmxDir = "")
     {
         System.ArgumentNullException.ThrowIfNull(xTile);
 
@@ -110,4 +117,6 @@ public class TmxTilesetTile
 
         Properties = new PropertyDict(xTile.Element("properties"));
     }
+
+    #endregion Constructors
 }

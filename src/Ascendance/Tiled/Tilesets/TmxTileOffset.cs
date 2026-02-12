@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 namespace Ascendance.Tiled.Tilesets;
 
@@ -7,6 +7,8 @@ namespace Ascendance.Tiled.Tilesets;
 /// </summary>
 public class TmxTileOffset
 {
+    #region Properties
+
     /// <summary>
     /// X offset in pixels.
     /// </summary>
@@ -17,11 +19,15 @@ public class TmxTileOffset
     /// </summary>
     public System.Int32 Y { get; }
 
+    #endregion Properties
+
+    #region Constructor
+
     /// <summary>
     /// Parses a &lt;tileoffset&gt; element. When the element is null, offset defaults to (0,0).
     /// </summary>
     /// <param name="xTileOffset">The &lt;tileoffset&gt; element or null.</param>
-    public TmxTileOffset(XElement xTileOffset)
+    public TmxTileOffset(System.Xml.Linq.XElement xTileOffset)
     {
         if (xTileOffset == null)
         {
@@ -34,4 +40,6 @@ public class TmxTileOffset
             Y = (System.Int32?)xTileOffset.Attribute("y") ?? 0;
         }
     }
+
+    #endregion Constructor
 }
