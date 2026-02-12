@@ -9,7 +9,7 @@ using Ascendance.Rendering.Entities;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Ascendance.Desktop;
+namespace Ascendance.Desktop.Rendering;
 
 /// <summary>
 /// Debug version of TMX Map Renderer with extensive logging

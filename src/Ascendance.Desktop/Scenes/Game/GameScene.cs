@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Desktop.Rendering;
 using Ascendance.Maps;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Camera;
