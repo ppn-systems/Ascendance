@@ -6,7 +6,8 @@ using Ascendance.Rendering.Animation;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Input;
 using Ascendance.Shared.Enums;
-using Ascendance.Tiles;
+using Ascendance.Tiled;
+using Ascendance.Tiled.Layers;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -24,7 +25,7 @@ namespace Ascendance.Characters;
 /// Features:
 /// - 4-directional movement (WASD/Arrow keys)
 /// - Walk/Run modes (Shift to run)
-/// - Tile-based collision detection with tile map
+/// - Tile-based collision detection with TMX tile map
 /// - Animated sprite with 4-directional walk cycles (15x31 pixels, 4 frames per direction)
 /// - Camera following (optional)
 /// - Circular collision for smooth 2.5D movement
@@ -90,19 +91,19 @@ public sealed class Character : AnimatedSprite
     public Direction2D Direction => _direction;
 
     /// <summary>
-    /// Gets or sets the tile map used for collision detection.
+    /// Gets or sets the TMX map used for collision detection.
     /// </summary>
     /// <remarks>
-    /// Set this to enable tile-based collision detection.
+    /// Set this to enable tile-based collision detection with TMX layers.
     /// If null, the player can move freely without collision.
     /// </remarks>
-    public TileMap TileMap { get; set; }
+    public TmxMap TmxMap { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the collision layer in the tile map.
+    /// Gets or sets the name of the collision layer in the TMX map.
     /// </summary>
     /// <remarks>
-    /// Default: "Collision". Set this to match your tile map's collision layer name.
+    /// Default: "collision". Set this to match your TMX map's collision layer name.
     /// This layer should contain tiles marked as collidable.
     /// </remarks>
     public System.String CollisionLayerName
@@ -192,7 +193,7 @@ public sealed class Character : AnimatedSprite
     /// 1. Process keyboard input
     /// 2. Determine player state (Idle/Walking/Running)
     /// 3. Apply movement via MovementController
-    /// 4. Resolve tile collisions
+    /// 4. Resolve TMX tile collisions
     /// 5. Update sprite position from collider
     /// 6. Update animation based on state and direction
     /// 7. Update animator (advance animation frames)
@@ -215,8 +216,8 @@ public sealed class Character : AnimatedSprite
         // 3. Apply movement via MovementController
         this.APPLY_MOVEMENT(inputDirection, deltaTime);
 
-        // 4. Handle tile collision
-        this.HANDLE_COLLISION();
+        // 4. Handle TMX tile collision
+        this.HANDLE_TMX_COLLISION();
 
         // 5. Update sprite position from collider (authoritative position)
         this.Sprite.Position = this.Collider.Position;
@@ -248,27 +249,27 @@ public sealed class Character : AnimatedSprite
     }
 
     /// <summary>
-    /// Teleports the player to a specific tile coordinate in the tile map.
+    /// Teleports the player to a specific tile coordinate in the TMX map.
     /// </summary>
     /// <param name="tileX">The tile X coordinate (column index).</param>
     /// <param name="tileY">The tile Y coordinate (row index).</param>
     /// <remarks>
     /// <para>
-    /// Converts tile coordinates to world coordinates using the tile map's
-    /// <see cref="TileMap.TileToWorldCenter"/> method.
+    /// Converts tile coordinates to world coordinates using the TMX map's tile size.
+    /// Centers the player in the middle of the target tile.
     /// </para>
     /// <para>
-    /// Does nothing if <see cref="TileMap"/> is null.
+    /// Does nothing if <see cref="TmxMap"/> is null.
     /// </para>
     /// </remarks>
     public void TeleportToTile(System.Int32 tileX, System.Int32 tileY)
     {
-        if (this.TileMap is null)
+        if (this.TmxMap is null)
         {
             return;
         }
 
-        Vector2f worldPos = this.TileMap.TileToWorldCenter(new Vector2i(tileX, tileY));
+        Vector2f worldPos = TILE_TO_WORLD_CENTER(new Vector2i(tileX, tileY));
         this.SetPosition(worldPos);
     }
 
@@ -276,9 +277,9 @@ public sealed class Character : AnimatedSprite
     /// Gets the current tile coordinate the player is standing on.
     /// </summary>
     /// <returns>
-    /// The tile coordinate as a <see cref="Vector2i"/>, or <c>(-1, -1)</c> if no tile map is set.
+    /// The tile coordinate as a <see cref="Vector2i"/>, or <c>(-1, -1)</c> if no TMX map is set.
     /// </returns>
-    public Vector2i GetCurrentTileCoordinate() => this.TileMap is null ? new Vector2i(-1, -1) : this.TileMap.WorldToTile(this.Collider.Position);
+    public Vector2i GetCurrentTileCoordinate() => this.TmxMap is null ? new Vector2i(-1, -1) : WORLD_TO_TILE(this.Collider.Position);
 
     #endregion Public Methods
 
@@ -307,6 +308,38 @@ public sealed class Character : AnimatedSprite
     }
 
     #endregion Event Handlers
+
+    #region Private Methods - Coordinate Conversion
+
+    /// <summary>
+    /// Converts world position to tile coordinates.
+    /// </summary>
+    /// <param name="worldPos">World position in pixels.</param>
+    /// <returns>Tile coordinate.</returns>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private Vector2i WORLD_TO_TILE(Vector2f worldPos)
+    {
+        System.Int32 tileX = (System.Int32)System.MathF.Floor(worldPos.X / TmxMap.TileWidth);
+        System.Int32 tileY = (System.Int32)System.MathF.Floor(worldPos.Y / TmxMap.TileHeight);
+        return new Vector2i(tileX, tileY);
+    }
+
+    /// <summary>
+    /// Converts tile coordinates to world center position.
+    /// </summary>
+    /// <param name="tilePos">Tile coordinate.</param>
+    /// <returns>World position at the center of the tile.</returns>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private Vector2f TILE_TO_WORLD_CENTER(Vector2i tilePos)
+    {
+        System.Single worldX = (tilePos.X * TmxMap.TileWidth) + (TmxMap.TileWidth * 0.5f);
+        System.Single worldY = (tilePos.Y * TmxMap.TileHeight) + (TmxMap.TileHeight * 0.5f);
+        return new Vector2f(worldX, worldY);
+    }
+
+    #endregion Private Methods - Coordinate Conversion
 
     #region Private Methods - Input
 
@@ -497,7 +530,6 @@ public sealed class Character : AnimatedSprite
         else
         {
             // Use Walk movement type
-            // TODO: Modify MovementController to support speed parameter or switch to RunMovement
             _movementController.SetMovement(MovementType.Walk, direction);
         }
 
@@ -506,18 +538,18 @@ public sealed class Character : AnimatedSprite
 
     #endregion Private Methods - Movement
 
-    #region Private Methods - Collision
+    #region Private Methods - TMX Collision
 
     /// <summary>
-    /// Handles tile-based collision detection and resolution.
+    /// Handles TMX tile-based collision detection and resolution.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Uses <see cref="TileCollider.ResolveCollision"/> with <see cref="CollisionMode.Stop"/>
-    /// to prevent the player from moving into collidable tiles.
+    /// Uses the TMX map's tile layers to check for collision tiles.
+    /// Resolves collision by testing X and Y movement separately.
     /// </para>
     /// <para>
-    /// If <see cref="TileMap"/> or <see cref="CollisionLayerName"/> is not set,
+    /// If <see cref="TmxMap"/> or <see cref="CollisionLayerName"/> is not set,
     /// the player moves freely without collision detection.
     /// </para>
     /// <para>
@@ -527,9 +559,9 @@ public sealed class Character : AnimatedSprite
     /// </remarks>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private void HANDLE_COLLISION()
+    private void HANDLE_TMX_COLLISION()
     {
-        if (this.TileMap is null || System.String.IsNullOrEmpty(this.CollisionLayerName))
+        if (this.TmxMap is null || System.String.IsNullOrEmpty(this.CollisionLayerName))
         {
             this.Collider.Position = _movementController.Position;
             return;
@@ -538,19 +570,18 @@ public sealed class Character : AnimatedSprite
         Vector2f currentPosition = this.Collider.Position;
         Vector2f targetPosition = _movementController.Position;
         Vector2f colliderSize = new(this.Collider.Radius * 2f, this.Collider.Radius * 2f);
-        Vector2f resolvedPosition = this.RESOLVE_COLLISION_SEPARATELY(currentPosition, targetPosition, colliderSize);
+        Vector2f resolvedPosition = this.RESOLVE_TMX_COLLISION_SEPARATELY(currentPosition, targetPosition, colliderSize);
 
         this.Collider.Position = resolvedPosition;
-
         _movementController.Position = resolvedPosition;
     }
 
     /// <summary>
-    /// Resolves collision by testing X and Y axes separately.
+    /// Resolves TMX collision by testing X and Y axes separately.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private Vector2f RESOLVE_COLLISION_SEPARATELY(
+    private Vector2f RESOLVE_TMX_COLLISION_SEPARATELY(
         Vector2f currentPos,
         Vector2f targetPos,
         Vector2f size)
@@ -561,7 +592,7 @@ public sealed class Character : AnimatedSprite
         Vector2f testX = new(targetPos.X, currentPos.Y);
         FloatRect boundsX = new(testX.X - (size.X * 0.5f), testX.Y - (size.Y * 0.5f), size.X, size.Y);
 
-        if (!TileCollider.CheckCollision(this.TileMap, this.CollisionLayerName, boundsX))
+        if (!CHECK_TMX_COLLISION(boundsX))
         {
             resolvedPos.X = testX.X; // X-axis is clear
         }
@@ -570,7 +601,7 @@ public sealed class Character : AnimatedSprite
         Vector2f testY = new(resolvedPos.X, targetPos.Y);
         FloatRect boundsY = new(testY.X - (size.X * 0.5f), testY.Y - (size.Y * 0.5f), size.X, size.Y);
 
-        if (!TileCollider.CheckCollision(this.TileMap, this.CollisionLayerName, boundsY))
+        if (!CHECK_TMX_COLLISION(boundsY))
         {
             resolvedPos.Y = testY.Y; // Y-axis is clear
         }
@@ -578,5 +609,55 @@ public sealed class Character : AnimatedSprite
         return resolvedPos;
     }
 
-    #endregion Private Methods - Collision
+    /// <summary>
+    /// Checks if the given bounds collide with any tiles in the collision layer.
+    /// </summary>
+    /// <param name="bounds">The bounding rectangle to check.</param>
+    /// <returns>True if collision detected, false otherwise.</returns>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private System.Boolean CHECK_TMX_COLLISION(FloatRect bounds)
+    {
+        // Find the collision layer by name
+        TmxLayer collisionLayer = null;
+        foreach (var layer in TmxMap.TileLayers)
+        {
+            if (System.String.Equals(layer.Name, CollisionLayerName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                collisionLayer = layer;
+                break;
+            }
+        }
+
+        if (collisionLayer is null || !collisionLayer.Visible)
+        {
+            return false; // No collision layer found or not visible
+        }
+
+        // Calculate tile bounds that overlap with the character bounds
+        System.Int32 startTileX = (System.Int32)System.MathF.Floor(bounds.Left / TmxMap.TileWidth);
+        System.Int32 endTileX = (System.Int32)System.MathF.Floor((bounds.Left + bounds.Width) / TmxMap.TileWidth);
+        System.Int32 startTileY = (System.Int32)System.MathF.Floor(bounds.Top / TmxMap.TileHeight);
+        System.Int32 endTileY = (System.Int32)System.MathF.Floor((bounds.Top + bounds.Height) / TmxMap.TileHeight);
+
+        // Check each overlapping tile for collision
+        for (System.Int32 tileY = startTileY; tileY <= endTileY; tileY++)
+        {
+            for (System.Int32 tileX = startTileX; tileX <= endTileX; tileX++)
+            {
+                // Check if this tile position has a collision tile
+                foreach (var tile in collisionLayer.Tiles)
+                {
+                    if (tile.X == tileX && tile.Y == tileY && tile.Gid > 0)
+                    {
+                        return true; // Collision detected
+                    }
+                }
+            }
+        }
+
+        return false; // No collision
+    }
+
+    #endregion Private Methods - TMX Collision
 }
