@@ -39,7 +39,7 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     private System.Single _lastLogicMs;
     private System.Single _lastRenderMs;
     private System.Boolean _renderCacheDirty;
-    private System.Collections.Generic.IReadOnlyList<RenderObject> _renderObjectCache;
+    private System.Collections.Generic.List<RenderObject> _renderObjectCache;
 
     #endregion Fields
 
@@ -327,16 +327,19 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
     {
         System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 
+        // Rebuild cache only when scene membership changes (spawn/destroy/scene change).
         if (_renderCacheDirty)
         {
+            // Create/refresh the mutable list.
             System.Collections.Generic.List<RenderObject> cache = [.. SceneManager.Instance.GetActiveObjects<RenderObject>()];
-            cache.Sort(RenderObject.CompareZIndex);
 
-            _renderCacheDirty = false;
             _renderObjectCache = cache;
+            _renderCacheDirty = false;
 
             NLogixFx.Debug(message: $"Render cache rebuilt ({cache.Count} objects).", source: "GraphicsEngine");
         }
+
+        _renderObjectCache.Sort(COMPARE_RENDER_ORDER);
 
         foreach (RenderObject obj in _renderObjectCache)
         {
@@ -366,6 +369,53 @@ public class GraphicsEngine : SingletonBase<GraphicsEngine>, IUpdatable
         }
 
         NLogixFx.Info(message: $"Window focus changed: {(focused ? "Gained" : "Lost")}", source: "GraphicsEngine");
+    }
+
+    /// <summary>
+    /// Comparison for render order: ZIndex, then foot Y.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private static System.Int32 COMPARE_RENDER_ORDER(RenderObject a, RenderObject b)
+    {
+        if (ReferenceEquals(a, b))
+        {
+            return 0;
+        }
+
+        if (a is null)
+        {
+            return -1;
+        }
+
+        if (b is null)
+        {
+            return 1;
+        }
+
+        // Primary: ZIndex (lower first -> drawn earlier -> behind)
+        System.Int32 z = a.ZIndex.CompareTo(b.ZIndex);
+        if (z != 0)
+        {
+            return z;
+        }
+
+        // Secondary: foot Y (lower first -> drawn earlier -> behind)
+        return GET_FOOT_Y(a).CompareTo(GET_FOOT_Y(b));
+    }
+
+    /// <summary>
+    /// Computes the "foot Y" used for ordering. For SpriteObject, use bottom of GlobalBounds.
+    /// Non-sprite objects default to 0.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private static System.Single GET_FOOT_Y(RenderObject o)
+    {
+        if (o is SpriteObject s)
+        {
+            FloatRect gb = s.GlobalBounds;
+            return gb.Top + gb.Height; // bottom Y of the sprite's AABB
+        }
+        return 0f;
     }
 
     #endregion Private Methods
