@@ -1,9 +1,9 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Collections;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Collections;
 
-namespace Ascendance.Tiled.Core;
+namespace Ascendance.Maps.Core;
 
 /// <summary>
 /// Represents an image layer in a Tiled map. Image layers contain a single image and

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Colliders;
+using Ascendance.Maps;
+using Ascendance.Maps.Layers;
 using Ascendance.Movement;
 using Ascendance.Rendering.Animation;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Input;
 using Ascendance.Shared.Enums;
-using Ascendance.Tiled;
-using Ascendance.Tiled.Layers;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;

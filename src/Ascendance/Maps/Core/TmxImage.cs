@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Tiled.Core;
+
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+namespace Ascendance.Maps.Core;
 
 /// <summary>
 /// Representation of an image used by tilesets, image-layers, or tile definitions.

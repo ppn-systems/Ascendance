@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Tiled.Tilesets;
+namespace Ascendance.Maps.Tilesets;
 
 /// <summary>
 /// Represents an optional per-tileset pixel offset used when rendering tiles.

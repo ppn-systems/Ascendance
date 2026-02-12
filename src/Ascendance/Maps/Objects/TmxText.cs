@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Core;
+using Ascendance.Maps.Core;
 
-namespace Ascendance.Tiled.Objects;
+namespace Ascendance.Maps.Objects;
 
 /// <summary>
 /// Represents text embedded in a Tiled &lt;text&gt; element.

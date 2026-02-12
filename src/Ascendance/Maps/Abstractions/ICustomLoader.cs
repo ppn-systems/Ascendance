@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Core;
+using Ascendance.Maps.Core;
 
-namespace Ascendance.Tiled.Abstractions;
+namespace Ascendance.Maps.Abstractions;
 
 /// <summary>
 /// Interface for a custom XML loader used by <see cref="TmxDocument"/>.

@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Maps;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Core;
+using Ascendance.Maps.Layers;
+using Ascendance.Maps.Tilesets;
 using Ascendance.Rendering.Entities;
-using Ascendance.Tiled;
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Core;
-using Ascendance.Tiled.Layers;
-using Ascendance.Tiled.Tilesets;
 using SFML.Graphics;
 using SFML.System;
 

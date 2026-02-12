@@ -1,12 +1,12 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Collections;
-using Ascendance.Tiled.Core;
-using Ascendance.Tiled.Enums;
-using Ascendance.Tiled.Objects;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Collections;
+using Ascendance.Maps.Core;
+using Ascendance.Maps.Enums;
+using Ascendance.Maps.Objects;
 
-namespace Ascendance.Tiled.Layers;
+namespace Ascendance.Maps.Layers;
 
 /// <summary>
 /// Represents an object group (&lt;objectgroup&gt;) layer in a Tiled map.

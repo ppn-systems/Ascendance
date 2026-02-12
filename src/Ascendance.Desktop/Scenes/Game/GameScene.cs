@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Maps;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
-using Ascendance.Tiled;
 using Nalix.Framework.Injection;
 using SFML.Graphics;
 using SFML.System;

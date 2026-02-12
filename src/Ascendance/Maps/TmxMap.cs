@@ -1,14 +1,14 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Collections;
-using Ascendance.Tiled.Core;
-using Ascendance.Tiled.Enums;
-using Ascendance.Tiled.Layers;
-using Ascendance.Tiled.Tilesets;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Collections;
+using Ascendance.Maps.Core;
+using Ascendance.Maps.Enums;
+using Ascendance.Maps.Layers;
+using Ascendance.Maps.Tilesets;
 using System.Linq;
 
-namespace Ascendance.Tiled;
+namespace Ascendance.Maps;
 
 /// <summary>
 /// Represents a TMX map document parsed from Tiled.

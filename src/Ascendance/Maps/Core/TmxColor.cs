@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Tiled.Core;
+namespace Ascendance.Maps.Core;
 
 /// <summary>
 /// Simple RGB color parsed from a hex string like "#RRGGBB".

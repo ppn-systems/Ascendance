@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Collections;
-using Ascendance.Tiled.Core;
-using Ascendance.Tiled.Layers;
+using Ascendance.Maps.Collections;
+using Ascendance.Maps.Core;
+using Ascendance.Maps.Layers;
 
-namespace Ascendance.Tiled.Tilesets;
+namespace Ascendance.Maps.Tilesets;
 
 /// <summary>
 /// Represents per-tile information inside a tileset (tile id specific data).

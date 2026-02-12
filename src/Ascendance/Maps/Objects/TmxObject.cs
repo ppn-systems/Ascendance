@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Collections;
-using Ascendance.Tiled.Enums;
-using Ascendance.Tiled.Layers;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Collections;
+using Ascendance.Maps.Enums;
+using Ascendance.Maps.Layers;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Xml.Linq;
 
-namespace Ascendance.Tiled.Objects;
+namespace Ascendance.Maps.Objects;
 
 /// <summary>
 /// Represents an object parsed from a Tiled &lt;object&gt; element.

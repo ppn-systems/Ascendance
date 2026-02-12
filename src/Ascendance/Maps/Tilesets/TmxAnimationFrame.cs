@@ -1,6 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Tiled.Tilesets;
+namespace Ascendance.Maps.Tilesets;
 
 /// <summary>
 /// Represents a single animation frame inside a &lt;animation&gt; block for a tile.

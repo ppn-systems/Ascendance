@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
 
-namespace Ascendance.Tiled.Core;
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Maps.Abstractions;
+
+namespace Ascendance.Maps.Core;
 
 /// <summary>
 /// Base functionality for reading TMX/TSX documents and providing a small parsing helper surface.

@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Tiled.Objects;
+namespace Ascendance.Maps.Objects;
 
 /// <summary>
 /// Represents a point used by TmxObject polygon/polyline definitions.

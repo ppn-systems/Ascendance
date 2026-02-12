@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Collections;
+using Ascendance.Maps.Collections;
 
-namespace Ascendance.Tiled.Abstractions;
+namespace Ascendance.Maps.Abstractions;
 
 /// <summary>
 /// Common contract for layers in a Tiled map (tile layers, object groups,

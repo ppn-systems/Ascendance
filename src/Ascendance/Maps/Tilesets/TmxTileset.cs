@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Collections;
-using Ascendance.Tiled.Core;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Collections;
+using Ascendance.Maps.Core;
 
-namespace Ascendance.Tiled.Tilesets;
+namespace Ascendance.Maps.Tilesets;
 
 /// <summary>
 /// Represents a tileset defined in TMX or TSX format.

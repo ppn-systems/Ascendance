@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Tiled.Layers;
+namespace Ascendance.Maps.Layers;
 
 /// <summary>
 /// Represents a tile instance in a tile layer including position and flip flags.

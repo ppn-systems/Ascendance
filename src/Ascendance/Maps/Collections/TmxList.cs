@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
 
-namespace Ascendance.Tiled.Collections;
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Maps.Abstractions;
+
+namespace Ascendance.Maps.Collections;
 
 /// <summary>
 /// Keyed collection that attempts to keep unique keys when multiple items share the same Name.

@@ -1,11 +1,11 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Collections;
-using Ascendance.Tiled.Core;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Collections;
+using Ascendance.Maps.Core;
 using System.Linq;
 
-namespace Ascendance.Tiled.Layers;
+namespace Ascendance.Maps.Layers;
 
 /// <summary>
 /// Represents a Tiled "group" layer which can contain other layers (tile layers,

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Abstractions;
-using Ascendance.Tiled.Collections;
+using Ascendance.Maps.Abstractions;
+using Ascendance.Maps.Collections;
 
-namespace Ascendance.Tiled.Tilesets;
+namespace Ascendance.Maps.Tilesets;
 
 /// <summary>
 /// Represents a terrain entry declared in &lt;terraintypes&gt;.

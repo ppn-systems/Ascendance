@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Tiled.Enums;
 
-namespace Ascendance.Tiled.Objects;
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Maps.Enums;
+
+namespace Ascendance.Maps.Objects;
 
 /// <summary>
 /// Represents horizontal and vertical alignment parsed from TMX attributes.
