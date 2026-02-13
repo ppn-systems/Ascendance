@@ -70,9 +70,9 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
     public System.Boolean IsCheatEngineDetected => _isCheatEngineDetected;
 
     /// <summary>
-    /// Gets the total number of detections.
+    /// Gets the timestamp of the most recent detection.
     /// </summary>
-    public System.Int32 TotalDetections => System.Threading.Volatile.Read(ref _totalDetections);
+    public System.DateTimeOffset? LastDetectionTime => _lastDetectionTime;
 
     /// <summary>
     /// Gets the timestamp of the first detection.
@@ -80,9 +80,9 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
     public System.DateTimeOffset? FirstDetectionTime => _firstDetectionTime;
 
     /// <summary>
-    /// Gets the timestamp of the most recent detection.
+    /// Gets the total number of detections.
     /// </summary>
-    public System.DateTimeOffset? LastDetectionTime => _lastDetectionTime;
+    public System.Int32 TotalDetections => System.Threading.Volatile.Read(ref _totalDetections);
 
     #endregion Properties
 
@@ -145,7 +145,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         _workerHandle = InstanceManager.Instance.GetOrCreateInstance<TaskManager>().ScheduleWorker(
             name: $"CheatEngineDetector_{_scanIntervalMs}ms",
             group: "AntiCheat",
-            work: async (ctx, ct) => await DetectionLoopAsync(ctx, ct).ConfigureAwait(false),
+            work: async (ctx, ct) => await DETECTION_LOOP_ASYNC(ctx, ct).ConfigureAwait(false),
             options: new WorkerOptions
             {
                 CancellationToken = linkedToken,
@@ -203,7 +203,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
 
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-    private async System.Threading.Tasks.Task DetectionLoopAsync(
+    private async System.Threading.Tasks.Task DETECTION_LOOP_ASYNC(
         IWorkerContext ctx,
         System.Threading.CancellationToken ct)
     {
@@ -226,7 +226,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
 
                     if (result.IsDetected)
                     {
-                        HandleDetection(scanCount, result);
+                        HANDLE_DETECTION(scanCount, result);
 
                         if (_autoShutdown)
                         {
@@ -265,7 +265,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
 
     #region Event Handling
 
-    private void HandleDetection(System.Int32 scanNumber, CheatDetectionResult result)
+    private void HANDLE_DETECTION(System.Int32 scanNumber, CheatDetectionResult result)
     {
         _isCheatEngineDetected = true;
         System.Int32 count = System.Threading.Interlocked.Increment(ref _totalDetections);

@@ -28,13 +28,11 @@ public sealed class LinuxAntiCheatDetector : IAntiCheatDetector
         {
             System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcesses();
 
-            foreach (var process in processes)
+            foreach (System.Diagnostics.Process process in processes)
             {
                 try
                 {
-                    System.String name = process.ProcessName.ToLowerInvariant();
-
-                    if (CheatToolNames.Any(name.Contains))
+                    if (CheatToolNames.Any(process.ProcessName.ToLowerInvariant().Contains))
                     {
                         return true;
                     }
@@ -66,8 +64,7 @@ public sealed class LinuxAntiCheatDetector : IAntiCheatDetector
             System.String statusPath = "/proc/self/status";
             if (System.IO.File.Exists(statusPath))
             {
-                System.String[] lines = System.IO.File.ReadAllLines(statusPath);
-                foreach (var line in lines)
+                foreach (System.String line in System.IO.File.ReadAllLines(statusPath))
                 {
                     if (line.StartsWith("TracerPid:", System.StringComparison.Ordinal))
                     {
@@ -97,25 +94,24 @@ public sealed class LinuxAntiCheatDetector : IAntiCheatDetector
             Timestamp = System.DateTimeOffset.UtcNow
         };
 
-        if (IsDebuggerAttached())
+        if (this.IsDebuggerAttached())
         {
             result.IsDetected = true;
-            result.DetectionMethod = "Debugger Detection (Linux /proc)";
             result.Details = "TracerPid indicates debugger attached";
-            return result;
+            result.DetectionMethod = "Debugger Detection (Linux /proc)";
         }
-
-        if (IsCheatToolRunning())
+        else if (this.IsCheatToolRunning())
         {
             result.IsDetected = true;
-            result.DetectionMethod = "Process Scanner (Linux)";
             result.Details = "Known cheat tool detected";
-            return result;
+            result.DetectionMethod = "Process Scanner (Linux)";
         }
-
-        result.IsDetected = false;
-        result.DetectionMethod = "Full Scan (Linux)";
-        result.Details = "No threats detected";
+        else
+        {
+            result.IsDetected = false;
+            result.Details = "No threats detected";
+            result.DetectionMethod = "Full Scan (Linux)";
+        }
 
         return result;
     }

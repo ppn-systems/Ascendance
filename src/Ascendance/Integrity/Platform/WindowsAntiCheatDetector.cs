@@ -94,9 +94,7 @@ public sealed partial class WindowsAntiCheatDetector : IAntiCheatDetector
             {
                 try
                 {
-                    System.String name = process.ProcessName.ToLowerInvariant();
-
-                    if (CheatToolNames.Any(name.Contains))
+                    if (CheatToolNames.Any(process.ProcessName.ToLowerInvariant().Contains))
                     {
                         System.Diagnostics.Debug.WriteLine($"[Windows] Detected cheat tool: {process.ProcessName}");
                         return true;
