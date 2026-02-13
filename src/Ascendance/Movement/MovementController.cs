@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Abstractions;
-using Ascendance.Shared.Enums;
+using Ascendance.Contracts.Enums;
 using SFML.System;
 
 namespace Ascendance.Movement;

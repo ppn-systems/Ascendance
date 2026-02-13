@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Shared.Enums;
+namespace Ascendance.Contracts.Enums;
 
 /// <summary>
 /// Specifies the tile layer rendering priority and type classification.

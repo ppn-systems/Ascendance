@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Nalix.Framework" Version="9.9.0" />
-		<ProjectReference Include="..\Ascendance.Shared\Ascendance.Shared.csproj" />
+		<ProjectReference Include="..\Ascendance.Contracts\Ascendance.Contracts.csproj" />
 		<ProjectReference Include="..\Ascendance.Rendering\Ascendance.Rendering.csproj" />
 	</ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2026 Ascendance Team. All rights reserved.
 
+using Ascendance.Contracts.Enums;
 using Ascendance.Hosting.Extensions;
-using Ascendance.Shared.Enums;
 using Nalix.Common.Connection;
 using Nalix.Common.Core.Enums;
 using Nalix.Common.Messaging.Packets.Abstractions;

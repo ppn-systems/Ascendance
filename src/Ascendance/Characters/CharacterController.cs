@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Contracts.Enums;
 using Ascendance.Rendering.Animation;
 using Ascendance.Rendering.Utilities;
-using Ascendance.Shared.Enums;
 using SFML.Graphics;
 
 namespace Ascendance.Characters;

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Colliders;
+using Ascendance.Contracts.Enums;
 using Ascendance.Maps;
 using Ascendance.Maps.Layers;
 using Ascendance.Movement;
 using Ascendance.Rendering.Animation;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Input;
-using Ascendance.Shared.Enums;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -56,12 +56,47 @@ public sealed class Character : AnimatedSprite
 
     private PlayerState _state;
     private Direction2D _direction;
-
-    private System.String _collisionLayerName = "collision";
+    private System.String _collisionLayerName;
 
     #endregion Fields
 
     #region Properties
+
+    /// <summary>
+    /// Gets or sets the TMX map used for collision detection.
+    /// </summary>
+    /// <remarks>
+    /// Set this to enable tile-based collision detection with TMX layers.
+    /// If null, the player can move freely without collision.
+    /// </remarks>
+    public TmxMap TmxMap { get; set; }
+
+    /// <summary>
+    /// Gets or sets the camera that follows the player.
+    /// </summary>
+    /// <remarks>
+    /// If set, the camera will automatically center on the player's position each frame.
+    /// The camera position is updated after movement and collision resolution.
+    /// </remarks>
+    public Camera2D Camera { get; set; }
+
+    /// <summary>
+    /// Gets the player's circular collider component.
+    /// </summary>
+    /// <remarks>
+    /// Exposed for advanced collision detection or physics integration.
+    /// </remarks>
+    public CircleCollider Collider { get; }
+
+    /// <summary>
+    /// Gets the current state of the player.
+    /// </summary>
+    public PlayerState State => _state;
+
+    /// <summary>
+    /// Gets the current facing direction of the player.
+    /// </summary>
+    public Direction2D Direction => _direction;
 
     /// <summary>
     /// Gets or sets the current world position of the player.
@@ -81,25 +116,6 @@ public sealed class Character : AnimatedSprite
     }
 
     /// <summary>
-    /// Gets the current state of the player.
-    /// </summary>
-    public PlayerState State => _state;
-
-    /// <summary>
-    /// Gets the current facing direction of the player.
-    /// </summary>
-    public Direction2D Direction => _direction;
-
-    /// <summary>
-    /// Gets or sets the TMX map used for collision detection.
-    /// </summary>
-    /// <remarks>
-    /// Set this to enable tile-based collision detection with TMX layers.
-    /// If null, the player can move freely without collision.
-    /// </remarks>
-    public TmxMap TmxMap { get; set; }
-
-    /// <summary>
     /// Gets or sets the name of the collision layer in the TMX map.
     /// </summary>
     /// <remarks>
@@ -113,34 +129,14 @@ public sealed class Character : AnimatedSprite
     }
 
     /// <summary>
-    /// Gets or sets the camera that follows the player.
-    /// </summary>
-    /// <remarks>
-    /// If set, the camera will automatically center on the player's position each frame.
-    /// The camera position is updated after movement and collision resolution.
-    /// </remarks>
-    public Camera2D Camera { get; set; }
-
-    /// <summary>
     /// Gets the player's collision bounds as a rectangle (for debugging/rendering).
     /// </summary>
     /// <remarks>
     /// Returns a <see cref="FloatRect"/> representing the circular collider as a bounding box.
     /// Useful for debug visualization or spatial queries.
     /// </remarks>
-    public FloatRect CollisionBounds => new(
-        this.Collider.Position.X - this.Collider.Radius,
-        this.Collider.Position.Y - this.Collider.Radius,
-        this.Collider.Radius * 2f,
-        this.Collider.Radius * 2f);
-
-    /// <summary>
-    /// Gets the player's circular collider component.
-    /// </summary>
-    /// <remarks>
-    /// Exposed for advanced collision detection or physics integration.
-    /// </remarks>
-    public CircleCollider Collider { get; }
+    public FloatRect CollisionBounds
+        => new(this.Collider.Position.X - this.Collider.Radius, this.Collider.Position.Y - this.Collider.Radius, this.Collider.Radius * 2f, this.Collider.Radius * 2f);
 
     #endregion Properties
 
@@ -155,6 +151,11 @@ public sealed class Character : AnimatedSprite
     public Character(Texture texture, Vector2f startPosition)
         : base(texture, new IntRect(0, 0, 15, 31), startPosition, new Vector2f(1f, 1f), 0f)
     {
+        // Set default state
+        _state = PlayerState.Idle;
+        _direction = Direction2D.Down;
+        _collisionLayerName = "collision";
+
         // Initialize input manager (singleton)
         _keyboard = KeyboardManager.Instance;
 
@@ -163,10 +164,6 @@ public sealed class Character : AnimatedSprite
 
         // Initialize animation controller
         _animationController = new CharacterController(this.SpriteAnimator);
-
-        // Set default state
-        _state = PlayerState.Idle;
-        _direction = Direction2D.Down;
 
         // Initialize collision (circular for smooth 2.5D movement)
         // Set sprite origin to center-bottom (for 2.5D depth sorting)

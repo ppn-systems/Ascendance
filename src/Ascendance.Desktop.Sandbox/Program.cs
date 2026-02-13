@@ -8,7 +8,7 @@ using Nalix.Common.Diagnostics;
 using Nalix.Logging.Extensions;
 using SFML.Graphics;
 
-namespace Ascendance.Sandbox;
+namespace Ascendance.Desktop.Sandbox;
 
 /// <summary>
 /// Program entry point for Ascendance Sandbox application.

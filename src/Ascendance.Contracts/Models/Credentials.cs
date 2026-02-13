@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Ascendance.Shared.Models;
+namespace Ascendance.Contracts.Models;
 
 /// <summary>
 /// Đại diện cho thông tin đăng nhập gồm tên người dùng và mật khẩu.

@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Shared.Enums;
 
-namespace Ascendance.Shared.Extensions;
+// Copyright (c) 2025 PPN Corporation. All rights reserved.
+
+using Ascendance.Contracts.Enums;
+
+namespace Ascendance.Contracts.Extensions;
 
 /// <summary>
 /// Extension methods for <see cref="TileLayerType"/>.

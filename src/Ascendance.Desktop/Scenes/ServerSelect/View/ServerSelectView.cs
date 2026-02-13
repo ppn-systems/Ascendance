@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Contracts.Enums;
 using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
@@ -7,7 +8,6 @@ using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Layout;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.UI.Controls;
-using Ascendance.Shared.Enums;
 using Nalix.Framework.Configuration;
 using SFML.Graphics;
 using SFML.System;

@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Shared.Enums;
+namespace Ascendance.Contracts.Enums;
 
 /// <summary>
 /// Represents the type of game server.

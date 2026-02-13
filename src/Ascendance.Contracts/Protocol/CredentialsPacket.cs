@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Shared.Enums;
-using Ascendance.Shared.Extensions;
-using Ascendance.Shared.Models;
+using Ascendance.Contracts.Enums;
+using Ascendance.Contracts.Extensions;
+using Ascendance.Contracts.Models;
 using Nalix.Common.Core.Attributes;
 using Nalix.Common.Core.Enums;
 using Nalix.Common.Infrastructure.Caching;
@@ -15,7 +15,7 @@ using Nalix.Shared.Memory.Pooling;
 using Nalix.Shared.Messaging;
 using Nalix.Shared.Serialization;
 
-namespace Ascendance.Shared.Protocol;
+namespace Ascendance.Contracts.Protocol;
 
 /// <summary>
 /// Gói tin chứa thông tin đăng nhập từ client (username, mật khẩu băm, metadata),

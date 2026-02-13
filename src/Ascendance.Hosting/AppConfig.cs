@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2026 Ascendance Team. All rights reserved.
 
-using Ascendance.Shared.Protocol;
+using Ascendance.Contracts.Protocol;
 using Nalix.Common.Diagnostics;
 using Nalix.Common.Messaging.Packets.Abstractions;
 using Nalix.Framework.Injection;

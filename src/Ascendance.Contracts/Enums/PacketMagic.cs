@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2026 Ascendance Team. All rights reserved.
 
-namespace Ascendance.Shared.Enums;
+namespace Ascendance.Contracts.Enums;
 
 public enum PacketMagic : System.UInt32
 {

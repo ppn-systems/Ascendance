@@ -1,8 +1,8 @@
 <Solution>
+  <Project Path="Ascendance/Ascendance.csproj" Id="ca0ed8c1-3854-4c3e-9868-9402e0e86ab0" />
+  <Project Path="Ascendance.Contracts/Ascendance.Contracts.csproj" Id="c1f6bae4-5ed5-4b31-b596-f5c322f789b3" />
   <Project Path="Ascendance.Desktop/Ascendance.Desktop.csproj" Id="87a7091b-82b3-408b-886c-317f165f45ee" />
+  <Project Path="Ascendance.Desktop.Sandbox/Ascendance.Desktop.Sandbox.csproj" Id="033627be-28a0-44cf-b2ed-3fc464272571" />
   <Project Path="Ascendance.Hosting/Ascendance.Hosting.csproj" Id="a95a77d5-67db-4145-9db8-624b3e9f5cf8" />
   <Project Path="Ascendance.Rendering/Ascendance.Rendering.csproj" />
-  <Project Path="Ascendance.Sandbox/Ascendance.Sandbox.csproj" Id="defa4f1c-673a-4691-8b2f-a2331bf4c87b" />
-  <Project Path="Ascendance.Shared/Ascendance.Shared.csproj" Id="c1f6bae4-5ed5-4b31-b596-f5c322f789b3" />
-  <Project Path="Ascendance/Ascendance.csproj" Id="ca0ed8c1-3854-4c3e-9868-9402e0e86ab0" />
 </Solution>

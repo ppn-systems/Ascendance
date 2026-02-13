@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2026 Ascendance Team. All rights reserved.
 
-using Ascendance.Shared.Enums;
+using Ascendance.Contracts.Enums;
 using Nalix.Common.Connection;
 
 namespace Ascendance.Hosting.Extensions;

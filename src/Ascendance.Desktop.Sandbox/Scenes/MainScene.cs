@@ -7,7 +7,7 @@ using Ascendance.Rendering.UI.Indicators;
 using Nalix.Framework.Configuration;
 using SFML.Graphics;
 
-namespace Ascendance.Sandbox.Scenes;
+namespace Ascendance.Desktop.Sandbox.Scenes;
 
 [DynamicLoad]
 public sealed class MainScene : BaseScene

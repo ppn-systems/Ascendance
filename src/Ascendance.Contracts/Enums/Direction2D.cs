@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Shared.Enums;
+namespace Ascendance.Contracts.Enums;
 
 /// <summary>
 /// Defines the four cardinal directions a player can face in 2.5D top-down perspective.
