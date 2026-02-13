@@ -2,7 +2,7 @@
 
 using Ascendance.Maps.Collections;
 
-namespace Ascendance.Maps.Abstractions;
+namespace Ascendance.Abstractions;
 
 /// <summary>
 /// Common contract for layers in a Tiled map (tile layers, object groups,

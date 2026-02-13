@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Abstractions;
-using Ascendance.AntiCheat.Models;
+using Ascendance.Integrity.Models;
 using System.Linq;
 
-namespace Ascendance.Security.AntiCheat.Platform;
+namespace Ascendance.Integrity.Platform;
 
 /// <summary>
 /// Windows-specific anti-cheat detection implementation.

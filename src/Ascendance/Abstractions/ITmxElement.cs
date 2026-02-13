@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-namespace Ascendance.Maps.Abstractions;
+namespace Ascendance.Abstractions;
 
 /// <summary>
 /// Generic small interface for TMX elements that expose a name.

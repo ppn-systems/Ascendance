@@ -3,7 +3,7 @@
 
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Maps.Abstractions;
+using Ascendance.Abstractions;
 
 namespace Ascendance.Maps.Core;
 

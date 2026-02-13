@@ -2,7 +2,7 @@
 
 using Ascendance.Maps.Core;
 
-namespace Ascendance.Maps.Abstractions;
+namespace Ascendance.Abstractions;
 
 /// <summary>
 /// Interface for a custom XML loader used by <see cref="TmxDocument"/>.

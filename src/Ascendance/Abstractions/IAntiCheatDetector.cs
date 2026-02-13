@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.AntiCheat.Models;
+using Ascendance.Integrity.Models;
 
 namespace Ascendance.Abstractions;
 

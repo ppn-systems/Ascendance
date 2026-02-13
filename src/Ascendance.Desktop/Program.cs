@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.AntiCheat;
-using Ascendance.AntiCheat.Events;
+using Ascendance.Integrity;
+using Ascendance.Integrity.Events;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Native;

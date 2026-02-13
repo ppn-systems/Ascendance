@@ -1,6 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Maps.Abstractions;
+using Ascendance.Abstractions;
 using Ascendance.Maps.Collections;
 using Ascendance.Maps.Core;
 using Ascendance.Maps.Enums;

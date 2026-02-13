@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Abstractions;
-using Ascendance.Security.AntiCheat.Platform;
+using Ascendance.Integrity.Platform;
 
-namespace Ascendance.AntiCheat;
+namespace Ascendance.Integrity;
 
 /// <summary>
 /// Factory for creating platform-specific anti-cheat detectors.

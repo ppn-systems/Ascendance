@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
 using Ascendance.Abstractions;
-using Ascendance.AntiCheat.Events;
-using Ascendance.AntiCheat.Models;
 using Ascendance.Configuration;
+using Ascendance.Integrity.Events;
+using Ascendance.Integrity.Models;
 using Nalix.Common.Concurrency;
 using Nalix.Common.Core.Abstractions;
 using Nalix.Common.Diagnostics;
@@ -13,7 +13,7 @@ using Nalix.Framework.Injection.DI;
 using Nalix.Framework.Options;
 using Nalix.Framework.Tasks;
 
-namespace Ascendance.AntiCheat;
+namespace Ascendance.Integrity;
 
 /// <summary>
 /// Orchestrates anti-cheat detection using platform-specific detectors.

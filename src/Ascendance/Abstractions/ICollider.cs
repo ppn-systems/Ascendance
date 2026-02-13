@@ -2,7 +2,7 @@
 
 using SFML.System;
 
-namespace Ascendance.Colliders;
+namespace Ascendance.Abstractions;
 
 /// <summary>
 /// Represents a generic collider used for collision detection.
