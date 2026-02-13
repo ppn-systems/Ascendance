@@ -15,6 +15,40 @@ namespace Ascendance.Maps;
 /// </summary>
 public class TmxMap : TmxDocument
 {
+    #region Fields
+
+    // Static maps to avoid reallocating dictionaries on each Load call.
+    private static readonly System.Collections.Generic.Dictionary<System.String, OrientationType> s_orientDict = new()
+    {
+        ["unknown"] = OrientationType.Unknown,
+        ["isometric"] = OrientationType.Isometric,
+        ["staggered"] = OrientationType.Staggered,
+        ["hexagonal"] = OrientationType.Hexagonal,
+        ["orthogonal"] = OrientationType.Orthogonal,
+    };
+
+    private static readonly System.Collections.Generic.Dictionary<System.String, StaggerAxisType> s_staggerAxisDict = new()
+    {
+        ["x"] = StaggerAxisType.X,
+        ["y"] = StaggerAxisType.Y,
+    };
+
+    private static readonly System.Collections.Generic.Dictionary<System.String, StaggerIndexType> s_staggerIndexDict = new()
+    {
+        ["odd"] = StaggerIndexType.Odd,
+        ["even"] = StaggerIndexType.Even,
+    };
+
+    private static readonly System.Collections.Generic.Dictionary<System.String, RenderOrderType> s_renderDict = new()
+    {
+        ["left-up"] = RenderOrderType.LeftUp,
+        ["right-up"] = RenderOrderType.RightUp,
+        ["left-down"] = RenderOrderType.LeftDown,
+        ["right-down"] = RenderOrderType.RightDown,
+    };
+
+    #endregion Fields
+
     #region Properties
 
     /// <summary>
@@ -118,40 +152,6 @@ public class TmxMap : TmxDocument
     public PropertyDict Properties { get; private set; }
 
     #endregion Properties
-
-    #region Fields
-
-    // Static maps to avoid reallocating dictionaries on each Load call.
-    private static readonly System.Collections.Generic.Dictionary<System.String, OrientationType> s_orientDict = new()
-    {
-        ["unknown"] = OrientationType.Unknown,
-        ["orthogonal"] = OrientationType.Orthogonal,
-        ["isometric"] = OrientationType.Isometric,
-        ["staggered"] = OrientationType.Staggered,
-        ["hexagonal"] = OrientationType.Hexagonal,
-    };
-
-    private static readonly System.Collections.Generic.Dictionary<System.String, StaggerAxisType> s_staggerAxisDict = new()
-    {
-        ["x"] = StaggerAxisType.X,
-        ["y"] = StaggerAxisType.Y,
-    };
-
-    private static readonly System.Collections.Generic.Dictionary<System.String, StaggerIndexType> s_staggerIndexDict = new()
-    {
-        ["odd"] = StaggerIndexType.Odd,
-        ["even"] = StaggerIndexType.Even,
-    };
-
-    private static readonly System.Collections.Generic.Dictionary<System.String, RenderOrderType> s_renderDict = new()
-    {
-        ["right-down"] = RenderOrderType.RightDown,
-        ["right-up"] = RenderOrderType.RightUp,
-        ["left-down"] = RenderOrderType.LeftDown,
-        ["left-up"] = RenderOrderType.LeftUp,
-    };
-
-    #endregion Fields
 
     #region Constructors
 
@@ -298,18 +298,18 @@ public class TmxMap : TmxDocument
         }
     }
 
+    private TmxGroup CREATE_AND_ADD_GROUP(System.Xml.Linq.XElement e)
+    {
+        TmxGroup group = new(e, Width, Height, TmxDirectory);
+        Groups.Add(group);
+        return group;
+    }
+
     private TmxLayer CREATE_AND_ADD_TILE_LAYER(System.Xml.Linq.XElement e)
     {
         TmxLayer tileLayer = new(e, Width, Height);
         TileLayers.Add(tileLayer);
         return tileLayer;
-    }
-
-    private TmxObjectGroup CREATE_AND_ADD_OBJECT_GROUP(System.Xml.Linq.XElement e)
-    {
-        TmxObjectGroup objectGroup = new(e);
-        ObjectGroups.Add(objectGroup);
-        return objectGroup;
     }
 
     private TmxImageLayer CREATE_AND_ADD_IMAGE_LAYER(System.Xml.Linq.XElement e)
@@ -319,11 +319,11 @@ public class TmxMap : TmxDocument
         return imageLayer;
     }
 
-    private TmxGroup CREATE_AND_ADD_GROUP(System.Xml.Linq.XElement e)
+    private TmxObjectGroup CREATE_AND_ADD_OBJECT_GROUP(System.Xml.Linq.XElement e)
     {
-        TmxGroup group = new(e, Width, Height, TmxDirectory);
-        Groups.Add(group);
-        return group;
+        TmxObjectGroup objectGroup = new(e);
+        ObjectGroups.Add(objectGroup);
+        return objectGroup;
     }
 
     #endregion Private Methods
