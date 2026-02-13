@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Shared.Abstractions;
+using Ascendance.Abstractions;
 using SFML.System;
 
 namespace Ascendance.Movement;

@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Camera;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Managers;
 using Ascendance.Rendering.Scenes;
 using Ascendance.Rendering.Time;
-using Ascendance.Shared.Abstractions;
 using Nalix.Framework.Configuration;
 using Nalix.Framework.Injection;
 using Nalix.Framework.Injection.DI;

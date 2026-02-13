@@ -2,7 +2,7 @@
 
 using SFML.System;
 
-namespace Ascendance.Shared.Abstractions;
+namespace Ascendance.Abstractions;
 
 /// <summary>
 /// Defines a movement strategy for an entity.

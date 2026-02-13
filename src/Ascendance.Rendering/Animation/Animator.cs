@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Enums;
-using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Animation;

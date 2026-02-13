@@ -4,7 +4,6 @@ using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Enums;
 using Ascendance.Rendering.Internal.Effects;
-using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 
 namespace Ascendance.Rendering.Scenes;

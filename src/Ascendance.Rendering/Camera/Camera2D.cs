@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Engine;
-using Ascendance.Shared.Abstractions;
 using Nalix.Framework.Injection.DI;
 using Nalix.Framework.Random;
 using SFML.Graphics;

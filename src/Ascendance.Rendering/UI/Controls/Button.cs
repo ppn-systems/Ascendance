@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Assets;
 using Ascendance.Rendering.Entities;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Input;
 using Ascendance.Rendering.Layout;
 using Ascendance.Rendering.UI.Theme;
-using Ascendance.Shared.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;

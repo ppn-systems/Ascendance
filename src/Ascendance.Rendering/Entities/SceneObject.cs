@@ -1,8 +1,8 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Extensions;
 using Ascendance.Rendering.Scenes;
-using Ascendance.Shared.Abstractions;
 
 namespace Ascendance.Rendering.Entities;
 

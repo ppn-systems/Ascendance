@@ -1,9 +1,9 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
+using Ascendance.Rendering.Abstractions;
 using Ascendance.Rendering.Attributes;
 using Ascendance.Rendering.Engine;
 using Ascendance.Rendering.Entities;
-using Ascendance.Shared.Abstractions;
 using Nalix.Framework.Injection.DI;
 using Nalix.Logging.Extensions;
 

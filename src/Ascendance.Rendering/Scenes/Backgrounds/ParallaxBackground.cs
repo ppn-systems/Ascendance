@@ -1,6 +1,6 @@
 // Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-using Ascendance.Shared.Abstractions;
+using Ascendance.Rendering.Abstractions;
 using SFML.Graphics;
 using SFML.System;
 
