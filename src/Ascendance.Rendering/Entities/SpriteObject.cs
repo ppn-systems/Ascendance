@@ -113,8 +113,8 @@ public abstract class SpriteObject : RenderObject
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     private static void APPLY_TRANSFORM(ref Sprite s, Vector2f position, Vector2f scale, System.Single rotation)
     {
-        s.Position = position;
         s.Scale = scale;
+        s.Position = position;
         s.Rotation = rotation;
     }
 

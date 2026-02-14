@@ -31,7 +31,7 @@ public static class Program
             Kernel32.Hide();
         }
 
-        //AntiCheatMonitor.Instance.Activate(cts.Token);
+        CheatDetectionService.Instance.Activate(cts.Token);
 
         // Create and set application icon
         Image icon = GetImageFromBase64(Program.IconBase64);

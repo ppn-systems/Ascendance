@@ -33,7 +33,7 @@ public abstract class RenderObject : SceneObject, IRenderable
 
     #endregion Properties
 
-    #region APIs
+    #region Public Methods
 
     /// <summary>
     /// Gets the drawable object to be rendered.
@@ -96,15 +96,7 @@ public abstract class RenderObject : SceneObject, IRenderable
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     [return: System.Diagnostics.CodeAnalysis.NotNull]
-    public static System.Int32 CompareZIndex(RenderObject r1, RenderObject r2)
-    {
-        if (ReferenceEquals(r1, r2))
-        {
-            return 0;
-        }
+    public static System.Int32 CompareZIndex(RenderObject r1, RenderObject r2) => ReferenceEquals(r1, r2) ? 0 : r1 is null ? -1 : r2 is null ? 1 : r1._zIndex.CompareTo(r2._zIndex);
 
-        return r1 is null ? -1 : r2 is null ? 1 : r1._zIndex.CompareTo(r2._zIndex);
-    }
-
-    #endregion APIs
+    #endregion Public Methods
 }

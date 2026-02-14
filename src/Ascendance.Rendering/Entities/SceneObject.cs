@@ -77,6 +77,34 @@ public abstract class SceneObject : IUpdatable
     #endregion Virtual Methods
 
     /// <summary>
+    /// Pauses the object, preventing it from updating.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void Pause() => this.IsPaused = true;
+
+    /// <summary>
+    /// Unpauses the object, allowing it to update again.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void Resume() => this.IsPaused = false;
+
+    /// <summary>
+    /// Enables the object, activating its behavior.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void Enable() => this.IsEnabled = true;
+
+    /// <summary>
+    /// Disables the object, deactivating its behavior.
+    /// </summary>
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public void Disable() => this.IsEnabled = false;
+
+    /// <summary>
     /// Clears all tags from the object.
     /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(
@@ -107,34 +135,6 @@ public abstract class SceneObject : IUpdatable
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     [return: System.Diagnostics.CodeAnalysis.NotNull]
     public System.Boolean HasTag(System.String tag) => _tags.Contains(tag);
-
-    /// <summary>
-    /// Pauses the object, preventing it from updating.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Pause() => this.IsPaused = true;
-
-    /// <summary>
-    /// Unpauses the object, allowing it to update again.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Resume() => this.IsPaused = false;
-
-    /// <summary>
-    /// Enables the object, activating its behavior.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Enable() => this.IsEnabled = true;
-
-    /// <summary>
-    /// Disables the object, deactivating its behavior.
-    /// </summary>
-    [System.Runtime.CompilerServices.MethodImpl(
-        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public void Disable() => this.IsEnabled = false;
 
     /// <summary>
     /// Checks if the object is queued to be spawned.
