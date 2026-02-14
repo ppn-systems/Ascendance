@@ -62,6 +62,8 @@ public static partial class User32
 
     #endregion Invoke Declarations
 
+    #region Public Methods
+
     /// <summary>
     /// Shows a custom error message box
     /// </summary>
@@ -71,4 +73,6 @@ public static partial class User32
 
         MESSAGE_BOX(System.IntPtr.Zero, message, title, flags);
     }
+
+    #endregion Public Methods
 }
