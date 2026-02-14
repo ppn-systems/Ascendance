@@ -13,9 +13,9 @@ public static class SceneConstants
     public const System.String Login = "login";
 
     /// <summary>
-    /// Scene bắt đầu trò chơi mới.
+    /// Scene chính của trò chơi.
     /// </summary>
-    public const System.String CharCreation = "charactor_creation";
+    public const System.String MainGame = "main_game";
 
     /// <summary>
     /// Scene hiển thị thông tin về máy chủ trò chơi.
@@ -23,7 +23,7 @@ public static class SceneConstants
     public const System.String ServerSelect = "server_selection";
 
     /// <summary>
-    /// Scene chính của trò chơi.
+    /// Scene bắt đầu trò chơi mới.
     /// </summary>
-    public const System.String MainGame = "main_game";
+    public const System.String CharCreation = "charactor_creation";
 }
