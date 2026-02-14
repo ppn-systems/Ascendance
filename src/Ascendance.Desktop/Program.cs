@@ -17,6 +17,8 @@ namespace Ascendance.Desktop;
 /// </summary>
 public static class Program
 {
+    #region Public Methods
+
     /// <summary>
     /// Main entry point of the application.
     /// </summary>
@@ -40,12 +42,15 @@ public static class Program
 
         GraphicsEngine.Instance.SetIcon(icon);
         GraphicsEngine.Instance.Launch();
+        CheatDetectionService.Instance.Deactivate(cts.Token);
 
         cts.Cancel();
 
         System.Console.WriteLine("Press Enter to exit...");
         System.Console.ReadLine();
     }
+
+    #endregion Public Methods
 
     #region Private Class
 
