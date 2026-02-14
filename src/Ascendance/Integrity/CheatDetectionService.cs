@@ -21,12 +21,12 @@ namespace Ascendance.Integrity;
 /// </summary>
 [System.Diagnostics.DebuggerNonUserCode]
 [System.Runtime.CompilerServices.SkipLocalsInit]
-public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivatable
+public sealed class CheatDetectionService : SingletonBase<CheatDetectionService>, IActivatable
 {
     #region Fields
 
-    private static readonly AntiCheatMonitorOptions DetectorOptions =
-        ConfigurationManager.Instance.Get<AntiCheatMonitorOptions>();
+    private static readonly CheatDetectionOptions DetectorOptions =
+        ConfigurationManager.Instance.Get<CheatDetectionOptions>();
 
     private readonly ILogger _logger;
     private readonly System.Int32 _exitCode;
@@ -91,8 +91,8 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
     /// <summary>
     /// Initializes a new instance using configuration and auto-detected platform detector.
     /// </summary>
-    public AntiCheatMonitor()
-        : this(AntiCheatDetectorFactory.Create(), null)
+    public CheatDetectionService()
+        : this(CheatDetectorFactory.Create(), null)
     {
     }
 
@@ -101,21 +101,21 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
     /// </summary>
     /// <param name="platformDetector">The platform-specific detector implementation.</param>
     /// <param name="options">Optional configuration. If null, uses <see cref="ConfigurationManager"/>.</param>
-    public AntiCheatMonitor(IAntiCheatDetector platformDetector, AntiCheatMonitorOptions options = null)
+    public CheatDetectionService(IAntiCheatDetector platformDetector, CheatDetectionOptions options = null)
     {
         System.ArgumentNullException.ThrowIfNull(platformDetector);
 
         _platformDetector = platformDetector;
         _logger = InstanceManager.Instance.GetExistingInstance<ILogger>();
 
-        AntiCheatMonitorOptions opts = options ?? DetectorOptions;
+        CheatDetectionOptions opts = options ?? DetectorOptions;
         opts.Validate();
 
         _scanIntervalMs = opts.ScanIntervalMs;
         _autoShutdown = opts.AutoShutdownOnDetection;
         _exitCode = opts.ExitCode;
 
-        _logger?.Info($"[AC.{nameof(AntiCheatMonitor)}] init detector={platformDetector.GetType().Name} " +
+        _logger?.Info($"[AC.{nameof(CheatDetectionService)}] init detector={platformDetector.GetType().Name} " +
                       $"interval={_scanIntervalMs}ms autoShutdown={_autoShutdown}");
     }
 
@@ -131,7 +131,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
     {
         if (_cts is { IsCancellationRequested: false })
         {
-            _logger?.Warn($"[AC.{nameof(AntiCheatMonitor)}:{nameof(Activate)}] already active");
+            _logger?.Warn($"[AC.{nameof(CheatDetectionService)}:{nameof(Activate)}] already active");
             return;
         }
 
@@ -149,7 +149,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
             options: new WorkerOptions
             {
                 CancellationToken = linkedToken,
-                Tag = nameof(AntiCheatMonitor),
+                Tag = nameof(CheatDetectionService),
                 RetainFor = System.TimeSpan.Zero,
                 GroupConcurrencyLimit = 1,
                 TryAcquireSlotImmediately = true
@@ -158,7 +158,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
 
         _isActive = true;
 
-        _logger?.Info($"[AC.{nameof(AntiCheatMonitor)}:{nameof(Activate)}] activated workerId={_workerHandle.Id}");
+        _logger?.Info($"[AC.{nameof(CheatDetectionService)}:{nameof(Activate)}] activated workerId={_workerHandle.Id}");
     }
 
     /// <inheritdoc/>
@@ -178,7 +178,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         try { cts.Cancel(); }
         catch (System.Exception ex)
         {
-            _logger?.Warn($"[AC.{nameof(AntiCheatMonitor)}:{nameof(Deactivate)}] cancel-error msg={ex.Message}");
+            _logger?.Warn($"[AC.{nameof(CheatDetectionService)}:{nameof(Deactivate)}] cancel-error msg={ex.Message}");
         }
 
         if (_workerHandle is not null)
@@ -191,10 +191,10 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         try { cts.Dispose(); }
         catch (System.Exception ex)
         {
-            _logger?.Warn($"[AC.{nameof(AntiCheatMonitor)}:{nameof(Deactivate)}] dispose-error msg={ex.Message}");
+            _logger?.Warn($"[AC.{nameof(CheatDetectionService)}:{nameof(Deactivate)}] dispose-error msg={ex.Message}");
         }
 
-        _logger?.Info($"[AC.{nameof(AntiCheatMonitor)}:{nameof(Deactivate)}] deactivated totalDetections={TotalDetections}");
+        _logger?.Info($"[AC.{nameof(CheatDetectionService)}:{nameof(Deactivate)}] deactivated totalDetections={TotalDetections}");
     }
 
     #endregion IActivatable
@@ -207,7 +207,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         IWorkerContext ctx,
         System.Threading.CancellationToken ct)
     {
-        _logger?.Debug($"[AC.{nameof(AntiCheatMonitor)}:Internal] loop-start workerId={ctx.Id}");
+        _logger?.Debug($"[AC.{nameof(CheatDetectionService)}:Internal] loop-start workerId={ctx.Id}");
 
         try
         {
@@ -230,7 +230,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
 
                         if (_autoShutdown)
                         {
-                            _logger?.Fatal($"[AC.{nameof(AntiCheatMonitor)}:Internal] auto-shutdown triggered!");
+                            _logger?.Fatal($"[AC.{nameof(CheatDetectionService)}:Internal] auto-shutdown triggered!");
                             System.Environment.Exit(_exitCode);
                         }
                     }
@@ -241,7 +241,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
                 }
                 catch (System.Exception ex)
                 {
-                    _logger?.Error($"[AC.{nameof(AntiCheatMonitor)}:Internal] scan-error scan={scanCount}", ex);
+                    _logger?.Error($"[AC.{nameof(CheatDetectionService)}:Internal] scan-error scan={scanCount}", ex);
                 }
 
                 ctx.Beat();
@@ -249,15 +249,15 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         }
         catch (System.OperationCanceledException)
         {
-            _logger?.Debug($"[AC.{nameof(AntiCheatMonitor)}:Internal] loop-cancelled");
+            _logger?.Debug($"[AC.{nameof(CheatDetectionService)}:Internal] loop-cancelled");
         }
         catch (System.Exception ex)
         {
-            _logger?.Error($"[AC.{nameof(AntiCheatMonitor)}:Internal] loop-error", ex);
+            _logger?.Error($"[AC.{nameof(CheatDetectionService)}:Internal] loop-error", ex);
         }
         finally
         {
-            _logger?.Debug($"[AC.{nameof(AntiCheatMonitor)}:Internal] loop-end");
+            _logger?.Debug($"[AC.{nameof(CheatDetectionService)}:Internal] loop-end");
         }
     }
 
@@ -275,7 +275,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         _firstDetectionTime ??= now;
         _lastDetectionTime = now;
 
-        _logger?.Warn($"[AC.{nameof(AntiCheatMonitor)}:Internal] 🚨 CHEAT DETECTED! " +
+        _logger?.Warn($"[AC.{nameof(CheatDetectionService)}:Internal] 🚨 CHEAT DETECTED! " +
                      $"scan={scanNumber} total={count} method={result.DetectionMethod} platform={result.Platform}");
 
         try
@@ -292,7 +292,7 @@ public sealed class AntiCheatMonitor : SingletonBase<AntiCheatMonitor>, IActivat
         }
         catch (System.Exception ex)
         {
-            _logger?.Error($"[AC.{nameof(AntiCheatMonitor)}:Internal] event-handler-error", ex);
+            _logger?.Error($"[AC.{nameof(CheatDetectionService)}:Internal] event-handler-error", ex);
         }
     }
 

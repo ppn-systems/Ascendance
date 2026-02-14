@@ -1,8 +1,5 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-
-// Copyright (c) 2025 PPN Corporation. All rights reserved.
-
 using Ascendance.Abstractions;
 
 namespace Ascendance.Maps.Collections;
@@ -23,7 +20,7 @@ public class TmxList<T> : System.Collections.ObjectModel.KeyedCollection<System.
     /// <param name="t">Item to add.</param>
     public new void Add(T t)
     {
-        var tName = t?.Name ?? System.String.Empty;
+        System.String tName = t?.Name ?? System.String.Empty;
 
         // Ensure a counter exists for this base name
         if (!nameCount.ContainsKey(tName))
@@ -41,7 +38,7 @@ public class TmxList<T> : System.Collections.ObjectModel.KeyedCollection<System.
     /// <returns>Unique key string.</returns>
     protected override System.String GetKeyForItem(T item)
     {
-        var baseName = item?.Name ?? System.String.Empty;
+        System.String baseName = item?.Name ?? System.String.Empty;
 
         // If the base name is not present yet as a key, use it directly.
         if (!this.Contains(baseName))
@@ -56,7 +53,7 @@ public class TmxList<T> : System.Collections.ObjectModel.KeyedCollection<System.
         }
 
         // Otherwise generate a unique suffixed key: "name_1", "name_2", ...
-        var count = nameCount.TryGetValue(baseName, out var existing) ? existing : 0;
+        System.Int32 count = nameCount.TryGetValue(baseName, out System.Int32 existing) ? existing : 0;
 
         System.String candidate;
         do

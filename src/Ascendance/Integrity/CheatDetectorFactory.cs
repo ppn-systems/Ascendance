@@ -9,7 +9,7 @@ namespace Ascendance.Integrity;
 /// Factory for creating platform-specific anti-cheat detectors.
 /// </summary>
 [System.Diagnostics.DebuggerNonUserCode]
-internal static class AntiCheatDetectorFactory
+internal static class CheatDetectorFactory
 {
     /// <summary>
     /// Creates an appropriate <see cref="IAntiCheatDetector"/> for the current platform.

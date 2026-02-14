@@ -1,8 +1,5 @@
 ﻿// Copyright (c) 2025 PPN Corporation. All rights reserved.
 
-
-// Copyright (c) 2025 PPN Corporation. All rights reserved.
-
 using Ascendance.Maps.Enums;
 
 namespace Ascendance.Maps.Objects;

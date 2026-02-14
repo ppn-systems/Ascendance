@@ -36,7 +36,7 @@ public static class Program
         // Create and set application icon
         Image icon = GetImageFromBase64(Program.IconBase64);
         GraphicsEngine.Instance.FrameUpdate += Program.OnFrameUpdate;
-        AntiCheatMonitor.Instance.CheatDetected += Program.OnCheatDetected;
+        CheatDetectionService.Instance.CheatDetected += Program.OnCheatDetected;
 
         GraphicsEngine.Instance.SetIcon(icon);
         GraphicsEngine.Instance.Launch();

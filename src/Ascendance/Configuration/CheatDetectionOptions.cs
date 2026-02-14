@@ -6,9 +6,9 @@ using Nalix.Framework.Configuration.Binding;
 namespace Ascendance.Configuration;
 
 /// <summary>
-/// Configuration options for <see cref="AntiCheatMonitor"/>.
+/// Configuration options for <see cref="CheatDetectionService"/>.
 /// </summary>
-public sealed class AntiCheatMonitorOptions : ConfigurationLoader
+public sealed class CheatDetectionOptions : ConfigurationLoader
 {
     /// <summary>
     /// Gets or sets the exit code for auto-shutdown. Default is -1.
